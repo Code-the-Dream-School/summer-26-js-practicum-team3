@@ -102,7 +102,7 @@ project-root/
 npm ci
 
 # Set up environment variables
-npm run setup-env
+npm run init-env
 ```
 
 ## 🧪 Available Scripts
