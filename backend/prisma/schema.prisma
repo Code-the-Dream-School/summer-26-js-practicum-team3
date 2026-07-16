@@ -1,13 +1,122 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
-  output   = "../generated/prisma"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model daily_menu_recipes {
+  id            Int         @id @default(autoincrement())
+  recipe_id     Int
+  daily_menu_id Int
+  meal_type     String?     @db.VarChar
+  daily_menus   daily_menus @relation(fields: [daily_menu_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  recipes       recipes     @relation(fields: [recipe_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model daily_menus {
+  id                 Int                  @id @default(autoincrement())
+  user_id            Int
+  date               DateTime             @db.Date
+  total_calories     Decimal?             @db.Decimal
+  total_protein      Decimal?             @db.Decimal
+  total_fat          Decimal?             @db.Decimal
+  total_carbs        Decimal?             @db.Decimal
+  total_cholesterol  Decimal?             @db.Decimal
+  total_fiber        Decimal?             @db.Decimal
+  created_at         DateTime?            @default(now()) @db.Timestamp(6)
+  daily_menu_recipes daily_menu_recipes[]
+  users              users                @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([user_id, date], map: "daily_menus_user_id_date_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model food_preferences {
+  id                  Int       @id @default(autoincrement())
+  user_id             Int
+  selected            String[]
+  custom_note         String?   @db.VarChar
+  preferences_enabled Boolean?  @default(true)
+  updated_at          DateTime? @default(now()) @db.Timestamp(6)
+  users               users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model nutrition_goals {
+  id                 Int       @id @default(autoincrement())
+  user_id            Int
+  calories_target    Decimal?  @db.Decimal
+  protein_target     Decimal?  @db.Decimal
+  fat_target         Decimal?  @db.Decimal
+  carbs_target       Decimal?  @db.Decimal
+  cholesterol_target Decimal?  @db.Decimal
+  fiber_target       Decimal?  @db.Decimal
+  updated_at         DateTime? @default(now()) @db.Timestamp(6)
+  users              users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model raw_recipes {
+  name           String?
+  url            String?
+  author         String?
+  date_published DateTime? @db.Date
+  ingredients    String?
+  calories       Int?
+  fat            Int?
+  carbs          Int?
+  protein        Int?
+  avg_rating     Decimal?  @db.Decimal(3, 1)
+  total_ratings  Int?
+  reviews        Int?
+  prep_time      Int?
+  cook_time      Int?
+  total_time     Int?
+  servings       Int?
+  id             Int       @id @default(autoincrement())
+  user_id        Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model recipes {
+  id                 Int                  @id @default(autoincrement())
+  user_id            Int
+  title              String               @db.VarChar
+  instructions       String?
+  total_time_minutes Int?
+  servings           Int?                 @default(1)
+  calories           Decimal?             @db.Decimal
+  protein            Decimal?             @db.Decimal
+  fat                Decimal?             @db.Decimal
+  carbs              Decimal?             @db.Decimal
+  cholesterol        Decimal?             @db.Decimal
+  fiber              Decimal?             @db.Decimal
+  is_public          Boolean?             @default(false)
+  created_at         DateTime?            @default(now()) @db.Timestamp(6)
+  ingredients        String?              @db.VarChar
+  daily_menu_recipes daily_menu_recipes[]
+  users              users                @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model users {
+  id               Int                @id @default(autoincrement())
+  email            String             @unique @db.VarChar
+  password_hash    String             @db.VarChar
+  name             String?            @db.VarChar
+  sex              String?            @db.VarChar
+  created_at       DateTime?          @default(now()) @db.Timestamp(6)
+  daily_menus      daily_menus[]
+  food_preferences food_preferences[]
+  nutrition_goals  nutrition_goals[]
+  recipes          recipes[]
 }
