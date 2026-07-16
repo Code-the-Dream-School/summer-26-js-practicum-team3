@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "node --env-file-if-exists=.env --watch server.js",
     "start": "node --env-file-if-exists=.env server.js",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "db:generate": "npx prisma generate"
   },
   "dependencies": {
     "@prisma/adapter-neon": "7.8.0",
