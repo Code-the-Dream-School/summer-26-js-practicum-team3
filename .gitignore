@@ -58,4 +58,4 @@ coverage/
 .cache/
 .temp/
 
-/generated/prisma
+**/generated/prisma

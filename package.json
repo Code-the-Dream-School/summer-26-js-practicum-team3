@@ -13,7 +13,8 @@
     "format:frontend": "npm run format --workspace=frontend",
     "format:backend": "npm run format --workspace=backend",
     "format": "concurrently \"npm:format:*\"",
-    "init-env": "cp -n backend/.env.example backend/.env && cp -n frontend/.env.example frontend/.env"
+    "init-env": "cp -n backend/.env.example backend/.env && cp -n frontend/.env.example frontend/.env",
+    "db:generate":"npm run --workspace=backend db:generate"
   },
   "devDependencies": {
     "concurrently": "10.0.3",
