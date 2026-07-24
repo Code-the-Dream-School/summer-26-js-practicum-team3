@@ -1,4 +1,4 @@
-async function getRecipes(req, res) {
+export async function getRecipes(req, res) {
   const whereClause = {};
 
   if (req.query.find) {
