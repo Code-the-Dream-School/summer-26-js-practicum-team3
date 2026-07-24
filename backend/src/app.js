@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 
 import helloRoutes from './routes/hello.routes.js';
+import RecipeRouter from './routes/recipe.routes.js';
 
 const app = express();
 

@@ -1,4 +1,5 @@
 export async function getRecipes(req, res) {
+  console.log('we are connecting......');
   const whereClause = {};
 
   if (req.query.find) {
@@ -11,5 +12,6 @@ export async function getRecipes(req, res) {
    * LOGIC GOES HERE
    */
   const recipes = ['incoming requests', req.body, req.query, req.params];
-  res.status(200).json(recipes);
+
+  return res.status(200).json(recipes);
 }
