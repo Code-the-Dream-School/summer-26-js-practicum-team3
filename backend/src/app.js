@@ -23,6 +23,9 @@ app.use(limiter);
 // Routes
 app.use('/api/hello', helloRoutes);
 
+//recipe routes
+app.use('/api/v1/recipes', RecipeRouter);
+
 // Root route
 app.get('/', (req, res) => {
   res.send('Backend API is running');
