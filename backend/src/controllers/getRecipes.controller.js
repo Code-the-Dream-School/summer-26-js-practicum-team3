@@ -44,7 +44,6 @@ const MOCK_RECIPE_DATA = [
 ];
 
 export async function getRecipes(req, res) {
-  console.log('we are connecting......');
   const whereClause = {};
 
   if (req.query.find) {
@@ -54,7 +53,8 @@ export async function getRecipes(req, res) {
     };
   }
   /**
-   * LOGIC GOES HERE
+   * TODO: search/filter logic
+   *       db query via prisma
    */
 
   return res.status(200).json(MOCK_RECIPE_DATA);
