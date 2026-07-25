@@ -59,3 +59,20 @@ export async function getRecipes(req, res) {
 
   return res.status(200).json(MOCK_RECIPE_DATA);
 }
+
+export async function createRecipe(req, res) {
+  const { title, instructions, ingredients, servings, total_time_minutes } =
+    req.body;
+
+  return res.status(201).json({
+    title,
+    instructions,
+    total_time_minutes,
+    servings,
+    ingredients,
+    calories: 134,
+    protein: 9,
+    fat: 10,
+    carbs: 0,
+  });
+}
