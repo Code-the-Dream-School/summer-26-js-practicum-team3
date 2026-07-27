@@ -62,14 +62,14 @@ export async function getRecipes(req, res) {
 
   function getOrderBy(query) {
     const validSortFields = ['protein', 'carbs', 'fat', 'calories'];
-    const sortBy = query.sortBy || 'createdAt';
+    const sortBy = query.sortBy || 'created_at';
     const sortDirection = query.sortDirection === 'asc' ? 'asc' : 'desc';
 
     if (validSortFields.includes(sortBy)) {
       return { [sortBy]: sortDirection };
     }
 
-    return { createdAt: sortDirection };
+    return { created_at: sortDirection };
   }
 
   try {
@@ -79,7 +79,7 @@ export async function getRecipes(req, res) {
         id: true,
         instructions: true,
         ingredients: true,
-        totalTimeMinutes: true,
+        total_time_minutes: true,
         servings: true,
         title: true,
         calories: true,
@@ -106,14 +106,13 @@ export async function getRecipes(req, res) {
     hasPrev: page > 1,
   };
 
-  // if (recipes.length === 0) {
-  //   return res.status(404).json({
-  //     error: 'No recipes could be found',
-  //     message: 'No recipes meet the criteria',
-  //   });
-  // }
+  if (recipes.length === 0) {
+    return res.status(404).json({
+      error: 'No recipes could be found',
+      message: 'No recipes meet the search criteria',
+    });
+  }
 
-  // return res.status(200).json({ message: 'you hit' });
   return res.status(200).json({ recipes, pagination });
 }
 
