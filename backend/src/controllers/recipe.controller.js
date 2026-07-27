@@ -45,6 +45,10 @@ const MOCK_RECIPE_DATA = [
 ];
 
 export async function getRecipes(req, res) {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 9;
+  const skip = (page - 1) * limit;
+
   const whereClause = {};
 
   if (req.query.find) {
@@ -53,10 +57,23 @@ export async function getRecipes(req, res) {
       mode: 'insensitive',
     };
   }
-  /**
-   * TODO: search/filter logic
-   *       db query via prisma
-   */
+  let recipes = null;
+  let total = null;
+
+  const pagination = {
+    page,
+    limit,
+    total,
+    pages: Math.ceil(total / limit),
+    hasNext: page * limit < total,
+    hasPrev: page > 1,
+  };
+
+  if (tasks.length === 0) {
+    return res
+      .status(404)
+      .json({ error: 'User has no tasks', message: 'No tasks found' });
+  }
 
   return res.status(200).json(MOCK_RECIPE_DATA);
 }
