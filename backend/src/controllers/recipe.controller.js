@@ -106,16 +106,15 @@ export async function getRecipes(req, res) {
     hasPrev: page > 1,
   };
 
-  if (tasks.length === 0) {
-    return res
-      .status(404)
-      .json({
-        error: 'No recipes could be found',
-        message: 'No recipes meet the criteria',
-      });
-  }
+  // if (recipes.length === 0) {
+  //   return res.status(404).json({
+  //     error: 'No recipes could be found',
+  //     message: 'No recipes meet the criteria',
+  //   });
+  // }
 
-  return res.status(200).json(MOCK_RECIPE_DATA);
+  // return res.status(200).json({ message: 'you hit' });
+  return res.status(200).json({ recipes, pagination });
 }
 
 export async function createRecipe(req, res) {
