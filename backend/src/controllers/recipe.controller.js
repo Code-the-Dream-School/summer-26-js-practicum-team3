@@ -1,3 +1,4 @@
+import { prisma } from '../db.js';
 /**
  * We are sending back a hard coded array of recipes
  * so that the front end can continue with develping
