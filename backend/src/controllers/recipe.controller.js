@@ -60,6 +60,43 @@ export async function getRecipes(req, res) {
   let recipes = null;
   let total = null;
 
+  function getOrderBy(query) {
+    const validSortFields = ['protein', 'carbs', 'fat', 'calories'];
+    const sortBy = query.sortBy || 'createdAt';
+    const sortDirection = query.sortDirection === 'asc' ? 'asc' : 'desc';
+
+    if (validSortFields.includes(sortBy)) {
+      return { [sortBy]: sortDirection };
+    }
+
+    return { createdAt: sortDirection };
+  }
+
+  try {
+    recipes = await prisma.recipes.findMany({
+      where: whereClause,
+      select: {
+        id: true,
+        instructions: true,
+        ingredients: true,
+        totalTimeMinutes: true,
+        servings: true,
+        title: true,
+        calories: true,
+        fat: true,
+        protein: true,
+        carbs: true,
+      },
+      skip: skip,
+      take: limit,
+      orderBy: getOrderBy(req.query),
+    });
+
+    total = await prisma.recipes.count({ where: whereClause });
+  } catch (error) {
+    console.log('Error in get catch', error);
+  }
+
   const pagination = {
     page,
     limit,
@@ -72,7 +109,10 @@ export async function getRecipes(req, res) {
   if (tasks.length === 0) {
     return res
       .status(404)
-      .json({ error: 'User has no tasks', message: 'No tasks found' });
+      .json({
+        error: 'No recipes could be found',
+        message: 'No recipes meet the criteria',
+      });
   }
 
   return res.status(200).json(MOCK_RECIPE_DATA);
