@@ -119,16 +119,27 @@ export async function getRecipes(req, res) {
 export async function createRecipe(req, res) {
   const { title, instructions, ingredients, servings, total_time_minutes } =
     req.body;
-
-  return res.status(201).json({
-    title,
-    instructions,
-    total_time_minutes,
-    servings,
-    ingredients,
-    calories: 134,
-    protein: 9,
-    fat: 10,
-    carbs: 0,
-  });
+  const cleanedData = normalizeData(req.body);
+  /**
+   * steps for create
+   *  check body for info (is all the info we need there)
+   *  is user valid (csrf check)<-middleware for these routes
+   *  normalize inputs (need validations(JOI))
+   *  pass all checks, save to db
+   *  send success or log error
+   */
+  return res.status(201).json(cleanedData);
 }
+
+const normalizeData = (reqBody) => {
+  const holder = {};
+  for (let propName in reqBody) {
+    const value = reqBody[propName];
+    if (isNaN(value)) {
+      holder[propName] = value.trim();
+    } else {
+      holder[propName] = Math.trunc(value);
+    }
+  }
+  return holder;
+};
