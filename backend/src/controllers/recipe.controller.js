@@ -117,8 +117,18 @@ export async function getRecipes(req, res) {
 }
 
 export async function createRecipe(req, res) {
+  // if (!req.user.id) {
+  //   return res
+  //     .status(404)
+  //     .json({ error: 'Bad Request', message: 'Need a user' });
+  // }
+
   //This will be replaced with validations later
   const cleanedData = normalizeData(req.body);
+
+  // cleanedData.user_id = req?.user?.id;
+  cleanedData.user_id = 1;
+
   let newRecipeCreated = null;
   try {
     newRecipeCreated = await prisma.recipes.create({
@@ -136,9 +146,15 @@ export async function createRecipe(req, res) {
         carbs: true,
       },
     });
+    console.log('Marker hit without error', newRecipeCreated);
   } catch (error) {
     console.log('Create Recipe catch', error);
+    res.status(500).json({
+      error: error.message,
+      message: 'Server/Database Connection Error',
+    });
   }
+  // return res.status(201).json(newRecipeCreated);
   return res.status(201).json(newRecipeCreated);
 }
 
