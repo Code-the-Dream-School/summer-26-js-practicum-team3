@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 
 import helloRoutes from './routes/hello.routes.js';
+import RecipeRouter from './routes/recipe.routes.js';
 
 const app = express();
 
@@ -22,6 +23,9 @@ app.use(limiter);
 
 // Routes
 app.use('/api/hello', helloRoutes);
+
+//recipe routes
+app.use('/api/v1/recipes', RecipeRouter);
 
 // Root route
 app.get('/', (req, res) => {
