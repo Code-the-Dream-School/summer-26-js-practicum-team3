@@ -117,18 +117,29 @@ export async function getRecipes(req, res) {
 }
 
 export async function createRecipe(req, res) {
-  const { title, instructions, ingredients, servings, total_time_minutes } =
-    req.body;
+  //This will be replaced with validations later
   const cleanedData = normalizeData(req.body);
-  /**
-   * steps for create
-   *  check body for info (is all the info we need there)
-   *  is user valid (csrf check)<-middleware for these routes
-   *  normalize inputs (need validations(JOI))
-   *  pass all checks, save to db
-   *  send success or log error
-   */
-  return res.status(201).json(cleanedData);
+  let newRecipeCreated = null;
+  try {
+    newRecipeCreated = await prisma.recipes.create({
+      data: cleanedData,
+      select: {
+        id: true,
+        instructions: true,
+        ingredients: true,
+        total_time_minutes: true,
+        servings: true,
+        title: true,
+        calories: true,
+        fat: true,
+        protein: true,
+        carbs: true,
+      },
+    });
+  } catch (error) {
+    console.log('Create Recipe catch', error);
+  }
+  return res.status(201).json(newRecipeCreated);
 }
 
 const normalizeData = (reqBody) => {
