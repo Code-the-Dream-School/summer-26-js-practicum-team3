@@ -117,18 +117,56 @@ export async function getRecipes(req, res) {
 }
 
 export async function createRecipe(req, res) {
-  const { title, instructions, ingredients, servings, total_time_minutes } =
-    req.body;
+  // if (!req.user.id) {
+  //   return res
+  //     .status(404)
+  //     .json({ error: 'Bad Request', message: 'Need a user' });
+  // }
 
-  return res.status(201).json({
-    title,
-    instructions,
-    total_time_minutes,
-    servings,
-    ingredients,
-    calories: 134,
-    protein: 9,
-    fat: 10,
-    carbs: 0,
-  });
+  //This will be replaced with validations later
+  const cleanedData = normalizeData(req.body);
+
+  // cleanedData.user_id = req?.user?.id;
+  cleanedData.user_id = 1;
+
+  let newRecipeCreated = null;
+  try {
+    newRecipeCreated = await prisma.recipes.create({
+      data: cleanedData,
+      select: {
+        id: true,
+        instructions: true,
+        ingredients: true,
+        total_time_minutes: true,
+        servings: true,
+        title: true,
+        calories: true,
+        fat: true,
+        protein: true,
+        carbs: true,
+      },
+    });
+    console.log('Marker hit without error', newRecipeCreated);
+  } catch (error) {
+    console.log('Create Recipe catch', error);
+    res.status(500).json({
+      error: error.message,
+      message: 'Server/Database Connection Error',
+    });
+  }
+  // return res.status(201).json(newRecipeCreated);
+  return res.status(201).json(newRecipeCreated);
 }
+
+const normalizeData = (reqBody) => {
+  const holder = {};
+  for (let propName in reqBody) {
+    const value = reqBody[propName];
+    if (isNaN(value)) {
+      holder[propName] = value.trim();
+    } else {
+      holder[propName] = Math.trunc(value);
+    }
+  }
+  return holder;
+};
