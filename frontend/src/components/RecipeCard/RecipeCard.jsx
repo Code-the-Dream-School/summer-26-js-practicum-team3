@@ -28,14 +28,28 @@ export function RecipeCard({
     <div className={styles.root}>
       <h2>{title}</h2>
       <h3>Summary</h3>
-      Time: {total_time_minutes}
-      Servings: {servings}
-      <h3>Nutrition facts</h3>
       <ul>
-        <li>Calories: {calories}</li>
-        <li>Protein: {protein}g</li>
-        <li>Carbs: {carbs}g</li>
-        <li>Fat: {fat}g</li>
+        <li>Time: {total_time_minutes}</li>
+        <li>Servings: {servings}</li>
+      </ul>
+      <h3>Nutrition facts</h3>
+      <ul className={styles.nutritionList}>
+        <li className={styles.nutritionItem}>
+          <span>{calories}</span>
+          <span>Calories</span>
+        </li>
+        <li className={styles.nutritionItem}>
+          <span>{carbs}g</span>
+          <span>Carbs</span>
+        </li>
+        <li className={styles.nutritionItem}>
+          <span>{fat}g</span>
+          <span>Fat</span>
+        </li>
+        <li className={styles.nutritionItem}>
+          <span>{protein}g</span>
+          <span>Protein</span>
+        </li>
       </ul>
     </div>
   );
