@@ -5,6 +5,8 @@ import styles from './RecipeCard.module.css';
  * @typedef {object} RecipeCardProps
  * @prop {string} title
  * @prop {number} total_time_minutes
+ * @prop {string} ingredients
+ * @prop {string} instructions
  * @prop {number} servings
  * @prop {number} protein
  * @prop {number} carbs
@@ -23,6 +25,8 @@ export function RecipeCard({
   carbs,
   calories,
   fat,
+  instructions,
+  ingredients,
 }) {
   return (
     <div className={styles.root}>
@@ -51,6 +55,14 @@ export function RecipeCard({
           <span>Protein</span>
         </li>
       </ul>
+      <div>
+        <h3>Ingredients</h3>
+        <span>{ingredients}</span>
+      </div>
+      <div>
+        <h3>Instructions</h3>
+        <span>{instructions}</span>
+      </div>
     </div>
   );
 }
