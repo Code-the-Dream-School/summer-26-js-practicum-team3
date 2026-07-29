@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import SignUpForm from './features/auth/components/SignUpForm';
 import './App.css';
 
 function App() {
@@ -33,6 +34,8 @@ function App() {
           Message from API: <strong>{message}</strong>
         </p>
       )}
+
+      <SignUpForm />
     </main>
   );
 }
