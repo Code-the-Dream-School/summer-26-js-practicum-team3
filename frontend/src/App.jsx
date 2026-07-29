@@ -43,6 +43,7 @@ const MOCK_RECIPE_DATA = [
     ingredients: '3  eggs, 1 cup milk, 1 cup all-purpose flour',
   },
 ];
+import { DailyPlanner } from '../pages/dailyplanner';
 
 function App() {
   const [message, setMessage] = useState('');
@@ -66,13 +67,22 @@ function App() {
   }, []);
   // TODO: replace inline styles with CSS classes
   return (
-    <main style={{ fontFamily: 'sans-serif' }}>
+    <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
       <SignUpForm />
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {MOCK_RECIPE_DATA.map((recipe, index) => (
           <RecipeCard key={index} {...recipe} />
         ))}
       </div>
+      <DailyPlanner />
+
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+
+      {!error && (
+        <p>
+          Message from API: <strong>{message}</strong>
+        </p>
+      )}
     </main>
   );
 }
