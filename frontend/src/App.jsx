@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import './App.css';
+import { DailyPlanner } from '../pages/dailyplanner';
 
 function App() {
   const [message, setMessage] = useState('');
@@ -25,6 +26,7 @@ function App() {
   return (
     <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
       <h1>Frontend ↔ Backend Test</h1>
+      <DailyPlanner />
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
