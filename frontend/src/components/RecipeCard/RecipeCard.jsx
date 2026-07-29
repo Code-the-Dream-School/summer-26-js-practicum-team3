@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import styles from './RecipeCard.module.css';
 
 /**
@@ -55,6 +57,28 @@ export function RecipeCard({
           <span>Protein</span>
         </li>
       </ul>
+      <RecipeCardDetails
+        ingredients={ingredients}
+        instructions={instructions}
+        title={title}
+      />
+    </div>
+  );
+}
+
+/**
+ *
+ * @param {Pick<RecipeCardProps, 'ingredients' | 'instructions' | 'title'>} props
+ */
+function RecipeCardDetails({ ingredients, instructions, title }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <details open={isExpanded} onToggle={() => setIsExpanded((prev) => !prev)}>
+      <summary>
+        <span>{isExpanded ? 'Hide' : 'Show'} ingredients</span>
+        <span className="visually-hidden">for {title}</span>
+      </summary>
       <div>
         <h3>Ingredients</h3>
         <span>{ingredients}</span>
@@ -63,6 +87,6 @@ export function RecipeCard({
         <h3>Instructions</h3>
         <span>{instructions}</span>
       </div>
-    </div>
+    </details>
   );
 }
