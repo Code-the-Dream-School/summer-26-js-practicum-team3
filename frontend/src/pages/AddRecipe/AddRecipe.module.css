@@ -1,0 +1,6 @@
+.root {
+  box-sizing: border-box;
+  border: 1px solid darkblue;
+  margin: 0;
+  padding: 0;
+}
