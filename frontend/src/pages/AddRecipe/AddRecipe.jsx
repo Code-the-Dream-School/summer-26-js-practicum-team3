@@ -24,6 +24,7 @@ export default function AddRecipe() {
       if (response.ok) {
         const data = await response.json();
         console.log('confirm response', data);
+        alert('Recipe saved successfully');
       }
     } catch (error) {
       console.log('Sending created recipe to back', error);
