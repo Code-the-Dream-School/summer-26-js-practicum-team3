@@ -95,6 +95,8 @@ export async function getRecipes(req, res) {
     total = await prisma.recipes.count({ where: whereClause });
   } catch (error) {
     console.log('Error in get catch', error);
+    res.status(400).json({ message: 'Prisma Error', error: error.message });
+    return;
   }
 
   const pagination = {
@@ -111,9 +113,11 @@ export async function getRecipes(req, res) {
       error: 'No recipes could be found',
       message: 'No recipes meet the search criteria',
     });
+    return;
   }
 
-  return res.status(200).json({ recipes, pagination });
+  res.status(200).json({ recipes, pagination });
+  return;
 }
 
 export async function createRecipe(req, res) {
@@ -146,21 +150,35 @@ export async function createRecipe(req, res) {
         carbs: true,
       },
     });
-    console.log('Marker hit without error', newRecipeCreated);
   } catch (error) {
     console.log('Create Recipe catch', error);
-    res.status(500).json({
+    res.status(400).json({
       error: error.message,
-      message: 'Server/Database Connection Error',
+      message: 'Prisma Error',
     });
     return;
   }
-  // return res.status(201).json(newRecipeCreated);
-  return res.status(201).json(newRecipeCreated);
+
+  res.status(201).json(newRecipeCreated);
+  return;
 }
 
-export async function updateRecipe(req, res) {
-  res.status(200).json({ message: 'Handler being created' });
+async function updateRecipe(req, res, next) {
+  const recipeIndex = parseInt(req.params?.id);
+  // const user_id = req.user.id;
+  const user_id = 1;
+
+  if ((recipeIndex < 0) | (user_id < 0)) {
+    res.status(400).json({ message: 'Validation Error', error: 'invalid id' });
+    return;
+  }
+  // to be replaced with joi validation
+  const cleanedData = normalizeData(req.body);
+
+  cleanedData.user_id = user_id;
+
+  res.status(200).json(updatedRecipe);
+  return;
 }
 
 const normalizeData = (reqBody) => {
