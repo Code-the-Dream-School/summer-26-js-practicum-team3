@@ -7,11 +7,11 @@ export default function AddRecipe() {
     instructions: '',
     ingredients: '',
     servings: '',
-    total_cook_time: '',
+    total_time_minutes: '',
     calories: '',
     protein: '',
     carbs: '',
-    fats: '',
+    fat: '',
   });
   async function handleSubmit(e) {
     e.preventDefault();
@@ -21,13 +21,26 @@ export default function AddRecipe() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
+      if (response.ok) {
+        const data = await response.json();
+        console.log('confirm response', data);
+      }
     } catch (error) {
       console.log('Sending created recipe to back', error);
     }
   }
+
   function handleChange(e) {
     const key = e.target.name;
-    const value = e.target.value;
+    let value = e.target.value;
+    if (e.target.getAttribute('inputMode') === 'numeric' && value !== '') {
+      value = parseInt(value);
+      if (Number.isNaN(value)) {
+        alert(`This ${key} must be a number`);
+        return;
+      }
+    }
+
     setFormData((prev) => ({ ...prev, [key]: value }));
   }
 
@@ -68,14 +81,14 @@ export default function AddRecipe() {
           />
         </div>
         <div>
-          <label htmlFor="total_cook_time">Total cook time</label>
+          <label htmlFor="total_time_minutes">Total cook time</label>
           <input
-            id="total_cook_time"
+            id="total_time_minutes"
             type="text"
-            name="total_cook_time"
+            name="total_time_minutes"
             inputMode="numeric"
             onChange={handleChange}
-            value={formData.total_cook_time}
+            value={formData.total_time_minutes}
           />
         </div>
         <div>
@@ -123,14 +136,14 @@ export default function AddRecipe() {
           />
         </div>
         <div>
-          <label htmlFor="fats">Fats</label>
+          <label htmlFor="fat">fat</label>
           <input
-            id="fats"
+            id="fat"
             type="text"
-            name="fats"
+            name="fat"
             inputMode="numeric"
             onChange={handleChange}
-            value={formData.fats}
+            value={formData.fat}
           />
         </div>
         <button type="submit">Save</button>
