@@ -153,6 +153,7 @@ export async function createRecipe(req, res) {
       error: error.message,
       message: 'Server/Database Connection Error',
     });
+    return;
   }
   // return res.status(201).json(newRecipeCreated);
   return res.status(201).json(newRecipeCreated);
