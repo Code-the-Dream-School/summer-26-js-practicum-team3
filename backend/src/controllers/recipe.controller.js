@@ -177,6 +177,33 @@ async function updateRecipe(req, res, next) {
 
   cleanedData.user_id = user_id;
 
+  let updatedRecipe = null;
+  try {
+    updatedRecipe = await prisma.recipes.update({
+      where: {
+        id: recipeIndex,
+        user_id: user_id,
+      },
+      data: cleanedData,
+      select: {
+        id: true,
+        instructions: true,
+        ingredients: true,
+        total_time_minutes: true,
+        servings: true,
+        title: true,
+        calories: true,
+        fat: true,
+        protein: true,
+        carbs: true,
+      },
+    });
+  } catch (error) {
+    console.log('Update Recipe Catch', error);
+    res.status(400).json({ message: 'Prisma Error', error: error.message });
+    return;
+  }
+
   res.status(200).json(updatedRecipe);
   return;
 }
