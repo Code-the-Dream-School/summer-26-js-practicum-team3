@@ -208,6 +208,11 @@ export async function updateRecipe(req, res, next) {
   return;
 }
 
+export function deleteRecipe(req, res) {
+  console.log('Connected to Delete...');
+  res.status(204).end();
+}
+
 const normalizeData = (reqBody) => {
   const holder = {};
   for (let propName in reqBody) {
