@@ -6,17 +6,24 @@ export default function AddRecipe() {
     title: '',
     instructions: '',
     ingredients: '',
-    servings: 0,
-    total_cook_time: 0,
-    calories: 0,
-    protein: 0,
-    carbs: 0,
-    fats: 0,
+    servings: '',
+    total_cook_time: '',
+    calories: '',
+    protein: '',
+    carbs: '',
+    fats: '',
   });
   async function handleSubmit(e) {
     e.preventDefault();
-    console.log('handle hit');
-    console.log(formData);
+    try {
+      const response = await fetch('http://localhost:8080/api/v1/recipes/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+    } catch (error) {
+      console.log('Sending created recipe to back', error);
+    }
   }
   function handleChange(e) {
     const key = e.target.name;
