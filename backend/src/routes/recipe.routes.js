@@ -9,6 +9,6 @@ const router = Router();
 
 router.get('/', getRecipes);
 router.post('/', createRecipe);
-router.patch('/', updateRecipe);
+router.patch('/:id', updateRecipe);
 
 export default router;

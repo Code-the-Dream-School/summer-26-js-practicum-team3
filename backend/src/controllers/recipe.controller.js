@@ -163,7 +163,7 @@ export async function createRecipe(req, res) {
   return;
 }
 
-async function updateRecipe(req, res, next) {
+export async function updateRecipe(req, res, next) {
   const recipeIndex = parseInt(req.params?.id);
   // const user_id = req.user.id;
   const user_id = 1;
