@@ -158,6 +158,10 @@ export async function createRecipe(req, res) {
   return res.status(201).json(newRecipeCreated);
 }
 
+export async function updateRecipe(req, res) {
+  res.status(200).json({ message: 'Handler being created' });
+}
+
 const normalizeData = (reqBody) => {
   const holder = {};
   for (let propName in reqBody) {
