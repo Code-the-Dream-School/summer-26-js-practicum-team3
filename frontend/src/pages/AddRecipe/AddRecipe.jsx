@@ -1,10 +1,15 @@
 import styles from './AddRecipe.module.css';
 
 export default function AddRecipe() {
+  async function handleSubmit(e) {
+    e.preventDefault();
+    console.log('handle hit');
+  }
+
   return (
     <div className={styles.root}>
       <h2>Add Recipe</h2>
-      <form className={styles.formContainer}>
+      <form className={styles.formContainer} onSubmit={handleSubmit}>
         <div>
           <label htmlFor="title">Recipe Name</label>
           <input id="title" type="text" required />
@@ -41,6 +46,7 @@ export default function AddRecipe() {
           <label htmlFor="fats">Fats</label>
           <input id="fats" type="text" inputMode="numeric" />
         </div>
+        <button type="submit">Save</button>
       </form>
     </div>
   );
