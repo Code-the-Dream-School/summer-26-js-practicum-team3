@@ -1,9 +1,27 @@
 import styles from './AddRecipe.module.css';
+import { useState } from 'react';
 
 export default function AddRecipe() {
+  const [formData, setFormData] = useState({
+    title: '',
+    instructions: '',
+    ingredients: '',
+    servings: 0,
+    total_cook_time: 0,
+    calories: 0,
+    protein: 0,
+    carbs: 0,
+    fats: 0,
+  });
   async function handleSubmit(e) {
     e.preventDefault();
     console.log('handle hit');
+    console.log(formData);
+  }
+  function handleChange(e) {
+    const key = e.target.name;
+    const value = e.target.value;
+    setFormData((prev) => ({ ...prev, [key]: value }));
   }
 
   return (
@@ -12,39 +30,101 @@ export default function AddRecipe() {
       <form className={styles.formContainer} onSubmit={handleSubmit}>
         <div>
           <label htmlFor="title">Recipe Name</label>
-          <input id="title" type="text" required />
+          <input
+            id="title"
+            type="text"
+            name="title"
+            value={formData.title}
+            required
+            onChange={handleChange}
+          />
         </div>
         <div>
           <label htmlFor="instructions">Instructions</label>
-          <input id="instructions" type="text" required />
+          <input
+            id="instructions"
+            type="text"
+            name="instructions"
+            required
+            onChange={handleChange}
+            value={formData.instructions}
+          />
         </div>
         <div>
           <label htmlFor="ingredients">Ingredients</label>
-          <input id="ingredients" type="text" />
+          <input
+            id="ingredients"
+            type="text"
+            name="ingredients"
+            onChange={handleChange}
+            value={formData.ingredients}
+          />
         </div>
         <div>
-          <label htmlFor="total_time">Total cook time</label>
-          <input id="total_time" type="text" inputMode="numeric" />
+          <label htmlFor="total_cook_time">Total cook time</label>
+          <input
+            id="total_cook_time"
+            type="text"
+            name="total_cook_time"
+            inputMode="numeric"
+            onChange={handleChange}
+            value={formData.total_cook_time}
+          />
         </div>
         <div>
           <label htmlFor="servings">Servings</label>
-          <input id="servings" type="text" inputMode="numeric" />
+          <input
+            id="servings"
+            type="text"
+            name="servings"
+            inputMode="numeric"
+            onChange={handleChange}
+            value={formData.servings}
+          />
         </div>
         <div>
           <label htmlFor="calories">Calories</label>
-          <input id="calories" type="text" inputMode="numeric" />
+          <input
+            id="calories"
+            type="text"
+            name="calories"
+            inputMode="numeric"
+            onChange={handleChange}
+            value={formData.calories}
+          />
         </div>
         <div>
           <label htmlFor="protein">Protein</label>
-          <input id="protein" type="text" inputMode="numeric" />
+          <input
+            id="protein"
+            type="text"
+            name="protein"
+            inputMode="numeric"
+            onChange={handleChange}
+            value={formData.protein}
+          />
         </div>
         <div>
           <label htmlFor="carbs">Carbs</label>
-          <input id="carbs" type="text" inputMode="numeric" />
+          <input
+            id="carbs"
+            type="text"
+            name="carbs"
+            inputMode="numeric"
+            onChange={handleChange}
+            value={formData.carbs}
+          />
         </div>
         <div>
           <label htmlFor="fats">Fats</label>
-          <input id="fats" type="text" inputMode="numeric" />
+          <input
+            id="fats"
+            type="text"
+            name="fats"
+            inputMode="numeric"
+            onChange={handleChange}
+            value={formData.fats}
+          />
         </div>
         <button type="submit">Save</button>
       </form>
