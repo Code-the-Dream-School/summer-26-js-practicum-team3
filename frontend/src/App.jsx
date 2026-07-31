@@ -1,6 +1,13 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 import { RecipeCard } from './components/RecipeCard';
+import { BrowserRouter as Router, Route, Routes } from 'react-router';
+
+// Connected Pages
+import { DailyPlanner } from '../pages/dailyplanner';
+import { Goals } from '../pages/goals';
+import { AddRecipe } from '../pages/addRecipe';
+import { Profile } from '../pages/profile';
 
 // TODO: Replace MOCK_RECIPE_DATA with data fetched from the backend API
 const MOCK_RECIPE_DATA = [
@@ -44,7 +51,7 @@ const MOCK_RECIPE_DATA = [
 ];
 import { DailyPlanner } from '../pages/dailyplanner';
 
-function App() {
+function AppContent() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState(null);
 
@@ -73,7 +80,25 @@ function App() {
           <RecipeCard key={index} {...recipe} />
         ))}
       </div>
-      <DailyPlanner />
+
+      <div>
+        <nav>
+          <ul>
+            <li>
+              <Link to="/">Home</Link>
+            </li>
+            <li>
+              <Link to="/dailyplanner">Daily Planner</Link>
+            </li>
+          </ul>
+        </nav>
+        <Routes>
+          <Route path="/dailyplanner" element={<DailyPlanner />} />
+          <Route path="/goals" element={<Goals />} />
+          <Route path="/addRecipe" element={<AddRecipe />} />
+          <Route path="/profile" element={<Profile />} />
+        </Routes>
+      </div>
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
@@ -86,4 +111,10 @@ function App() {
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
+  );
+}

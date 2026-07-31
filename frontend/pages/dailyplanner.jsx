@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import './App.css';
+import { Link } from 'react-router';
 
 export default function DailyPlanner() {
   const proteinRef = useRef(null);
@@ -129,16 +130,16 @@ export default function DailyPlanner() {
             <nav className="nav-bar">
               <ul>
                 <li>
-                  <a href="dailyplanner.html">Daily Planner</a>
+                  <Link to="/dailyplanner">Daily Planner</Link>
                 </li>
                 <li>
-                  <a href="goals.html">Goals</a>
+                  <Link to="/goals">Goals</Link>
                 </li>
                 <li>
-                  <a href="recipe.html">Add Recipe</a>
+                  <Link to="/addRecipe">Add Recipe</Link>
                 </li>
                 <li>
-                  <a href="profile.html">Profile</a>
+                  <Link to="/profile">Profile</Link>
                 </li>
               </ul>
             </nav>
