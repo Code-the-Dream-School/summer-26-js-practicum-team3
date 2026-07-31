@@ -20,6 +20,7 @@ import styles from './RecipeCard.module.css';
  * @param {RecipeCardProps} props
  */
 export function RecipeCard({
+  id,
   title,
   total_time_minutes,
   servings,
@@ -57,6 +58,9 @@ export function RecipeCard({
           <span>Protein</span>
         </li>
       </ul>
+      <button type="button" onClick={() => handleAddToPlanner(id)}>
+        Add To Planner
+      </button>
       <RecipeCardDetails
         ingredients={ingredients}
         instructions={instructions}
