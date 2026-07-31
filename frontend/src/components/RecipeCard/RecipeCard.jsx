@@ -30,6 +30,7 @@ export function RecipeCard({
   fat,
   instructions,
   ingredients,
+  handleAddToPlanner,
 }) {
   return (
     <div className={styles.root}>
