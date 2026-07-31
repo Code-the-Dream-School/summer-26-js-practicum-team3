@@ -221,8 +221,8 @@ export async function deleteRecipe(req, res) {
   try {
     await prisma.recipes.delete({
       where: {
-        id: taskIndex,
-        userId: user_id,
+        id: recipeIndex,
+        user_id: user_id,
       },
     });
   } catch (error) {
