@@ -37,7 +37,6 @@ model nutrition_goals {
   protein_target  Decimal?  @db.Decimal
   fat_target      Decimal?  @db.Decimal
   carbs_target    Decimal?  @db.Decimal
-  goals_enabled   Boolean?  @default(true)
   updated_at      DateTime? @default(now()) @db.Timestamp(6)
   users           users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
@@ -70,8 +69,6 @@ model users {
   name            String?           @db.VarChar
   sex             String?           @db.VarChar
   created_at      DateTime?         @default(now()) @db.Timestamp(6)
-  dob             DateTime?         @db.Date
-  activity_level  String?           @db.VarChar(30)
   daily_menus     daily_menus[]
   nutrition_goals nutrition_goals[]
   recipes         recipes[]
