@@ -115,6 +115,15 @@ npm run db:pull
 npm run db:generate
 ```
 
+### Environment Variables
+
+- `DATABASE_URL` - Connection string for the PostgreSQL database 
+- `JWT_SECRET` - Secret key used to sign JWTs. Use a long, random string - do not commit a real value 
+Generate a secure value for `JWT_SECRET` with:
+```bash
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+```
+
 ## 🧪 Available Scripts
 
 ```bash

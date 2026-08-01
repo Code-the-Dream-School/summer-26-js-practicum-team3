@@ -148,15 +148,6 @@ Examples:
 
 Never commit `.env` files to Git.
 
-### Environment Variables
-
-Create `backend/.env` (or copy from `backend/.env.example`) with:
-
-| Variable | Description |
-|---|---|
-| `DATABASE_URL` | Connection string for the PostgreSQL database |
-| `JWT_SECRET` | Secret key used to sign JWTs. Use a long, random string - do not commit a real value |
-
 
 ## 🌐 API Design Best Practices
 
