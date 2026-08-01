@@ -208,6 +208,32 @@ export async function updateRecipe(req, res, next) {
   return;
 }
 
+export async function deleteRecipe(req, res) {
+  const recipeIndex = parseInt(req.params?.id);
+  // const user_id = req.user.id;
+  const user_id = 1;
+
+  if ((recipeIndex < 0) | (user_id < 0)) {
+    res.status(400).json({ message: 'Validation Error', error: 'invalid id' });
+    return;
+  }
+
+  try {
+    await prisma.recipes.delete({
+      where: {
+        id: recipeIndex,
+        user_id: user_id,
+      },
+    });
+  } catch (error) {
+    console.log('Update Recipe Catch', error);
+    res.status(400).json({ message: 'Prisma Error', error: error.message });
+    return;
+  }
+
+  res.status(204).end();
+}
+
 const normalizeData = (reqBody) => {
   const holder = {};
   for (let propName in reqBody) {
