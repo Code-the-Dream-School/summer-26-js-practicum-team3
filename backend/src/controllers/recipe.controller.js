@@ -1,5 +1,49 @@
 import { prisma } from '../db.js';
 
+/**
+ * @swagger
+ * /recipes:
+ *   get:
+ *     summary: Get a list of recipes
+ *     description: Fetch recipes with pagination. You can also search by title and sort by nutrition facts.
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: The page number you want to view.
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 9
+ *         description: The number of recipes per page.
+ *       - in: query
+ *         name: find
+ *         schema:
+ *           type: string
+ *         description: Type a word to search recipe titles.
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [protein, carbs, fat, calories]
+ *         description: Pick a nutrition field to sort the results.
+ *       - in: query
+ *         name: sortDirection
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *         description: Sort going up (asc) or down (desc).
+ *     responses:
+ *       200:
+ *         description: A list of recipes and pagination details.
+ *       404:
+ *         description: No recipes met the search criteria.
+ *       500:
+ *         description: Server error.
+ */
 export async function getRecipes(req, res) {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 9;
