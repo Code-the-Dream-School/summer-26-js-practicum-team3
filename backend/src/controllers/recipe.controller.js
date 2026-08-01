@@ -125,7 +125,13 @@ export async function getRecipes(req, res) {
  * /recipes:
  *   post:
  *     summary: Create a new recipe
- *     description: Submit a new recipe to the database.**NOTE: req.user.id is hardcoded now but will be required later via JWT tokens.**
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         description: "JWT Token to pull the request user ID (Note: hardcoded for now, but will be required later)"
+ *         required: false
+ *         schema:
+ *           type: string
  *     requestBody:
  *       required: true
  *       content:
