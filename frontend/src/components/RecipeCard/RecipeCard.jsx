@@ -2,6 +2,8 @@ import { useState } from 'react';
 
 import styles from './RecipeCard.module.css';
 
+const NO_OP = () => {};
+
 /**
  *
  * @typedef {object} RecipeCardProps
@@ -30,7 +32,7 @@ export function RecipeCard({
   fat,
   instructions,
   ingredients,
-  handleAddToPlanner,
+  handleAddToPlanner = NO_OP,
 }) {
   return (
     <div className={styles.root}>
