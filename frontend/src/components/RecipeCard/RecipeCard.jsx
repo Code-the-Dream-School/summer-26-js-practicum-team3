@@ -2,6 +2,8 @@ import { useState } from 'react';
 
 import styles from './RecipeCard.module.css';
 
+const NO_OP = () => {};
+
 /**
  *
  * @typedef {object} RecipeCardProps
@@ -20,6 +22,7 @@ import styles from './RecipeCard.module.css';
  * @param {RecipeCardProps} props
  */
 export function RecipeCard({
+  id,
   title,
   total_time_minutes,
   servings,
@@ -29,6 +32,7 @@ export function RecipeCard({
   fat,
   instructions,
   ingredients,
+  handleAddToPlanner = NO_OP,
 }) {
   return (
     <div className={styles.root}>
@@ -57,6 +61,9 @@ export function RecipeCard({
           <span>Protein</span>
         </li>
       </ul>
+      <button type="button" onClick={() => handleAddToPlanner(id)}>
+        Add To Planner
+      </button>
       <RecipeCardDetails
         ingredients={ingredients}
         instructions={instructions}
