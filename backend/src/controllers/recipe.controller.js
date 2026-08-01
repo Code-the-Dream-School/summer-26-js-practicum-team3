@@ -120,6 +120,52 @@ export async function getRecipes(req, res) {
   return;
 }
 
+/**
+ * @swagger
+ * /recipes:
+ *   post:
+ *     summary: Create a new recipe
+ *     description: Submit a new recipe to the database.**NOTE: req.user.id is hardcoded now but will be required later via JWT tokens.**
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: "Spicy Garlic Chicken"
+ *               instructions:
+ *                 type: string
+ *                 example: "1. Chop chicken. 2. Cook chicken."
+ *               ingredients:
+ *                 type: string
+ *                 example: "Chicken, Garlic, Spices"
+ *               total_time_minutes:
+ *                 type: integer
+ *                 example: 30
+ *               servings:
+ *                 type: integer
+ *                 example: 4
+ *               calories:
+ *                 type: integer
+ *                 example: 450
+ *               fat:
+ *                 type: integer
+ *                 example: 15
+ *               protein:
+ *                 type: integer
+ *                 example: 35
+ *               carbs:
+ *                 type: integer
+ *                 example: 10
+ *     responses:
+ *       201:
+ *         description: The recipe was successfully created.
+ *       500:
+ *         description: Server or database connection error.
+ */
 export async function createRecipe(req, res) {
   // if (!req.user.id) {
   //   return res
