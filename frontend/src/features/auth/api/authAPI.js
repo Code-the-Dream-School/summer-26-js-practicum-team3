@@ -1,6 +1,5 @@
-async function registerUser (name, email, password){
-
-    //temporary test//
+async function registerUser(name, email, password) {
+  //temporary test//
   if (email === 'takenemail@test.com') {
     return {
       status: 409,
@@ -28,4 +27,4 @@ async function registerUser (name, email, password){
   };
 }
 
-export default registerUser
+export default registerUser;
