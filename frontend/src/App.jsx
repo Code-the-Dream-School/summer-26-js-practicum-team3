@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 import { RecipeCard } from './components/RecipeCard';
-import { BrowserRouter as Router, Route, Routes } from 'react-router';
 
 // Connected Pages
-import { DailyPlanner } from '../pages/dailyplanner';
-import { Goals } from '../pages/goals';
-import { AddRecipe } from '../pages/addRecipe';
-import { Profile } from '../pages/profile';
+import { BrowserRouter as Router, Route, Routes } from 'react-router';
+import AppLayout from './pages/AppLayout';
+import DailyPlanner from './pages/DailyPlanner';
+import Goals from './pages/Goals';
+import AddRecipe from './pages/AddRecipe';
+import Profile from './pages/Profile';
 
 // TODO: Replace MOCK_RECIPE_DATA with data fetched from the backend API
 const MOCK_RECIPE_DATA = [
@@ -49,12 +50,10 @@ const MOCK_RECIPE_DATA = [
     ingredients: '3  eggs, 1 cup milk, 1 cup all-purpose flour',
   },
 ];
-import { DailyPlanner } from '../pages/dailyplanner';
 
-function AppContent() {
+export default function App() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState(null);
-
   useEffect(() => {
     // Call the backend API
     fetch('http://localhost:8080/api/hello')
@@ -73,48 +72,15 @@ function AppContent() {
   }, []);
 
   return (
-    // TODO: replace inline styles with CSS classes
-    <main style={{ fontFamily: 'sans-serif' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        {MOCK_RECIPE_DATA.map((recipe, index) => (
-          <RecipeCard key={index} {...recipe} />
-        ))}
-      </div>
-
-      <div>
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/dailyplanner">Daily Planner</Link>
-            </li>
-          </ul>
-        </nav>
-        <Routes>
-          <Route path="/dailyplanner" element={<DailyPlanner />} />
-          <Route path="/goals" element={<Goals />} />
-          <Route path="/addRecipe" element={<AddRecipe />} />
-          <Route path="/profile" element={<Profile />} />
-        </Routes>
-      </div>
-
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-
-      {!error && (
-        <p>
-          Message from API: <strong>{message}</strong>
-        </p>
-      )}
-    </main>
-  );
-}
-
-export default function App() {
-  return (
     <Router>
-      <AppContent />
+      <Routes>
+        <Route path="/" element={<AppLayout />}>
+          <Route path="dailyplanner" element={<DailyPlanner />} />
+          <Route path="goals" element={<Goals />} />
+          <Route path="add-recipe" element={<AddRecipe />} />
+          <Route path="profile" element={<Profile />} />
+        </Route>
+      </Routes>
     </Router>
   );
 }
