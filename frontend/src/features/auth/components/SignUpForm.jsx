@@ -14,6 +14,8 @@ function SignUpForm() {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [errorType, setErrorType] = useState('');
+  const isFormValid =
+    isValidName(name) && isValidEmail(email) && isValidPassword(password);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -58,6 +60,9 @@ function SignUpForm() {
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
+        {name.length > 0 && !isValidName(name) && (
+          <p>Name must be at least 2 characters.</p>
+        )}
       </div>
       <div>
         <label htmlFor="emailInput">Email</label>
@@ -67,6 +72,9 @@ function SignUpForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
+        {email.length > 0 && !isValidEmail(email) && (
+          <p>Please enter a valid email address.</p>
+        )}
       </div>
       <div>
         <label htmlFor="passwordInput">Password</label>
@@ -76,8 +84,11 @@ function SignUpForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+        {password.length > 0 && !isValidPassword(password) && (
+          <p>Password must be at least 8 characters</p>
+        )}
       </div>
-      <button type="submit" disabled={loading}>
+      <button type="submit" disabled={loading || !isFormValid}>
         {loading ? 'Submitting...' : 'Submit'}
       </button>
       {errorMessage && <p>{errorMessage}</p>}
