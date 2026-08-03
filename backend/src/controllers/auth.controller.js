@@ -73,4 +73,11 @@ const register = async (req, res) => {
  }
 };
 
-export { register };
+const login = async (req, res) => {
+  // TODO: implement login logic
+  return res.status(200).json({
+    name: 'John Anyman',
+    csrfToken: 'super_secret_long_string',
+  });
+}
+export { register, login };
