@@ -10,7 +10,7 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Recipe API Docs',
+      title: 'TodayEatz API Docs',
       version: '1.0.0',
       description:
         'Documentation for creating, reading, updating, and deleting recipes.',
