@@ -35,11 +35,10 @@ Focus on the **user problem**, not the technology.
 
 Add screenshots or GIFs of key features here.
 
-
-
 ## 🛠 Tech Stack
 
 ### Frontend
+
 - React
 - JavaScript (ES6+)
 - HTML5
@@ -47,14 +46,17 @@ Add screenshots or GIFs of key features here.
 - Vite or Create React App
 
 ### Backend
+
 - Node.js
 - Express.js
 - REST API
 
 ### Database
+
 - PostgreSQL (Prisma / Knex / Sequelize)
 
 ### Tooling
+
 - Git & GitHub
 - dotenv (environment variables)
 - ESLint / Prettier
@@ -90,11 +92,13 @@ project-root/
 ## ⚙️ Setup & Installation
 
 ### Prerequisites
+
 - Node.js (v24.18+ recommended)
 - npm
 - PostgreSQL (local or cloud)
 
 ### Installation
+
 ```bash
 # In the root directory of the repo (NOT frontend or backend)
 
@@ -103,6 +107,21 @@ npm ci
 
 # Set up environment variables
 npm run init-env
+
+# Pull latest database migrations
+npm run db:pull
+
+# Generate Prisma client
+npm run db:generate
+```
+
+### Environment Variables
+
+- `DATABASE_URL` - Connection string for the PostgreSQL database 
+- `JWT_SECRET` - Secret key used to sign JWTs. Use a long, random string - do not commit a real value 
+Generate a secure value for `JWT_SECRET` with:
+```bash
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 ```
 
 ## 🧪 Available Scripts
@@ -143,16 +162,17 @@ DELETE /api/items/:id
 ## 🤝 Team & Collaboration
 
 ### Team Members
+
 - Name — Role
 - Name — Role
 - Name — Role
 
 ### Workflow
+
 - GitHub Issues for task tracking
 - Feature branches for development
 - Pull Requests required for all merges
 - Code reviews before merging to `main`
-
 
 ## 🧩 Development Process
 

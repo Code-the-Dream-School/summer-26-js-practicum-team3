@@ -8,6 +8,11 @@ export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
 
   return {
+    css: {
+      modules: {
+        localsConvention: 'camelCase',
+      },
+    },
     plugins: [react()],
     server: {
       port: env.VITE_PORT || 8081,

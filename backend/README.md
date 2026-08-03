@@ -148,6 +148,7 @@ Examples:
 
 Never commit `.env` files to Git.
 
+
 ## 🌐 API Design Best Practices
 
 ### 1️⃣1️⃣ Use Proper HTTP Status Codes
