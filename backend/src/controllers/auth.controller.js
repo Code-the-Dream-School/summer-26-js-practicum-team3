@@ -89,6 +89,35 @@ const register = async (req, res) => {
  }
 };
 
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: Log in a user
+ *     description: "Authenticate a user and set a JWT cookie."
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: "user@example.com"
+ *               password:
+ *                 type: string
+ *                 example: "password123"
+ *     responses:
+ *       200:
+ *         description: "Successfully authenticated."
+ *       400:
+ *         description: "Validation error for email or password."
+ *       401:
+ *         description: "Invalid email or password."
+ *       500:
+ *         description: "Server error."
+ */
 const login = async (req, res) => {
   const { email, password } = req.body ?? {};
 
