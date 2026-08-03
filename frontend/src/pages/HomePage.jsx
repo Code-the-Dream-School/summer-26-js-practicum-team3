@@ -4,7 +4,7 @@ export default function AppLayout() {
   return (
     <div>
       <nav>
-        <ul>
+        <ul style={{ display: 'flex', gap: '1rem', listStyleType: 'none' }}>
           <li>
             <Link to="/">Home</Link>
           </li>

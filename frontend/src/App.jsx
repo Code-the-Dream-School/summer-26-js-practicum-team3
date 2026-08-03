@@ -4,7 +4,7 @@ import { RecipeCard } from './components/RecipeCard';
 
 // Connected Pages
 import { BrowserRouter as Router, Route, Routes } from 'react-router';
-import AppLayout from './pages/AppLayout';
+import HomePage from './pages/HomePage';
 import DailyPlanner from './pages/DailyPlanner';
 import Goals from './pages/Goals';
 import AddRecipe from './pages/AddRecipe';
@@ -74,12 +74,11 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<AppLayout />}>
-          <Route path="dailyplanner" element={<DailyPlanner />} />
-          <Route path="goals" element={<Goals />} />
-          <Route path="add-recipe" element={<AddRecipe />} />
-          <Route path="profile" element={<Profile />} />
-        </Route>
+        <Route path="/" element={<HomePage />} />
+        <Route path="dailyplanner" element={<DailyPlanner />} />
+        <Route path="goals" element={<Goals />} />
+        <Route path="add-recipe" element={<AddRecipe />} />
+        <Route path="profile" element={<Profile />} />
       </Routes>
     </Router>
   );
