@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
+import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import './App.css';
 import { RecipeCard } from './components/RecipeCard';
+import OnboardingWizard from './components/onboarding/OnboardingWizard';
 
 // TODO: Replace MOCK_RECIPE_DATA with data fetched from the backend API
 const MOCK_RECIPE_DATA = [
@@ -42,10 +44,17 @@ const MOCK_RECIPE_DATA = [
     ingredients: '3  eggs, 1 cup milk, 1 cup all-purpose flour',
   },
 ];
+const theme = createTheme({
+  palette: {
+    primary: { main: '#059669' }, 
+  },
+  shape: { borderRadius: 8 },
+});
 
 function App() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState(null);
+  const [onboardingDone, setOnboardingDone] = useState(false);
 
   useEffect(() => {
     // Call the backend API
@@ -65,14 +74,23 @@ function App() {
   }, []);
 
   return (
-    // TODO: replace inline styles with CSS classes
-    <main style={{ fontFamily: 'sans-serif' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        {MOCK_RECIPE_DATA.map((recipe, index) => (
-          <RecipeCard key={index} {...recipe} />
-        ))}
-      </div>
-    </main>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <main style={{ fontFamily: 'sans-serif', padding: '1rem' }}>
+        {error && <p style={{ color: 'red' }}>Backend error: {error}</p>}
+        {message && <p style={{ color: 'gray' }}>Backend says: {message}</p>}
+ 
+        {!onboardingDone ? (
+          <OnboardingWizard onComplete={() => setOnboardingDone(true)} />
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {MOCK_RECIPE_DATA.map((recipe, index) => (
+              <RecipeCard key={index} {...recipe} />
+            ))}
+          </div>
+        )}
+      </main>
+    </ThemeProvider>
   );
 }
 
