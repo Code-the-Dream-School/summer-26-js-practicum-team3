@@ -215,6 +215,65 @@ export async function createRecipe(req, res) {
   return;
 }
 
+/**
+ * @swagger
+ * /recipes/{id}:
+ *   put:
+ *     summary: Update an existing recipe
+ *     description: "Modify an existing recipe in the database."
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: "The ID of the recipe you want to update."
+ *         schema:
+ *           type: integer
+ *       - in: header
+ *         name: Authorization
+ *         description: "JWT Token to pull the request user ID (Note: hardcoded for now, but will be required later)"
+ *         required: false
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: "Spicy Garlic Chicken (Updated)"
+ *               instructions:
+ *                 type: string
+ *                 example: "1. Chop chicken. 2. Cook chicken. 3. Serve hot."
+ *               ingredients:
+ *                 type: string
+ *                 example: "Chicken, Garlic, Spices, Extra Love"
+ *               total_time_minutes:
+ *                 type: integer
+ *                 example: 35
+ *               servings:
+ *                 type: integer
+ *                 example: 4
+ *               calories:
+ *                 type: integer
+ *                 example: 450
+ *               fat:
+ *                 type: integer
+ *                 example: 15
+ *               protein:
+ *                 type: integer
+ *                 example: 35
+ *               carbs:
+ *                 type: integer
+ *                 example: 10
+ *     responses:
+ *       200:
+ *         description: "The recipe was successfully updated."
+ *       400:
+ *         description: "Validation error or database connection issue."
+ */
 export async function updateRecipe(req, res, next) {
   const recipeIndex = parseInt(req.params?.id);
   // const user_id = req.user.id;
