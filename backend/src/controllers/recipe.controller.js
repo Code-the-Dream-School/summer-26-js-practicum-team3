@@ -319,6 +319,31 @@ export async function updateRecipe(req, res, next) {
   return;
 }
 
+/**
+ * @swagger
+ * /recipes/{id}:
+ *   delete:
+ *     summary: Delete a recipe
+ *     description: "Remove a recipe from the database."
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: "The ID of the recipe you want to delete."
+ *         schema:
+ *           type: integer
+ *       - in: header
+ *         name: Authorization
+ *         description: "JWT Token to pull the request user ID (Note: hardcoded for now, but will be required later)"
+ *         required: false
+ *         schema:
+ *           type: string
+ *     responses:
+ *       204:
+ *         description: "The recipe was successfully deleted."
+ *       400:
+ *         description: "Validation error or database connection issue."
+ */
 export async function deleteRecipe(req, res) {
   const recipeIndex = parseInt(req.params?.id);
   // const user_id = req.user.id;
