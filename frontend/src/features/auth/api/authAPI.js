@@ -1,30 +1,22 @@
+const BASE_URL = 'http://localhost:8080/api/auth';
 async function registerUser(name, email, password) {
-  //temporary test//
-  if (email === 'takenemail@test.com') {
-    return {
-      status: 409,
-      data: {
-        message: 'This email is already registered.',
+  try {
+    const response = await fetch(`${BASE_URL}/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
-    };
-  }
+      body: JSON.stringify({ name, email, password }),
+      credentials: 'include',
+    });
 
-  if (password.length < 8) {
-    return {
-      status: 400,
-      data: {
-        message: 'Password must be at least 8 characters.',
-      },
-    };
-  }
+    const data = await response.json();
 
-  return {
-    status: 201,
-    data: {
-      name: name,
-      csrfToken: 'fake-csrf-token-for-now',
-    },
-  };
+    return { status: response.status, data };
+  } catch (err) {
+    console.error('registerUser failed:', err);
+    return { status: 0, data: { message: 'Unable to reach the server.' } };
+  }
 }
 
 export default registerUser;
