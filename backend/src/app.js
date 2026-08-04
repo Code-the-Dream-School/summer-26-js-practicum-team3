@@ -5,14 +5,19 @@ import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 
 import helloRoutes from './routes/hello.routes.js';
-import authRoutes from './routes/auth.routes.js'
+import authRoutes from './routes/auth.routes.js';
 import RecipeRouter from './routes/recipe.routes.js';
 
 const app = express();
 
 // Security & best‑practice middleware
 app.use(helmet());
-app.use(cors());
+app.use(
+  cors({
+    origin: 'http://localhost:8081',
+    credentials: true,
+  }),
+);
 app.use(express.json());
 app.use(morgan('dev'));
 
