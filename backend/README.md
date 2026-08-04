@@ -1,4 +1,26 @@
-# Backend API Best Practices & Security Guide
+# Backend Setup
+
+## Database
+
+1. Create a `.env` file in the `backend` folder.
+2. Open the "EatzRecipes" project in https://console.neon.tech/.
+3. Open "Branches" on the sidebar and select "dev_basic_tables".
+4. Click the green "Connect" button and copy the connection string.
+5. Paste the connection string into the `.env.` file:
+
+```
+DATABASE_URL="postgresql://your_connection_string_here"
+```
+
+6. From either the root or `backend` directory, run the following commands to pull
+   the latest schema and generate your Prisma client.
+
+```bash
+> npm run db:pull
+> npm run db:generate
+```
+
+# Best Practices & Security Guide
 
 This document outlines **backend API, security, and architecture best practices** for a Node.js + Express application.
 It is written for students building their first **real-world backend** and should be used as a reference while developing features.
@@ -148,7 +170,6 @@ Examples:
 
 Never commit `.env` files to Git.
 
-
 ## 🌐 API Design Best Practices
 
 ### 1️⃣1️⃣ Use Proper HTTP Status Codes
@@ -183,7 +204,7 @@ Example error response:
 
 Consistency makes frontend development easier.
 
-## 🗄 Database Best Practices (When Added)
+## 🗄 Database Best Practices
 
 - Only the backend talks to the database
 - Keep database logic out of routes
