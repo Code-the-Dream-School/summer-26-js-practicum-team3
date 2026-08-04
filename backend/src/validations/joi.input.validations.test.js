@@ -6,20 +6,13 @@ import {
   patchRecipeSchema,
 } from './joi.input.validations';
 
-/****************
- ***USER TEST***
- *****************/
-import { describe, it, expect } from 'vitest';
-import { userSchema } from './joi.input.validations.js'; // Adjust path if needed
-
-// COPY AND PASTE THIS BASE OBJECT INSIDE YOUR TESTS
-const baseValidUser = {
-  email: 'test@example.com',
-  name: 'John Doe',
-  password: 'Password123!',
-};
-
 describe('User Schema Validation', () => {
+  const baseValidUser = {
+    email: 'test@example.com',
+    name: 'John Doe',
+    password: 'Password123!',
+  };
+
   it('should pass with a valid email format', () => {
     const validData = { ...baseValidUser }; // Copy base object directly
 
@@ -143,6 +136,86 @@ describe('Recipe Schema Validation', () => {
     expect(error).toBeDefined();
     expect(error.details[0].message).toContain(
       'must be less than or equal to 999',
+    );
+  });
+});
+
+describe('Patch Recipe Schema Validation', () => {
+  // COPY AND PASTE THIS BASE OBJECT INSIDE YOUR TESTS
+  const baseValidPatch = {
+    title: 'Spaghetti Carbonara',
+    instructions: 'Boil pasta, fry guanciale, mix with egg and cheese.',
+    ingredients: 'Pasta, eggs, guanciale, pecorino',
+    total_time_minutes: 20,
+    servings: 12,
+    protein: 25,
+    carbs: 60,
+    calories: 650,
+    fat: 30,
+  };
+
+  it('should pass when all numeric fields are valid integers within boundaries', () => {
+    const validData = { ...baseValidPatch };
+    expect.assertions(6);
+    const { error, value } = patchRecipeSchema.validate(validData);
+
+    expect(error).toBeUndefined();
+    expect(value.total_time_minutes).toBe(20);
+    expect(value.protein).toBe(25);
+    expect(value.carbs).toBe(60);
+    expect(value.calories).toBe(650);
+    expect(value.fat).toBe(30);
+  });
+
+  // 2. ALL NUMBERS - FAILURE
+  // Testing multiple numeric failures or out-of-bounds at once
+  it('should fail if any numeric field goes below 1 or exceeds 999', () => {
+    const invalidData = {
+      ...baseValidPatch,
+      total_time_minutes: 1000, // Exceeds max 999
+      servings: 0, // Below min 1
+    };
+
+    const { error } = patchRecipeSchema.validate(invalidData);
+    expect(error).toBeDefined();
+  });
+
+  // 3. TITLE MINIMUM - SUCCESS
+  it('should pass when title meets the minimum length requirement', () => {
+    const validData = {
+      ...baseValidPatch,
+      title: 'Pie', // Exactly 3 characters (meets min 3)
+    };
+
+    const { error } = patchRecipeSchema.validate(validData);
+    expect(error).toBeUndefined();
+  });
+
+  // 4. TITLE MINIMUM - FAILURE
+  it('should fail if title length is below 3 characters', () => {
+    const invalidData = {
+      ...baseValidPatch,
+      title: 'Yo', // Only 2 characters
+    };
+
+    const { error } = patchRecipeSchema.validate(invalidData);
+    expect(error).toBeDefined();
+    expect(error.message).toContain(
+      '"title" length must be at least 3 characters long',
+    );
+  });
+
+  // 5. INSTRUCTIONS MINIMUM - FAILURE
+  it('should fail if instructions length is below 3 characters', () => {
+    const invalidData = {
+      ...baseValidPatch,
+      instructions: 'Do', // Only 2 characters
+    };
+
+    const { error } = patchRecipeSchema.validate(invalidData);
+    expect(error).toBeDefined();
+    expect(error.message).toContain(
+      '"instructions" length must be at least 3 characters long',
     );
   });
 });
