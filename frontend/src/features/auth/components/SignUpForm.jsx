@@ -31,11 +31,9 @@ function SignUpForm() {
         if (response.status === 409) {
           setErrorMessage('This email is already in use. Please log in.');
           setErrorType('emailTaken');
-          alert('This email is already in use. Please log in.');
         } else if (response.status === 400) {
           setErrorMessage('Invalid input data. Please check your fields.');
           setErrorType('validation');
-          alert('Invalid input data. Please check your fields.');
         } else {
           setErrorMessage(response.data.message || 'Something went wrong.');
         }
@@ -91,7 +89,7 @@ function SignUpForm() {
       <button type="submit" disabled={loading || !isFormValid}>
         {loading ? 'Submitting...' : 'Submit'}
       </button>
-      {errorMessage && <p>{errorMessage}</p>}
+      {errorMessage && <p role="alert">{errorMessage}</p>}
 
       {errorType === 'emailTaken' && (
         <>
@@ -100,7 +98,7 @@ function SignUpForm() {
         </>
       )}
 
-      {successMessage && <p>{successMessage}</p>}
+      {successMessage && <p aria-live="polite">{successMessage}</p>}
     </form>
   );
 }
