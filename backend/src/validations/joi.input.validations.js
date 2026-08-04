@@ -35,8 +35,8 @@ const userSchema = Joi.object({
  */
 const recipeSchema = Joi.object({
   title: Joi.string().trim().min(3).max(30).required(),
-  instructions: Joi.string().trim().min(3).max(30).required(),
-  ingredients: Joi.string().trim().min(3).max(30).allow('', null),
+  instructions: Joi.string().trim().min(3).max(5000).required(),
+  ingredients: Joi.string().trim().min(3).max(3000).allow('', null),
   total_time_minutes: Joi.number().integer().min(1).max(999).allow('', null),
   servings: Joi.number().integer().min(1).max(999).allow('', null),
   protein: Joi.number().integer().min(1).max(999).allow('', null),
@@ -59,8 +59,8 @@ const recipeSchema = Joi.object({
  */
 const patchRecipeSchema = Joi.object({
   title: Joi.string().trim().min(3).max(30).required(),
-  instructions: Joi.string().trim().min(3).max(30).required(),
-  ingredients: Joi.string().trim().min(3).max(30).allow('', null),
+  instructions: Joi.string().trim().min(3).max(5000).required(),
+  ingredients: Joi.string().trim().min(3).max(3000).allow('', null),
   total_time_minutes: Joi.number().integer().min(1).max(999).allow('', null),
   servings: Joi.number().integer().min(1).max(999).allow('', null),
   protein: Joi.number().integer().min(1).max(999).allow('', null),
