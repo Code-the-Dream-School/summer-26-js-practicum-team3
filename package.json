@@ -17,7 +17,6 @@
     "db:generate":"npm run --workspace=backend db:generate",
     "db:pull":"npm run --workspace=backend db:pull",
     "test:joi":"npm run --workspace=backend test"
-
   },
   "devDependencies": {
     "concurrently": "10.0.3",
