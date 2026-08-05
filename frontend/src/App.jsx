@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import SignUpForm from './features/auth/components/SignUpForm';
 import './App.css';
 import { RecipeCard } from './components/RecipeCard';
 
@@ -63,10 +64,10 @@ function App() {
         setError(err.message);
       });
   }, []);
-
+  // TODO: replace inline styles with CSS classes
   return (
-    // TODO: replace inline styles with CSS classes
     <main style={{ fontFamily: 'sans-serif' }}>
+      <SignUpForm />
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {MOCK_RECIPE_DATA.map((recipe, index) => (
           <RecipeCard key={index} {...recipe} />
