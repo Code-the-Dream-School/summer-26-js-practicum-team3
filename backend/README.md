@@ -34,7 +34,7 @@ DATABASE_URL="postgresql://your_connection_string_here"
 
 If you need to change the database structure (add a column, a table, etc.), the change happens directly in Neon — we don't use Prisma Migrate. Once you've made the change:
 
-1. Run the following command from the `backend` folder to pull the new structure into `schema.prisma`.
+1. Run the following command from the `root` folder to pull the new structure into `schema.prisma`.
 ```bash
 > npm run db:pull
 ```
@@ -86,7 +86,7 @@ Install Postgres and create an empty local database.
 
 This only prints the string - nothing is touched.
 
-- Once confirmed, push the schema and generate the client (still from backend/):
+- Once confirmed, push the schema and generate the client (from backend/):
 
 ```bash
 > npx prisma db push       # creates the tables in your local database from schema.prisma
