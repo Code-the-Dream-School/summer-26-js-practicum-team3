@@ -14,7 +14,7 @@ describe('User Schema Validation', () => {
   };
 
   it('should pass with a valid email format', () => {
-    const validData = { ...baseValidUser }; // Copy base object directly
+    const validData = { ...baseValidUser }; 
 
     const { error } = userSchema.validate(validData);
     expect(error).toBeUndefined();
@@ -23,7 +23,7 @@ describe('User Schema Validation', () => {
   it('should fail with an invalid email format', () => {
     const invalidData = {
       ...baseValidUser,
-      email: 'not-an-email', // Modifying just the email field
+      email: 'not-an-email',
     };
 
     const { error } = userSchema.validate(invalidData);
@@ -61,7 +61,7 @@ describe('User Schema Validation', () => {
   it('should fail if name is too short', () => {
     const invalidData = {
       ...baseValidUser,
-      name: 'Jo', // Less than the min(3) limit in your schema
+      name: 'Jo', 
     };
 
     const { error } = userSchema.validate(invalidData);
@@ -72,9 +72,7 @@ describe('User Schema Validation', () => {
   });
 });
 
-/****************
- ***RECIPE TEST***
- *****************/
+
 describe('Recipe Schema Validation', () => {
   it('should pass with fully valid data', () => {
     const validData = {
@@ -141,7 +139,7 @@ describe('Recipe Schema Validation', () => {
 });
 
 describe('Patch Recipe Schema Validation', () => {
-  // COPY AND PASTE THIS BASE OBJECT INSIDE YOUR TESTS
+
   const baseValidPatch = {
     title: 'Spaghetti Carbonara',
     instructions: 'Boil pasta, fry guanciale, mix with egg and cheese.',
@@ -167,35 +165,32 @@ describe('Patch Recipe Schema Validation', () => {
     expect(value.fat).toBe(30);
   });
 
-  // 2. ALL NUMBERS - FAILURE
-  // Testing multiple numeric failures or out-of-bounds at once
+
   it('should fail if any numeric field goes below 1 or exceeds 999', () => {
     const invalidData = {
       ...baseValidPatch,
-      total_time_minutes: 1000, // Exceeds max 999
-      servings: 0, // Below min 1
+      total_time_minutes: 1000, 
+      servings: 0, 
     };
 
     const { error } = patchRecipeSchema.validate(invalidData);
     expect(error).toBeDefined();
   });
 
-  // 3. TITLE MINIMUM - SUCCESS
   it('should pass when title meets the minimum length requirement', () => {
     const validData = {
       ...baseValidPatch,
-      title: 'Pie', // Exactly 3 characters (meets min 3)
+      title: 'Pie', 
     };
 
     const { error } = patchRecipeSchema.validate(validData);
     expect(error).toBeUndefined();
   });
 
-  // 4. TITLE MINIMUM - FAILURE
   it('should fail if title length is below 3 characters', () => {
     const invalidData = {
       ...baseValidPatch,
-      title: 'Yo', // Only 2 characters
+      title: 'Yo',
     };
 
     const { error } = patchRecipeSchema.validate(invalidData);
@@ -205,11 +200,10 @@ describe('Patch Recipe Schema Validation', () => {
     );
   });
 
-  // 5. INSTRUCTIONS MINIMUM - FAILURE
   it('should fail if instructions length is below 3 characters', () => {
     const invalidData = {
       ...baseValidPatch,
-      instructions: 'Do', // Only 2 characters
+      instructions: 'Do', 
     };
 
     const { error } = patchRecipeSchema.validate(invalidData);
