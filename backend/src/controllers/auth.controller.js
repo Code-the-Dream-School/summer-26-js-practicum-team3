@@ -186,4 +186,4 @@ const login = async (req, res) => {
        .json({ message: 'Something went wrong, please try again' });
   }
 }
-export { register, login };
+export { register, login, hashPassword, verifyPassword };

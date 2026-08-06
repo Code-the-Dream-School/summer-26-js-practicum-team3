@@ -5,12 +5,14 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "test": "vitest",
     "dev": "node --env-file-if-exists=.env --watch server.js",
     "start": "node --env-file-if-exists=.env server.js",
     "format": "prettier --write .",
     "db:generate": "npx prisma generate",
-    "db:pull": "npx prisma db pull"
+    "db:pull": "npx prisma db pull",
+    "test": "vitest run",
+    "test:joi": "vitest run joi",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@prisma/adapter-neon": "7.8.0",
@@ -31,6 +33,6 @@
   },
   "devDependencies": {
     "morgan": "1.11.0",
-     "vitest": "4.1.10"
+    "vitest": "4.1.10"
   }
 }
