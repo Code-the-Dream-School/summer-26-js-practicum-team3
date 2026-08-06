@@ -132,6 +132,12 @@ npm run dev
 
 # Format code with Prettier
 npm run format
+
+# Run all backend tests (Vitest)
+npm run test
+
+# Run only the Joi validation tests
+npm run test:joi
 ```
 
 ## Installing new dependencies
