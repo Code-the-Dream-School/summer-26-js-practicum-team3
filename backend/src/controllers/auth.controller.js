@@ -186,4 +186,19 @@ const login = async (req, res) => {
        .json({ message: 'Something went wrong, please try again' });
   }
 }
-export { register, login, hashPassword, verifyPassword };
+
+/**
+ * @swagger
+ * /auth/logout:
+ *   post:
+ *     summary: Log out the current user
+ *     description: "Stub endpoint - returns the logout response shape."
+ *     responses:
+ *       200:
+ *         description: "Successfully logged out."
+ */
+const logout = (req, res) => {
+  return res.status(StatusCodes.OK).json({ message: 'Logged out' });
+};
+
+export { register, login, logout, hashPassword, verifyPassword };
