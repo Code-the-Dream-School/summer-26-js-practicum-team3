@@ -5,6 +5,7 @@ import {
   isValidEmail,
   isValidPassword,
 } from '../utils/validators';
+import { TextField, Button, Stack, Alert } from '@mui/material';
 
 function SignUpForm() {
   const [name, setName] = useState('');
@@ -16,6 +17,10 @@ function SignUpForm() {
   const [errorType, setErrorType] = useState('');
   const isFormValid =
     isValidName(name) && isValidEmail(email) && isValidPassword(password);
+
+  const nameError = name.length > 0 && !isValidName(name);
+  const emailError = email.length > 0 && !isValidEmail(email);
+  const passwordError = password.length > 0 && !isValidPassword(password);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -50,46 +55,53 @@ function SignUpForm() {
   };
   return (
     <form onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor="nameInput">Name</label>
-        <input
+      <Stack spacing={3}>
+        <TextField
+          label="Name"
           id="nameInput"
-          type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          error={nameError}
+          helperText={nameError ? 'Name must be at least 2 characters' : ' '}
+          fullWidth
         />
-        {name.length > 0 && !isValidName(name) && (
-          <p>Name must be at least 2 characters.</p>
-        )}
-      </div>
-      <div>
-        <label htmlFor="emailInput">Email</label>
-        <input
+        <TextField
+          label="Email"
           id="emailInput"
-          type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          error={emailError}
+          helperText={emailError ? 'Please enter a valid email address' : ' '}
+          fullWidth
         />
-        {email.length > 0 && !isValidEmail(email) && (
-          <p>Please enter a valid email address.</p>
-        )}
-      </div>
-      <div>
-        <label htmlFor="passwordInput">Password</label>
-        <input
+
+        <TextField
+          label="Password"
           id="passwordInput"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          error={passwordError}
+          helperText={
+            passwordError ? 'Password must be at least 8 characters' : ' '
+          }
+          fullWidth
         />
-        {password.length > 0 && !isValidPassword(password) && (
-          <p>Password must be at least 8 characters</p>
-        )}
-      </div>
-      <button type="submit" disabled={loading || !isFormValid}>
+      </Stack>
+      <Button
+        variant="contained"
+        fullWidth
+        size="large"
+        type="submit"
+        disabled={loading || !isFormValid}
+      >
         {loading ? 'Submitting...' : 'Submit'}
-      </button>
-      {errorMessage && <p role="alert">{errorMessage}</p>}
+      </Button>
+      {errorMessage && (
+        <Alert severity="error" sx={{ mt: 2 }}>
+          {errorMessage}
+        </Alert>
+      )}
 
       {errorType === 'emailTaken' && (
         <>
@@ -97,8 +109,11 @@ function SignUpForm() {
           <button type="button">Try Again</button>
         </>
       )}
-
-      {successMessage && <p aria-live="polite">{successMessage}</p>}
+      {successMessage && (
+        <Alert severity="success" aria-live="polite" sx={{ mt: 2 }}>
+          {successMessage}
+        </Alert>
+      )}
     </form>
   );
 }
