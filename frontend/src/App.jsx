@@ -7,7 +7,9 @@ import Goals from './pages/Goals';
 import AddRecipe from './pages/AddRecipe/AddRecipe';
 import Profile from './pages/Profile';
 import Home from './pages/Home';
-
+import Login from './pages/Login';
+import SignUp from './pages/SignUp';
+import NotFound from './pages/NotFound';
 import './App.css';
 
 export default function App() {
@@ -21,6 +23,9 @@ export default function App() {
           <Route path="add-recipe" element={<AddRecipe />} />
           <Route path="profile" element={<Profile />} />
         </Route>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );

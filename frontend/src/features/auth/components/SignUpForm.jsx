@@ -93,7 +93,7 @@ function SignUpForm() {
 
       {errorType === 'emailTaken' && (
         <>
-          <button type="button">Sign In</button>
+          <button type="button">Log In</button>
           <button type="button">Try Again</button>
         </>
       )}
