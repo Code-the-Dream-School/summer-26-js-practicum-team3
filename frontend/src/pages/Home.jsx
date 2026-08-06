@@ -1,4 +1,4 @@
-import SignUpForm from '../features/auth/components/SignUpForm';
+
 import { RecipeCard } from '../components/RecipeCard/RecipeCard';
 import { useEffect, useState } from 'react';
 
@@ -65,7 +65,7 @@ export default function Home() {
   // TODO: replace inline styles with CSS classes
   return (
     <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
-      <SignUpForm />
+      
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {MOCK_RECIPE_DATA.map((recipe, index) => (
           <RecipeCard key={index} {...recipe} />
