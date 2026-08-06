@@ -192,12 +192,13 @@ const login = async (req, res) => {
  * /auth/logout:
  *   post:
  *     summary: Log out the current user
- *     description: "Stub endpoint - returns the logout response shape."
+ *     description: "Clear the JWT cookie, ending the current session. Idempotent - succeeds even if no session exists."
  *     responses:
  *       200:
  *         description: "Successfully logged out."
  */
 const logout = (req, res) => {
+  res.clearCookie('jwt', cookieFlags());
   return res.status(StatusCodes.OK).json({ message: 'Logged out' });
 };
 
