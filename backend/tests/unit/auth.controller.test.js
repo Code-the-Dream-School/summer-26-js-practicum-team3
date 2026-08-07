@@ -1,13 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // this replaces the real db.js file with a fake one for this whole test file
-vi.mock('../src/db.js', () => ({
-  // prisma.users.findUnique / prisma.users.create become empty fake functions 
+vi.mock('../../src/db.js', () => ({
+  // prisma.users.findUnique / prisma.users.create become empty fake functions
   prisma: { users: { findUnique: vi.fn(), create: vi.fn() } },
 }));
 
-import { prisma } from '../src/db.js';
-import { register, login, logout, hashPassword, verifyPassword } from '../src/controllers/auth.controller.js';
+import { prisma } from '../../src/db.js';
+import {
+  register,
+  login,
+  logout,
+  hashPassword,
+  verifyPassword,
+} from '../../src/controllers/auth.controller.js';
 
 // fake Express res object
 function mockRes() {
@@ -62,11 +68,14 @@ describe('POST /api/auth/register', () => {
 
   it('returns 409 when the email is already registered', async () => {
     // tell the fake DB to pretend a user already exists with this email
-    prisma.users.findUnique.mockResolvedValue({ id: 1, email: validBody.email });
+    prisma.users.findUnique.mockResolvedValue({
+      id: 1,
+      email: validBody.email,
+    });
     const req = { body: validBody };
     const res = mockRes();
 
-    await register(req, res); 
+    await register(req, res);
     expect(res.status).toHaveBeenCalledWith(409);
     expect(prisma.users.create).not.toHaveBeenCalled();
   });
@@ -179,7 +188,11 @@ describe('POST /api/auth/login', () => {
 
   it('returns 401 when the password is wrong', async () => {
     // fake DB: user exists with validHash, but we log in with a different password.
-    prisma.users.findUnique.mockResolvedValue({ id: 1, name: 'John', password_hash: validHash });
+    prisma.users.findUnique.mockResolvedValue({
+      id: 1,
+      name: 'John',
+      password_hash: validHash,
+    });
     const req = { body: { email: 'a@b.com', password: 'WrongPassword123' } };
     const res = mockRes();
 
@@ -188,17 +201,28 @@ describe('POST /api/auth/login', () => {
   });
 
   it('returns 200 and the correct response shape on success', async () => {
-    prisma.users.findUnique.mockResolvedValue({ id: 1, name: 'John', password_hash: validHash });
+    prisma.users.findUnique.mockResolvedValue({
+      id: 1,
+      name: 'John',
+      password_hash: validHash,
+    });
     const req = { body: { email: 'a@b.com', password } };
     const res = mockRes();
 
     await login(req, res);
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith({ name: 'John', csrfToken: expect.any(String) });
+    expect(res.json).toHaveBeenCalledWith({
+      name: 'John',
+      csrfToken: expect.any(String),
+    });
   });
 
   it('never returns password_hash in the response', async () => {
-    prisma.users.findUnique.mockResolvedValue({ id: 1, name: 'John', password_hash: validHash });
+    prisma.users.findUnique.mockResolvedValue({
+      id: 1,
+      name: 'John',
+      password_hash: validHash,
+    });
     const req = { body: { email: 'a@b.com', password } };
     const res = mockRes();
 
@@ -208,7 +232,11 @@ describe('POST /api/auth/login', () => {
   });
 
   it('sets a JWT as an httpOnly cookie on success', async () => {
-    prisma.users.findUnique.mockResolvedValue({ id: 1, name: 'John', password_hash: validHash });
+    prisma.users.findUnique.mockResolvedValue({
+      id: 1,
+      name: 'John',
+      password_hash: validHash,
+    });
     const req = { body: { email: 'a@b.com', password } };
     const res = mockRes();
 
