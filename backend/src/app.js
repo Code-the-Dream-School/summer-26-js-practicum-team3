@@ -13,6 +13,11 @@ import SwaggerRouter from './routes/swagger-docs.routes.js';
 const app = express();
 
 // Security & best‑practice middleware
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+});
+app.use(limiter);
 app.use(helmet());
 app.use(
   cors({
@@ -22,13 +27,7 @@ app.use(
 );
 app.use(express.json());
 app.use(morgan('dev'));
-app.use(cookieParser);
-
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-});
-app.use(limiter);
+app.use(cookieParser());
 
 // Routes
 app.use('/api/hello', helloRoutes);

@@ -20,7 +20,7 @@ export default (req, res, next) => {
     // they can read req.user.id instead of hard-coded user_id = 1
     req.user = { id: decoded.id };
     // for these operations we have to check for cross site request forgery
-    if (['POST', 'PATCH', 'PUT', 'DELETE', 'CONNECT'].includes(req.method)) {
+    if (['POST', 'PATCH', 'PUT', 'DELETE'].includes(req.method)) {
       // the frontend must send the same csrfToken in a separate header (not in the cookie!)
       if (req.get('X-CSRF-TOKEN') !== decoded.csrfToken) {
         return send401(res);
