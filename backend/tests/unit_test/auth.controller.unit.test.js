@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // this replaces the real db.js file with a fake one for this whole test file
-vi.mock('../src/db.js', () => ({
+vi.mock('../../src/db.js', () => ({
   // prisma.users.findUnique / prisma.users.create become empty fake functions
   prisma: { users: { findUnique: vi.fn(), create: vi.fn() } },
 }));
