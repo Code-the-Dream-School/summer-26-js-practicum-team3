@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
+import cookieParser from 'cookie-parser';
 
 import helloRoutes from './routes/hello.routes.js';
 import authRoutes from './routes/auth.routes.js';
@@ -21,6 +22,7 @@ app.use(
 );
 app.use(express.json());
 app.use(morgan('dev'));
+app.use(cookieParser);
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
