@@ -4,6 +4,7 @@ import {
   userSchema,
   recipeSchema,
   patchRecipeSchema,
+  nutritrionGoalsSchema,
 } from './joi.input.validations';
 
 describe('User Schema Validation', () => {
@@ -14,7 +15,7 @@ describe('User Schema Validation', () => {
   };
 
   it('should pass with a valid email format', () => {
-    const validData = { ...baseValidUser }; 
+    const validData = { ...baseValidUser };
 
     const { error } = userSchema.validate(validData);
     expect(error).toBeUndefined();
@@ -61,7 +62,7 @@ describe('User Schema Validation', () => {
   it('should fail if name is too short', () => {
     const invalidData = {
       ...baseValidUser,
-      name: 'Jo', 
+      name: 'Jo',
     };
 
     const { error } = userSchema.validate(invalidData);
@@ -71,7 +72,6 @@ describe('User Schema Validation', () => {
     );
   });
 });
-
 
 describe('Recipe Schema Validation', () => {
   it('should pass with fully valid data', () => {
@@ -139,7 +139,6 @@ describe('Recipe Schema Validation', () => {
 });
 
 describe('Patch Recipe Schema Validation', () => {
-
   const baseValidPatch = {
     title: 'Spaghetti Carbonara',
     instructions: 'Boil pasta, fry guanciale, mix with egg and cheese.',
@@ -165,12 +164,11 @@ describe('Patch Recipe Schema Validation', () => {
     expect(value.fat).toBe(30);
   });
 
-
   it('should fail if any numeric field goes below 1 or exceeds 999', () => {
     const invalidData = {
       ...baseValidPatch,
-      total_time_minutes: 1000, 
-      servings: 0, 
+      total_time_minutes: 1000,
+      servings: 0,
     };
 
     const { error } = patchRecipeSchema.validate(invalidData);
@@ -180,7 +178,7 @@ describe('Patch Recipe Schema Validation', () => {
   it('should pass when title meets the minimum length requirement', () => {
     const validData = {
       ...baseValidPatch,
-      title: 'Pie', 
+      title: 'Pie',
     };
 
     const { error } = patchRecipeSchema.validate(validData);
@@ -203,7 +201,7 @@ describe('Patch Recipe Schema Validation', () => {
   it('should fail if instructions length is below 3 characters', () => {
     const invalidData = {
       ...baseValidPatch,
-      instructions: 'Do', 
+      instructions: 'Do',
     };
 
     const { error } = patchRecipeSchema.validate(invalidData);
@@ -211,5 +209,15 @@ describe('Patch Recipe Schema Validation', () => {
     expect(error.message).toContain(
       '"instructions" length must be at least 3 characters long',
     );
+  });
+});
+
+describe('Testing a joi input for rounding numbers', () => {
+  it('success?', () => {
+    const valid = { user_id: 5, fat: 15.7 };
+    const { value, error } = nutritrionGoalsSchema.validate(valid);
+    // expect.assertions(2);
+    // expect(error).toBeUndefined();
+    expect(value.fat).toBe(16);
   });
 });

@@ -37,7 +37,7 @@ const userSchema = Joi.object({
 const recipeSchema = Joi.object({
   title: Joi.string().trim().min(3).max(30).required(),
   instructions: Joi.string().trim().min(3).max(5000).required(),
-  ingredients: Joi.string().trim().min(3).max(3000).allow(null),
+  ingredients: Joi.string().trim().min(3).max(3000).allow('', null),
   total_time_minutes: Joi.number().integer().min(1).max(999).allow(null),
   servings: Joi.number().integer().min(1).max(999).allow(null),
   protein: Joi.number().integer().min(1).max(999).allow(null),
@@ -61,7 +61,7 @@ const recipeSchema = Joi.object({
 const patchRecipeSchema = Joi.object({
   title: Joi.string().trim().min(3).max(30).required(),
   instructions: Joi.string().trim().min(3).max(5000).required(),
-  ingredients: Joi.string().trim().min(3).max(3000).allow(null),
+  ingredients: Joi.string().trim().min(3).max(3000).allow('', null),
   total_time_minutes: Joi.number().integer().min(1).max(999).allow(null),
   servings: Joi.number().integer().min(1).max(999).allow(null),
   protein: Joi.number().integer().min(1).max(999).allow(null),
@@ -72,8 +72,17 @@ const patchRecipeSchema = Joi.object({
   .min(1)
   .message('No attributes to change were specified.');
 
+/**
+ *
+ * @param {number} value
+ * @returns number
+ */
+const roundToWholeNumber = (value) => {
+  return typeof value === 'number' ? Math.round(value) : value;
+};
 const nutritrionGoalsSchema = Joi.object({
   user_id: Joi.number().integer().required(),
-  fat: Joi.number().integer().min(0).allow(null),
+  // fat: Joi.number().integer().min(0).allow(null),
+  fat: Joi.number().precision(0).allow(null),
 });
-export { userSchema, recipeSchema, patchRecipeSchema };
+export { userSchema, recipeSchema, patchRecipeSchema, nutritrionGoalsSchema };
