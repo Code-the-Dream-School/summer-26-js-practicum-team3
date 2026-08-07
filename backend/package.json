@@ -12,6 +12,7 @@
     "db:pull": "npx prisma db pull",
     "test": "vitest run",
     "test:joi": "vitest run joi",
+    "test:recipe-api":"vitest run recipe",
     "test:watch": "vitest"
   },
   "dependencies": {
