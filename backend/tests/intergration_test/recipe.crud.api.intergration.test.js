@@ -254,3 +254,103 @@ describe('POST /api/v1/recipes - Failure Cases', () => {
     });
   });
 });
+
+describe('PATCH /api/v1/recipes/:id - Success Cases', () => {
+  const recipeId = 5;
+  const updatePayload = {
+    title: 'Updated Chicken Curry',
+    total_time_minutes: 45,
+  };
+
+  const mockUpdatedRecipe = {
+    id: recipeId,
+    title: 'Updated Chicken Curry',
+    instructions: 'Cook curry with chicken',
+    ingredients: 'chicken, curry paste, coconut milk',
+    total_time_minutes: 45,
+    servings: 4,
+    calories: 550,
+    fat: 15,
+    protein: 35,
+    carbs: 40,
+  };
+
+  let res;
+  let updateSpy;
+
+  beforeEach(async () => {
+    vi.restoreAllMocks();
+
+    updateSpy = vi
+      .spyOn(prisma.recipes, 'update')
+      .mockResolvedValue(mockUpdatedRecipe);
+
+    res = await request(app)
+      .patch(`/api/v1/recipes/${recipeId}`)
+      .send(updatePayload);
+  });
+
+  it('should return status 200 OK', () => {
+    expect(res.status).toBe(200);
+  });
+
+  it('should return the updated recipe in the response body', () => {
+    expect(res.body).toEqual(mockUpdatedRecipe);
+  });
+
+  it('should enforce user ownership in the Prisma where clause', () => {
+    expect(updateSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          id: recipeId,
+          user_id: 1,
+        },
+      }),
+    );
+  });
+
+  it('should pass updated fields and select payload to Prisma', () => {
+    expect(updateSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          title: 'Updated Chicken Curry',
+          total_time_minutes: 45,
+          user_id: 1,
+        }),
+      }),
+    );
+  });
+});
+
+describe('PATCH /api/v1/recipes/:id - Failure Cases', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('should return 400 when an invalid negative ID parameter is provided', async () => {
+    const res = await request(app)
+      .patch('/api/v1/recipes/-5')
+      .send({ title: 'Invalid Recipe ID Update' });
+
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual({
+      message: 'Validation Error',
+      error: 'invalid id',
+    });
+  });
+
+  it('should return 400 with Prisma error details when update fails or record does not exist', async () => {
+    const mockPrismaError = new Error('Record to update not found.');
+    vi.spyOn(prisma.recipes, 'update').mockRejectedValue(mockPrismaError);
+
+    const res = await request(app)
+      .patch('/api/v1/recipes/999')
+      .send({ title: 'Non-existent Recipe' });
+
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual({
+      message: 'Prisma Error',
+      error: 'Record to update not found.',
+    });
+  });
+});
