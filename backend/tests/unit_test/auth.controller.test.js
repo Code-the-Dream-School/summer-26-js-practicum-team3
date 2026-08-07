@@ -6,18 +6,14 @@ vi.mock('../../src/db.js', () => ({
   prisma: { users: { findUnique: vi.fn(), create: vi.fn() } },
 }));
 
-<<<<<<< HEAD:backend/tests/unit_test/auth.controller.test.js
-import { prisma } from '../../src/db.js';
+import { prisma } from '../src/db.js';
 import {
   register,
   login,
+  logout,
   hashPassword,
   verifyPassword,
-} from '../../src/controllers/auth.controller.js';
-=======
-import { prisma } from '../src/db.js';
-import { register, login, logout, hashPassword, verifyPassword } from '../src/controllers/auth.controller.js';
->>>>>>> main:backend/tests/auth.controller.unit.test.js
+} from '../src/controllers/auth.controller.js';
 
 // fake Express res object
 function mockRes() {
