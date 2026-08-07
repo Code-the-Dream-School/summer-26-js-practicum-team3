@@ -4,8 +4,9 @@ import Joi from 'joi';
  * @typedef {object} userSchema
  * @prop {string} email - REQUIRED.
  * @prop {string} name - REQUIRED.
- * @prop {string} password - REQUIRED. Password must be at least 8 characters long
- *  and include upper and lower case letters, a number, and a special character
+ * @prop {string} password - REQUIRED. Password must be at least 8 characters
+ *  long and include upper and lower case letters, a number, and a special
+ *  character
  */
 const userSchema = Joi.object({
   email: Joi.string().trim().lowercase().email().required(),
@@ -36,13 +37,13 @@ const userSchema = Joi.object({
 const recipeSchema = Joi.object({
   title: Joi.string().trim().min(3).max(30).required(),
   instructions: Joi.string().trim().min(3).max(5000).required(),
-  ingredients: Joi.string().trim().min(3).max(3000).allow('', null),
-  total_time_minutes: Joi.number().integer().min(1).max(999).allow('', null),
-  servings: Joi.number().integer().min(1).max(999).allow('', null),
-  protein: Joi.number().integer().min(1).max(999).allow('', null),
-  carbs: Joi.number().integer().min(1).max(999).allow('', null),
-  calories: Joi.number().integer().min(1).max(9999).allow('', null),
-  fat: Joi.number().integer().min(1).max(999).allow('', null),
+  ingredients: Joi.string().trim().min(3).max(3000).allow(null),
+  total_time_minutes: Joi.number().integer().min(1).max(999).allow(null),
+  servings: Joi.number().integer().min(1).max(999).allow(null),
+  protein: Joi.number().integer().min(1).max(999).allow(null),
+  carbs: Joi.number().integer().min(1).max(999).allow(null),
+  calories: Joi.number().integer().min(1).max(9999).allow(null),
+  fat: Joi.number().integer().min(1).max(999).allow(null),
 });
 
 /**
@@ -60,15 +61,19 @@ const recipeSchema = Joi.object({
 const patchRecipeSchema = Joi.object({
   title: Joi.string().trim().min(3).max(30).required(),
   instructions: Joi.string().trim().min(3).max(5000).required(),
-  ingredients: Joi.string().trim().min(3).max(3000).allow('', null),
-  total_time_minutes: Joi.number().integer().min(1).max(999).allow('', null),
-  servings: Joi.number().integer().min(1).max(999).allow('', null),
-  protein: Joi.number().integer().min(1).max(999).allow('', null),
-  carbs: Joi.number().integer().min(1).max(999).allow('', null),
-  calories: Joi.number().integer().min(1).max(9999).allow('', null),
-  fat: Joi.number().integer().min(1).max(999).allow('', null),
+  ingredients: Joi.string().trim().min(3).max(3000).allow(null),
+  total_time_minutes: Joi.number().integer().min(1).max(999).allow(null),
+  servings: Joi.number().integer().min(1).max(999).allow(null),
+  protein: Joi.number().integer().min(1).max(999).allow(null),
+  carbs: Joi.number().integer().min(1).max(999).allow(null),
+  calories: Joi.number().integer().min(1).max(9999).allow(null),
+  fat: Joi.number().integer().min(1).max(999).allow(null),
 })
   .min(1)
   .message('No attributes to change were specified.');
 
+const nutritrionGoalsSchema = Joi.object({
+  user_id: Joi.number().integer().required(),
+  fat: Joi.number().integer().min(0).allow(null),
+});
 export { userSchema, recipeSchema, patchRecipeSchema };
