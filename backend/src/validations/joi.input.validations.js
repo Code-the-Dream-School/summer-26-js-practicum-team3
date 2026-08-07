@@ -74,15 +74,19 @@ const patchRecipeSchema = Joi.object({
 
 /**
  *
- * @param {number} value
- * @returns number
+ * @typedef {object} nutritrionGoalsSchema
+ * @prop {number} user_id - REQUIRED. comes from Auth
+ * @prop {number} - fat
+ * @prop {number} - calories
+ * @prop {number} - protein
+ * @prop {number} - carbs
  */
-const roundToWholeNumber = (value) => {
-  return typeof value === 'number' ? Math.round(value) : value;
-};
 const nutritrionGoalsSchema = Joi.object({
   user_id: Joi.number().integer().required(),
-  // fat: Joi.number().integer().min(0).allow(null),
-  fat: Joi.number().precision(0).allow(null),
+  fat: Joi.number().precision(0).integer().min(0).allow(null),
+  calories: Joi.number().precision(0).integer().min(0).allow(null),
+  protein: Joi.number().precision(0).integer().min(0).allow(null),
+  carbs: Joi.number().precision(0).integer().min(0).allow(null),
 });
+
 export { userSchema, recipeSchema, patchRecipeSchema, nutritrionGoalsSchema };
