@@ -354,3 +354,59 @@ describe('PATCH /api/v1/recipes/:id - Failure Cases', () => {
     });
   });
 });
+
+describe('DELETE /api/v1/recipes/:id - Success Cases', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('should delete a recipe and return 204 No Content', async () => {
+    const recipeId = 12;
+
+    const deleteSpy = vi
+      .spyOn(prisma.recipes, 'delete')
+      .mockResolvedValue({ id: recipeId, user_id: 1 });
+
+    const res = await request(app).delete(`/api/v1/recipes/${recipeId}`);
+
+    expect(res.status).toBe(204);
+    expect(res.text).toBe('');
+
+    // Verify Prisma delete arguments
+    expect(deleteSpy).toHaveBeenCalledWith({
+      where: {
+        id: recipeId,
+        user_id: 1,
+      },
+    });
+  });
+});
+
+describe('DELETE /api/v1/recipes/:id - Failure Cases', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('should return 400 when an invalid negative ID parameter is provided', async () => {
+    const res = await request(app).delete('/api/v1/recipes/-3');
+
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual({
+      message: 'Validation Error',
+      error: 'invalid id',
+    });
+  });
+
+  it('should return 400 with Prisma error details when deletion fails or record does not exist', async () => {
+    const mockPrismaError = new Error('Record to delete does not exist.');
+    vi.spyOn(prisma.recipes, 'delete').mockRejectedValue(mockPrismaError);
+
+    const res = await request(app).delete('/api/v1/recipes/999');
+
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual({
+      message: 'Prisma Error',
+      error: 'Record to delete does not exist.',
+    });
+  });
+});
