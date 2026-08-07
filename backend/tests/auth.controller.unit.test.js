@@ -7,7 +7,7 @@ vi.mock('../src/db.js', () => ({
 }));
 
 import { prisma } from '../src/db.js';
-import { register, login, hashPassword, verifyPassword } from '../src/controllers/auth.controller.js';
+import { register, login, logout, hashPassword, verifyPassword } from '../src/controllers/auth.controller.js';
 
 // fake Express res object
 function mockRes() {
@@ -16,6 +16,7 @@ function mockRes() {
     status: vi.fn().mockReturnThis(),
     json: vi.fn().mockReturnThis(),
     cookie: vi.fn().mockReturnThis(),
+    clearCookie: vi.fn().mockReturnThis(),
   };
 }
 
@@ -223,6 +224,44 @@ describe('POST /api/auth/login', () => {
 
     await login(req, res);
     expect(res.status).toHaveBeenCalledWith(500);
+  });
+});
+
+describe('POST /api/auth/logout', () => {
+  it('clears the "jwt" cookie with the matching cookie flags', () => {
+    const req = { cookies: { jwt: 'some-valid-token' } };
+    const res = mockRes();
+
+    logout(req, res);
+    expect(res.clearCookie).toHaveBeenCalledWith('jwt', {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'Strict',
+    });
+  });
+
+  it('returns 200 and the correct response shape on success', () => {
+    const req = { cookies: { jwt: 'some-valid-token' } };
+    const res = mockRes();
+
+    logout(req, res);
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({ message: 'Logged out' });
+  });
+
+  it('behaves the same (200, cookie cleared) even when no session exists - idempotency', () => {
+    // no cookies at all on the incoming request, unlike the tests above
+    const req = { cookies: {} };
+    const res = mockRes();
+
+    logout(req, res);
+    expect(res.clearCookie).toHaveBeenCalledWith('jwt', {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'Strict',
+    });
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({ message: 'Logged out' });
   });
 });
 
