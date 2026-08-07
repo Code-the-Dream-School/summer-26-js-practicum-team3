@@ -178,3 +178,79 @@ describe('GET /api/v1/recipes - Failure Cases', () => {
     });
   });
 });
+
+describe('POST /api/v1/recipes - Success Cases', () => {
+  const inputData = {
+    title: 'Spaghetti Bolognese',
+    instructions: 'Boil pasta, cook meat, mix together.',
+    ingredients: 'pasta, ground beef, tomato sauce',
+    total_time_minutes: 30,
+    servings: 4,
+    calories: 600,
+    fat: 20,
+    protein: 30,
+    carbs: 70,
+  };
+
+  const mockCreatedRecipe = {
+    id: '101',
+    ...inputData,
+  };
+
+  let res;
+  let createSpy;
+
+  beforeEach(async () => {
+    vi.restoreAllMocks();
+
+    createSpy = vi
+      .spyOn(prisma.recipes, 'create')
+      .mockResolvedValue(mockCreatedRecipe);
+
+    res = await request(app).post('/api/v1/recipes').send(inputData);
+  });
+
+  it('should return status 201 Created', () => {
+    expect(res.status).toBe(201);
+  });
+
+  it('should return the created recipe in the response body', () => {
+    expect(res.body).toEqual(mockCreatedRecipe);
+  });
+
+  it('should attach user_id and pass correct select fields to Prisma', () => {
+    expect(createSpy).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        ...inputData,
+        user_id: 1,
+      }),
+      select: expect.objectContaining({
+        id: true,
+        title: true,
+      }),
+    });
+  });
+});
+
+describe('POST /api/v1/recipes - Failure Cases', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('should return 400 with Prisma error message when database creation fails', async () => {
+    const mockError = new Error('Field title is missing');
+    vi.spyOn(prisma.recipes, 'create').mockRejectedValue(mockError);
+
+    const invalidInput = {
+      instructions: 'Cook something without a title',
+    };
+
+    const res = await request(app).post('/api/v1/recipes').send(invalidInput);
+
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual({
+      message: 'Prisma Error',
+      error: 'Field title is missing',
+    });
+  });
+});
