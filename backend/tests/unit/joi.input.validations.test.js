@@ -5,6 +5,7 @@ import {
   recipeSchema,
   patchRecipeSchema,
   nutritrionGoalsSchema,
+  nutritrionGoalsSchema,
 } from '../../src/validations/joi.input.validations';
 
 describe('User Schema Validation', () => {
@@ -220,7 +221,7 @@ describe('Testing onboarding Joi validation', () => {
     protein_target: 35.8,
     carbs_target: '100',
   };
-  describe('Successful Testing', () => {
+  describe('Successful OnBoarding Validation Testing', () => {
     it('Successful goal object, rounding down fat', () => {
       const { value, error } = nutritrionGoalsSchema.validate(validGoal);
       expect.assertions(3);
@@ -241,6 +242,25 @@ describe('Testing onboarding Joi validation', () => {
       expect.assertions(2);
       expect(error).toBeUndefined();
       expect(value.carbs_target).toBeTypeOf('number');
+    });
+  });
+  describe('Invalid OnBoarding Validation Tests', () => {
+    it('Throws Error for no user_id(required)', () => {
+      const { user_id, ...invalid } = validGoal;
+      const { value, error } = nutritrionGoalsSchema.validate(invalid);
+      expect.assertions(2);
+      expect(value).not.toHaveProperty('user_id');
+      expect(error.details[0].message).toContain('user_id');
+    });
+
+    it('Throws Error for non-numeric string(carbs)', () => {
+      const invalidStringValue = { ...validGoal, carbs: 'something' };
+      const { value, error } =
+        nutritrionGoalsSchema.validate(invalidStringValue);
+      console.log(error);
+      expect.assertions(2);
+      expect(value.carbs).toBeTypeOf('string');
+      expect(error.details[0].message).toContain('carbs');
     });
   });
 });
