@@ -4,6 +4,9 @@ import Joi from 'joi';
  * @typedef {object} userSchema
  * @prop {string} email - REQUIRED.
  * @prop {string} name - REQUIRED.
+ * @prop {string} dob - Date Of Birth. allows ''|null
+ * @prop {string} sex - matabalism. allows ''|null
+ * @prop {string} activity_level - TBD. allows ''|null
  * @prop {string} password - REQUIRED. Password must be at least 8 characters
  *  long and include upper and lower case letters, a number, and a special
  *  character
@@ -11,6 +14,11 @@ import Joi from 'joi';
 const userSchema = Joi.object({
   email: Joi.string().trim().lowercase().email().required(),
   name: Joi.string().trim().min(3).max(30).required(),
+  dob: Joi.date().iso().allow('', null), //yyyy-mm-dd
+  sex: Joi.string()
+    .valid('Male', 'Female', 'Prefer Not to Answer')
+    .allow('', null),
+  activity_level: Joi.string().min(3).max(50).allow('', null),
   password: Joi.string()
     .trim()
     .min(8)
@@ -74,15 +82,19 @@ const patchRecipeSchema = Joi.object({
 
 /**
  *
- * @param {number} value
- * @returns number
+ * @typedef {object} nutritrionGoalsSchema
+ * @prop {number} user_id - REQUIRED. comes from Auth
+ * @prop {number} - fat_target for tailored recipes
+ * @prop {number} - calories_target for tailored recipes
+ * @prop {number} - protein_target for tailored recipes
+ * @prop {number} - carbs_target for tailored recipes
  */
-const roundToWholeNumber = (value) => {
-  return typeof value === 'number' ? Math.round(value) : value;
-};
 const nutritrionGoalsSchema = Joi.object({
   user_id: Joi.number().integer().required(),
-  // fat: Joi.number().integer().min(0).allow(null),
-  fat: Joi.number().precision(0).allow(null),
+  fat_target: Joi.number().precision(0).integer().min(0).allow(null),
+  calories_target: Joi.number().precision(0).integer().min(0).allow(null),
+  protein_target: Joi.number().precision(0).integer().min(0).allow(null),
+  carbs_target: Joi.number().precision(0).integer().min(0).allow(null),
 });
+
 export { userSchema, recipeSchema, patchRecipeSchema, nutritrionGoalsSchema };
