@@ -1,4 +1,5 @@
 const BASE_URL = 'http://localhost:8080/api/auth';
+
 async function registerUser(name, email, password) {
   try {
     const response = await fetch(`${BASE_URL}/register`, {
@@ -19,4 +20,6 @@ async function registerUser(name, email, password) {
   }
 }
 
-export default registerUser;
+async function loginUser(email, password) {}
+
+export { registerUser, loginUser };
