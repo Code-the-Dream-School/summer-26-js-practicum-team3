@@ -20,7 +20,7 @@
     "test:joi":"npm run --workspace=backend test:joi"
   },
   "devDependencies": {
-    "concurrently": "10.0.3",
-    "prettier": "3.9.5"
+    "concurrently": "10.0.4",
+    "prettier": "3.9.6"
   }
 }
