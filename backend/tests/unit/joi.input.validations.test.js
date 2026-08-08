@@ -5,7 +5,7 @@ import {
   recipeSchema,
   patchRecipeSchema,
   nutritrionGoalsSchema,
-} from './joi.input.validations';
+} from '../../src/validations/joi.input.validations';
 
 describe('User Schema Validation', () => {
   const baseValidUser = {
@@ -212,12 +212,35 @@ describe('Patch Recipe Schema Validation', () => {
   });
 });
 
-describe('Testing a joi input for rounding numbers', () => {
-  it('success?', () => {
-    const valid = { user_id: 5, fat: 15.3 };
-    const { value, error } = nutritrionGoalsSchema.validate(valid);
-    expect.assertions(2);
-    expect(error).toBeUndefined();
-    expect(value.fat).toBe(16);
+describe('Testing onboarding Joi validation', () => {
+  const validGoal = {
+    user_id: 5,
+    fat_target: 15.3,
+    calories_target: 250,
+    protein_target: 35.8,
+    carbs_target: '100',
+  };
+  describe('Successful Testing', () => {
+    it('Successful goal object, rounding down fat', () => {
+      const { value, error } = nutritrionGoalsSchema.validate(validGoal);
+      expect.assertions(3);
+      expect(error).toBeUndefined();
+      expect(value.user_id).toBe(5);
+      expect(value.fat_target).toBe(15);
+    });
+
+    it('Successful goal object, round up protien', () => {
+      const { value, error } = nutritrionGoalsSchema.validate(validGoal);
+      expect.assertions(2);
+      expect(error).toBeUndefined();
+      expect(value.protein_target).toBe(36);
+    });
+
+    it('Successful goal object, converts string to number', () => {
+      const { value, error } = nutritrionGoalsSchema.validate(validGoal);
+      expect.assertions(2);
+      expect(error).toBeUndefined();
+      expect(value.carbs_target).toBeTypeOf('number');
+    });
   });
 });
