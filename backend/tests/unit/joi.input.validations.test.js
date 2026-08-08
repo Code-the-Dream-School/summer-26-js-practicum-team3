@@ -5,7 +5,6 @@ import {
   recipeSchema,
   patchRecipeSchema,
   nutritrionGoalsSchema,
-  nutritrionGoalsSchema,
 } from '../../src/validations/joi.input.validations';
 
 describe('User Schema Validation', () => {
@@ -27,7 +26,7 @@ describe('User Schema Validation', () => {
       ...baseValidUser,
       email: 'not-an-email',
     };
-
+    expect.assertions(2);
     const { error } = userSchema.validate(invalidData);
     expect(error).toBeDefined();
     expect(error.message).toContain('"email" must be a valid email');
@@ -45,7 +44,7 @@ describe('User Schema Validation', () => {
       ...baseValidUser,
       password: 'nocapitalsornumbers',
     };
-
+    expect.assertions(2);
     const { error } = userSchema.validate(invalidData);
     expect(error).toBeDefined();
     expect(error.message).toContain(
@@ -65,11 +64,63 @@ describe('User Schema Validation', () => {
       ...baseValidUser,
       name: 'Jo',
     };
-
+    expect.assertions(2);
     const { error } = userSchema.validate(invalidData);
     expect(error).toBeDefined();
     expect(error.message).toContain(
       '"name" length must be at least 3 characters long',
+    );
+  });
+
+  it('Success: accepts a valid ISO date string (YYYY-MM-DD)', () => {
+    const input = { dob: '1990-05-15' };
+    const { value, error } = userSchema.validate(input);
+    expect.assertions(2);
+    expect(error).toBeUndefined();
+    expect(value.dob).toBeInstanceOf(Date); // Joi converts ISO string to Date object
+  });
+
+  it('Failure: rejects an invalid date string format', () => {
+    const input = { dob: '15-05-1990' }; // Not ISO format
+    const { error } = userSchema.validate(input);
+    expect.assertions(2);
+    expect(error).toBeDefined();
+    expect(error.message).toContain('must be in ISO 8601 date format');
+  });
+
+  it('Success: accepts one of the allowed option strings', () => {
+    const input = { sex: 'Female' };
+    const { value, error } = userSchema.validate(input);
+    expect.assertions(2);
+    expect(error).toBeUndefined();
+    expect(value.sex).toBe('Female');
+  });
+
+  it('Failure: rejects an option not in the allowed list', () => {
+    const input = { sex: 'Other' };
+    const { error } = userSchema.validate(input);
+    expect.assertions(2);
+    expect(error).toBeDefined();
+    expect(error.message).toContain(
+      'must be one of [Male, Female, Prefer Not to Answer]',
+    );
+  });
+
+  it('Success: accepts a string within the length boundaries (3-50 chars)', () => {
+    const input = { activity_level: 'Moderate' };
+    const { value, error } = nutritionGoalsSchema.validate(input);
+    expect.assertions(2);
+    expect(error).toBeUndefined();
+    expect(value.activity_level).toBe('Moderate');
+  });
+
+  it('Failure: rejects a string that is too short (under 3 chars)', () => {
+    const input = { activity_level: 'Hi' }; // 2 characters
+    const { error } = nutritionGoalsSchema.validate(input);
+    expect.assertions(2);
+    expect(error).toBeDefined();
+    expect(error.message).toContain(
+      'length must be at least 3 characters long',
     );
   });
 });
