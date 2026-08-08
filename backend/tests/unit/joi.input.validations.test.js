@@ -214,10 +214,10 @@ describe('Patch Recipe Schema Validation', () => {
 
 describe('Testing a joi input for rounding numbers', () => {
   it('success?', () => {
-    const valid = { user_id: 5, fat: 15.7 };
+    const valid = { user_id: 5, fat: 15.3 };
     const { value, error } = nutritrionGoalsSchema.validate(valid);
-    // expect.assertions(2);
-    // expect(error).toBeUndefined();
+    expect.assertions(2);
+    expect(error).toBeUndefined();
     expect(value.fat).toBe(16);
   });
 });
