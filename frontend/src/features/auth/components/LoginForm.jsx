@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { loginUser } from '../api/authApi';
 import { isValidEmail } from '../utils/validators';
 import { TextField, Button, Stack, Alert } from '@mui/material';
+import { useAuth } from '../context/AuthContext';
 
 function LoginForm() {
   const [email, setEmail] = useState('');
@@ -9,8 +10,8 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const isFormValid = isValidEmail(email) && password.length > 0;
-
   const emailError = email.length > 0 && !isValidEmail(email);
+  const { login } = useAuth();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -30,7 +31,7 @@ function LoginForm() {
         }
         return;
       }
-      console.log('Logged in user:', response.data);
+      login(response.data);
     } catch (error) {
       setErrorMessage('Submission failed: A critical error occurred');
       console.error(error);
