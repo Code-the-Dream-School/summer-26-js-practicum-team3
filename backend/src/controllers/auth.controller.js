@@ -186,4 +186,20 @@ const login = async (req, res) => {
        .json({ message: 'Something went wrong, please try again' });
   }
 }
-export { register, login, hashPassword, verifyPassword };
+
+/**
+ * @swagger
+ * /auth/logout:
+ *   post:
+ *     summary: Log out the current user
+ *     description: "Clear the JWT cookie, ending the current session. Idempotent - succeeds even if no session exists."
+ *     responses:
+ *       200:
+ *         description: "Successfully logged out."
+ */
+const logout = (req, res) => {
+  res.clearCookie('jwt', cookieFlags());
+  return res.status(StatusCodes.OK).json({ message: 'Logged out' });
+};
+
+export { register, login, logout, hashPassword, verifyPassword };

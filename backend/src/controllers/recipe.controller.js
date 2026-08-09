@@ -49,6 +49,13 @@ export async function getRecipes(req, res) {
   const limit = parseInt(req.query.limit) || 9;
   const skip = (page - 1) * limit;
 
+  if (page < 0) {
+    res
+      .status(404)
+      .json({ message: 'Invalid page number', error: 'Improper Paging' });
+    return;
+  }
+
   const whereClause = {};
 
   if (req.query.find) {
