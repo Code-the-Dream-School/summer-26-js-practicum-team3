@@ -6,8 +6,6 @@ const FIELDS = [
   { key: 'protein', label: 'Protein', unit: 'g' },
   { key: 'fat', label: 'Fat', unit: 'g' },
   { key: 'carbs', label: 'Carb', unit: 'g' },
-  { key: 'cholesterol', label: 'Cholesterol', unit: 'mg' },
-  { key: 'fiber', label: 'Fiber', unit: 'g' },
 ];
 
 const FDA_GUIDELINES_URL =

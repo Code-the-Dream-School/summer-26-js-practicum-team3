@@ -6,10 +6,10 @@ export async function saveOnboarding(formData) {
       Authorization: `Bearer ${localStorage.getItem('token')}`,
     },
     body: JSON.stringify({
-      goals: formData.goals,
+      goals: formData.goals, // calories, protein, fat, carbs
       activityLevel: formData.activityLevel, // nullable, skippable
       dob: formData.dob, // nullable, skippable
-      gender: formData.gender, // nullable, skippable
+      sex: formData.sex, // nullable, skippable
     }),
   });
 

@@ -10,13 +10,13 @@ import {
 } from '@mui/material';
 import StepCard from '../StepCard';
 
-const GENDER_OPTIONS = [
+const SEX_OPTIONS = [
   { value: 'male', label: 'Male' },
   { value: 'female', label: 'Female' },
   { value: 'prefer_not_to_say', label: 'Prefer Not to say' },
 ];
 
-export default function GenderStep({ formData, updateField, onNext, onBack, onSkip, submitting }) {
+export default function SexStep({ formData, updateField, onNext, onBack, onSkip, submitting }) {
   return (
     <StepCard>
       <MobileStepper
@@ -29,15 +29,15 @@ export default function GenderStep({ formData, updateField, onNext, onBack, onSk
         backButton={null}
       />
       <Typography variant="h6" fontWeight={600} sx={{ mb: 3 }}>
-        Gender
+        Sex
       </Typography>
 
       <RadioGroup
-        value={formData.gender || ''}
-        onChange={(e) => updateField('gender', e.target.value)}
+        value={formData.sex || ''}
+        onChange={(e) => updateField('sex', e.target.value)}
         sx={{ textAlign: 'left', pl: 1 }}
       >
-        {GENDER_OPTIONS.map((opt) => (
+        {SEX_OPTIONS.map((opt) => (
           <FormControlLabel
             key={opt.value}
             value={opt.value}

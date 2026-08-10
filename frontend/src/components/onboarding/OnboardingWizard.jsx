@@ -4,17 +4,17 @@ import WelcomeStep from './steps/WelcomeStep';
 import GoalsStep from './steps/GoalsStep';
 import ActivityStep from './steps/ActivityStep';
 import DobStep from './steps/DobStep';
-import GenderStep from './steps/GenderStep';
+import SexStep from './steps/SexStep';
 import { saveOnboarding } from '../../services/onboardingService';
 
-// Order matches the wireframe. To reorder (e.g. collect DOB/Gender/Activity
+// Order matches the wireframe. To reorder (e.g. collect DOB/Sex/Activity
 // before Goals so recommended values can be pre-filled), just reorder this array.
 const STEPS = [
   { key: 'welcome', Component: WelcomeStep },
   { key: 'goals', Component: GoalsStep },
   { key: 'activity', Component: ActivityStep },
   { key: 'dob', Component: DobStep },
-  { key: 'gender', Component: GenderStep },
+  { key: 'sex', Component: SexStep },
 ];
 
 const DEFAULT_GOALS = {
@@ -22,8 +22,6 @@ const DEFAULT_GOALS = {
   protein: 50,
   fat: 70,
   carbs: 275,
-  cholesterol: 300,
-  fiber: 28,
 };
 
 export default function OnboardingWizard({ onComplete = () => {} }) {
@@ -32,7 +30,7 @@ export default function OnboardingWizard({ onComplete = () => {} }) {
     goals: DEFAULT_GOALS,
     activityLevel: null,
     dob: '',
-    gender: null,
+    sex: null,
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
@@ -60,13 +58,12 @@ export default function OnboardingWizard({ onComplete = () => {} }) {
     }
   };
 
-  // Skippable steps: Activity, DOB, Gender. Gender is the last step, so
-  // skipping it finishes onboarding (with gender left unset) instead of
-  // just advancing.
+  // Skippable steps: Activity, DOB, Sex. Sex is the last step, so skipping
+  // it finishes onboarding (with sex left unset) instead of just advancing.
   const skipHandlers = {
     activity: goNext,
     dob: goNext,
-    gender: handleFinish,
+    sex: handleFinish,
   };
 
   return (

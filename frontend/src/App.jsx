@@ -1,97 +1,34 @@
-import { useEffect, useState } from 'react';
-import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
+import { BrowserRouter as Router, Route, Routes } from 'react-router';
+import AppLayout from './pages/AppLayout';
+import DailyPlanner from './pages/DailyPlanner';
+import Goals from './pages/Goals';
+import AddRecipe from './pages/AddRecipe/AddRecipe';
+import Profile from './pages/Profile';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import SignUp from './pages/SignUp';
+import OnboardingPage from './pages/OnboardingPage';
+import NotFound from './pages/NotFound';
 import './App.css';
-import { RecipeCard } from './components/RecipeCard';
-import OnboardingWizard from './components/onboarding/OnboardingWizard';
 
-// TODO: Replace MOCK_RECIPE_DATA with data fetched from the backend API
-const MOCK_RECIPE_DATA = [
-  {
-    title: 'How to Cook Bacon in the Oven',
-    instructions: 'https://www.allrecipes.com/recipe/267904/oven-baked-bacon',
-    total_time_minutes: 35,
-    servings: 6,
-    calories: 134,
-    protein: 9,
-    fat: 10,
-    carbs: 0,
-    ingredients: '1 (16 ounce) package bacon',
-  },
-  {
-    title: 'Boiled Peanuts',
-    instructions: 'https://www.allrecipes.com/recipe/17551/boiled-peanuts/',
-    total_time_minutes: 185,
-    servings: 40,
-    calories: 322,
-    protein: 15,
-    fat: 28,
-    carbs: 9,
-    ingredients:
-      '5 pounds raw peanuts, in shells, 1 cup salt, or to taste, water to cover',
-  },
-  {
-    id: 967,
-    user_id: 1,
-    title: 'Manicotti Pancakes II',
-    instructions:
-      'https://www.allrecipes.com/recipe/20566/manicotti-pancakes-ii/',
-    total_time_minutes: 15,
-    servings: 12,
-    calories: 66,
-    protein: 3,
-    fat: 2,
-    carbs: 9,
-    ingredients: '3  eggs, 1 cup milk, 1 cup all-purpose flour',
-  },
-];
-const theme = createTheme({
-  palette: {
-    primary: { main: '#059669' }, 
-  },
-  shape: { borderRadius: 8 },
-});
-
-function App() {
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState(null);
-  const [onboardingDone, setOnboardingDone] = useState(false);
-
-  useEffect(() => {
-    // Call the backend API
-    fetch('http://localhost:8080/api/hello')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Failed to fetch from backend');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setMessage(data.message);
-      })
-      .catch((err) => {
-        setError(err.message);
-      });
-  }, []);
-
+export default function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <main style={{ fontFamily: 'sans-serif', padding: '1rem' }}>
-        {error && <p style={{ color: 'red' }}>Backend error: {error}</p>}
-        {message && <p style={{ color: 'gray' }}>Backend says: {message}</p>}
- 
-        {!onboardingDone ? (
-          <OnboardingWizard onComplete={() => setOnboardingDone(true)} />
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {MOCK_RECIPE_DATA.map((recipe, index) => (
-              <RecipeCard key={index} {...recipe} />
-            ))}
-          </div>
-        )}
-      </main>
-    </ThemeProvider>
+    <Router>
+      <Routes>
+        <Route path="/" element={<AppLayout />}>
+          <Route index element={<Home />} />
+          <Route path="daily-planner" element={<DailyPlanner />} />
+          <Route path="goals" element={<Goals />} />
+          <Route path="add-recipe" element={<AddRecipe />} />
+          <Route path="profile" element={<Profile />} />
+        </Route>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
+        {/* Standalone for now, per team decision — not yet wired to
+            redirect here automatically after login/signup. */}
+        <Route path="/onboarding" element={<OnboardingPage />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Router>
   );
 }
-
-export default App;

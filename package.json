@@ -15,11 +15,12 @@
     "format": "concurrently \"npm:format:*\"",
     "init-env": "cp -n backend/.env.example backend/.env && cp -n frontend/.env.example frontend/.env",
     "db:generate":"npm run --workspace=backend db:generate",
-    "db:pull":"npm run --workspace=backend db:pull"
-
+    "db:pull":"npm run --workspace=backend db:pull",
+    "test":"npm run --workspace=backend test",
+    "test:joi":"npm run --workspace=backend test:joi"
   },
   "devDependencies": {
-    "concurrently": "10.0.3",
-    "prettier": "3.9.5"
+    "concurrently": "10.0.4",
+    "prettier": "3.9.6"
   }
 }

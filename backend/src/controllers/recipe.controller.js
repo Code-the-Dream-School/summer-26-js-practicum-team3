@@ -1,53 +1,60 @@
 import { prisma } from '../db.js';
-/**
- * We are sending back a hard coded array of recipes
- * so that the front end can continue with develping
- * under the proper API
- */
-const MOCK_RECIPE_DATA = [
-  {
-    title: 'How to Cook Bacon in the Oven',
-    instructions: 'https://www.allrecipes.com/recipe/267904/oven-baked-bacon',
-    total_time_minutes: 35,
-    servings: 6,
-    calories: 134,
-    protein: 9,
-    fat: 10,
-    carbs: 0,
-    ingredients: '1 (16 ounce) package bacon',
-  },
-  {
-    title: 'Boiled Peanuts',
-    instructions: 'https://www.allrecipes.com/recipe/17551/boiled-peanuts/',
-    total_time_minutes: 185,
-    servings: 40,
-    calories: 322,
-    protein: 15,
-    fat: 28,
-    carbs: 9,
-    ingredients:
-      '5 pounds raw peanuts, in shells, 1 cup salt, or to taste, water to cover',
-  },
-  {
-    id: 967,
-    user_id: 1,
-    title: 'Manicotti Pancakes II',
-    instructions:
-      'https://www.allrecipes.com/recipe/20566/manicotti-pancakes-ii/',
-    total_time_minutes: 15,
-    servings: 12,
-    calories: 66,
-    protein: 3,
-    fat: 2,
-    carbs: 9,
-    ingredients: '3  eggs, 1 cup milk, 1 cup all-purpose flour',
-  },
-];
 
+/**
+ * @swagger
+ * /recipes:
+ *   get:
+ *     summary: Get a list of recipes
+ *     description: Fetch recipes with pagination. You can also search by title and sort by nutrition facts.
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: The page number you want to view.
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 9
+ *         description: The number of recipes per page.
+ *       - in: query
+ *         name: find
+ *         schema:
+ *           type: string
+ *         description: Type a word to search recipe titles.
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [protein, carbs, fat, calories]
+ *         description: Pick a nutrition field to sort the results.
+ *       - in: query
+ *         name: sortDirection
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *         description: Sort going up (asc) or down (desc).
+ *     responses:
+ *       200:
+ *         description: A list of recipes and pagination details.
+ *       404:
+ *         description: No recipes met the search criteria.
+ *       500:
+ *         description: Server error.
+ */
 export async function getRecipes(req, res) {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 9;
   const skip = (page - 1) * limit;
+
+  if (page < 0) {
+    res
+      .status(404)
+      .json({ message: 'Invalid page number', error: 'Improper Paging' });
+    return;
+  }
 
   const whereClause = {};
 
@@ -120,6 +127,58 @@ export async function getRecipes(req, res) {
   return;
 }
 
+/**
+ * @swagger
+ * /recipes:
+ *   post:
+ *     summary: Create a new recipe
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         description: "JWT Token to pull the request user ID (Note: hardcoded for now, but will be required later)"
+ *         required: false
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: "Spicy Garlic Chicken"
+ *               instructions:
+ *                 type: string
+ *                 example: "1. Chop chicken. 2. Cook chicken."
+ *               ingredients:
+ *                 type: string
+ *                 example: "Chicken, Garlic, Spices"
+ *               total_time_minutes:
+ *                 type: integer
+ *                 example: 30
+ *               servings:
+ *                 type: integer
+ *                 example: 4
+ *               calories:
+ *                 type: integer
+ *                 example: 450
+ *               fat:
+ *                 type: integer
+ *                 example: 15
+ *               protein:
+ *                 type: integer
+ *                 example: 35
+ *               carbs:
+ *                 type: integer
+ *                 example: 10
+ *     responses:
+ *       201:
+ *         description: The recipe was successfully created.
+ *       500:
+ *         description: Server or database connection error.
+ */
 export async function createRecipe(req, res) {
   // if (!req.user.id) {
   //   return res
@@ -163,6 +222,65 @@ export async function createRecipe(req, res) {
   return;
 }
 
+/**
+ * @swagger
+ * /recipes/{id}:
+ *   put:
+ *     summary: Update an existing recipe
+ *     description: "Modify an existing recipe in the database."
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: "The ID of the recipe you want to update."
+ *         schema:
+ *           type: integer
+ *       - in: header
+ *         name: Authorization
+ *         description: "JWT Token to pull the request user ID (Note: hardcoded for now, but will be required later)"
+ *         required: false
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: "Spicy Garlic Chicken (Updated)"
+ *               instructions:
+ *                 type: string
+ *                 example: "1. Chop chicken. 2. Cook chicken. 3. Serve hot."
+ *               ingredients:
+ *                 type: string
+ *                 example: "Chicken, Garlic, Spices, Extra Love"
+ *               total_time_minutes:
+ *                 type: integer
+ *                 example: 35
+ *               servings:
+ *                 type: integer
+ *                 example: 4
+ *               calories:
+ *                 type: integer
+ *                 example: 450
+ *               fat:
+ *                 type: integer
+ *                 example: 15
+ *               protein:
+ *                 type: integer
+ *                 example: 35
+ *               carbs:
+ *                 type: integer
+ *                 example: 10
+ *     responses:
+ *       200:
+ *         description: "The recipe was successfully updated."
+ *       400:
+ *         description: "Validation error or database connection issue."
+ */
 export async function updateRecipe(req, res, next) {
   const recipeIndex = parseInt(req.params?.id);
   // const user_id = req.user.id;
@@ -208,6 +326,31 @@ export async function updateRecipe(req, res, next) {
   return;
 }
 
+/**
+ * @swagger
+ * /recipes/{id}:
+ *   delete:
+ *     summary: Delete a recipe
+ *     description: "Remove a recipe from the database."
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: "The ID of the recipe you want to delete."
+ *         schema:
+ *           type: integer
+ *       - in: header
+ *         name: Authorization
+ *         description: "JWT Token to pull the request user ID (Note: hardcoded for now, but will be required later)"
+ *         required: false
+ *         schema:
+ *           type: string
+ *     responses:
+ *       204:
+ *         description: "The recipe was successfully deleted."
+ *       400:
+ *         description: "Validation error or database connection issue."
+ */
 export async function deleteRecipe(req, res) {
   const recipeIndex = parseInt(req.params?.id);
   // const user_id = req.user.id;
