@@ -50,12 +50,11 @@ export async function getRecipes(req, res) {
   const limit = parseInt(req.query.limit) || 9;
   const skip = (page - 1) * limit;
 
-  // a negative page/limit would make skip/take negative too, which Prisma
-  // rejects with a raw DB error instead of a clean validation message
   if (page < 0 || limit < 0) {
-    return res
-      .status(400)
-      .json({ message: 'Invalid page number or limit ', error: 'Improper Paging' });
+    res
+      .status(404)
+      .json({ message: 'Invalid page number', error: 'Improper Paging' });
+    return;
   }
 
   const whereClause = {};
