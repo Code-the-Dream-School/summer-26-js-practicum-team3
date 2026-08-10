@@ -1,9 +1,5 @@
 import { execSync } from 'child_process';
 
-// if git diff-tree has the file names
-// then those files have been changed
-// files changed = true ? generate db client and/or
-// installing node packages:null;
 const GIT_CHANGED_FILES =
   'git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD';
 try {
@@ -11,6 +7,17 @@ try {
     .toString()
     .trim()
     .split('\n');
+
+  if (changed_files.includes('backend/prisma/schema.prisma')) {
+    console.log('Schema has apeared to\n change, generating new db client');
+    execSync('npm run db:generate', { stdio: 'inherit' });
+    console.log('Finished generating DB client');
+  }
+  if (changed_files.includes('backend/package.json')) {
+    console.log('Backend package.json is updating...');
+    execSync('npm install');
+    console.log('Finished updating backend server');
+  }
 } catch (error) {
   console.log('Error in checking files changed \n', error.message);
   process.exit(1);
