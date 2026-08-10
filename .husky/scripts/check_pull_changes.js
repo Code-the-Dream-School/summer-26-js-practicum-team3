@@ -18,6 +18,11 @@ try {
     execSync('npm install');
     console.log('Finished updating backend server');
   }
+  if (changed_files.includes('frontend/package.json')) {
+    console.log('Front package.json is updating...');
+    execSync('npm install');
+    console.log('Finished updating frontend server');
+  }
 } catch (error) {
   console.log('Error in checking files changed \n', error.message);
   process.exit(1);
