@@ -1,4 +1,5 @@
 import { prisma } from '../db.js';
+import { StatusCodes } from 'http-status-codes';
 
 
 /**
@@ -52,7 +53,7 @@ export async function getRecipes(req, res) {
 
   if (page < 0 || limit < 0) {
     res
-      .status(404)
+      .status(StatusCodes.BAD_REQUEST)
       .json({ message: 'Invalid page number', error: 'Improper Paging' });
     return;
   }
@@ -103,7 +104,9 @@ export async function getRecipes(req, res) {
     total = await prisma.recipes.count({ where: whereClause });
   } catch (error) {
     console.log('Error in get catch', error);
-    res.status(400).json({ message: 'Prisma Error', error: error.message });
+    res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: 'Prisma Error', error: error.message });
     return;
   }
 
@@ -117,7 +120,7 @@ export async function getRecipes(req, res) {
   };
 
   if (recipes.length === 0) {
-    return res.status(404).json({
+    return res.status(StatusCodes.NOT_FOUND).json({
       error: 'No recipes could be found',
       message: 'No recipes meet the search criteria',
     });
@@ -212,7 +215,7 @@ export async function createRecipe(req, res) {
     });
   } catch (error) {
     console.log('Create Recipe catch', error);
-    res.status(400).json({
+    res.status(StatusCodes.BAD_REQUEST).json({
       error: error.message,
       message: 'Prisma Error',
     });
@@ -288,7 +291,9 @@ export async function updateRecipe(req, res, next) {
   // const user_id = 1;
 
   if ((recipeIndex < 0) | (user_id < 0)) {
-    res.status(400).json({ message: 'Validation Error', error: 'invalid id' });
+    res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: 'Validation Error', error: 'invalid id' });
     return;
   }
   // to be replaced with joi validation
@@ -319,11 +324,13 @@ export async function updateRecipe(req, res, next) {
     });
   } catch (error) {
     console.log('Update Recipe Catch', error);
-    res.status(400).json({ message: 'Prisma Error', error: error.message });
+    res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: 'Prisma Error', error: error.message });
     return;
   }
 
-  res.status(200).json(updatedRecipe);
+  res.status(StatusCodes.OK).json(updatedRecipe);
   return;
 }
 
@@ -358,7 +365,9 @@ export async function deleteRecipe(req, res) {
   // const user_id = 1;
 
   if ((recipeIndex < 0) | (user_id < 0)) {
-    res.status(400).json({ message: 'Validation Error', error: 'invalid id' });
+    res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: 'Validation Error', error: 'invalid id' });
     return;
   }
 
@@ -371,11 +380,13 @@ export async function deleteRecipe(req, res) {
     });
   } catch (error) {
     console.log('Update Recipe Catch', error);
-    res.status(400).json({ message: 'Prisma Error', error: error.message });
+    res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: 'Prisma Error', error: error.message });
     return;
   }
 
-  res.status(204).end();
+  res.status(StatusCodes.NO_CONTENT).end();
 }
 
 const normalizeData = (reqBody) => {
