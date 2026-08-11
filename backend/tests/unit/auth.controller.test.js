@@ -36,7 +36,9 @@ beforeEach(() => {
 describe('POST /api/auth/register', () => {
   const validBody = {
     email: 'anyemail@fake.com',
-    password: 'super_long_password',
+    // userSchema requires upper+lower+digit+special char, unlike the old
+    // manual length-only check this replaced
+    password: 'Super_Long_Password1!',
     name: 'John Anyman',
   };
 

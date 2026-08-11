@@ -108,7 +108,7 @@ describe('User Schema Validation', () => {
 
   it('Success: accepts a string within the length boundaries (3-50 chars)', () => {
     const input = { activity_level: 'Moderate' };
-    const { value, error } = nutritionGoalsSchema.validate(input);
+    const { value, error } = userSchema.validate(input);
     expect.assertions(2);
     expect(error).toBeUndefined();
     expect(value.activity_level).toBe('Moderate');
@@ -116,7 +116,7 @@ describe('User Schema Validation', () => {
 
   it('Failure: rejects a string that is too short (under 3 chars)', () => {
     const input = { activity_level: 'Hi' }; // 2 characters
-    const { error } = nutritionGoalsSchema.validate(input);
+    const { error } = userSchema.validate(input);
     expect.assertions(2);
     expect(error).toBeDefined();
     expect(error.message).toContain(
