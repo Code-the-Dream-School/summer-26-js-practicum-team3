@@ -7,3 +7,45 @@
   white-space: nowrap;
   width: 1px;
 }
+
+body {
+  background-image: url('./photos/Park_Background_Image.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.recipe-card-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+  padding: 20px;
+  color: #0dbac0;
+  background-color: gray;
+}
+
+.app-nav {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  position: relative;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: #0dbac0;
+  margin: 0 auto;
+}
+
+.app-nav-list {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  list-style-type: none;
+  padding: 0;
+  margin: 0 auto;
+}
+
+.app-nav-list > li {
+  margin: 0 1rem;
+}

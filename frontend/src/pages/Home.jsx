@@ -1,6 +1,6 @@
-
 import { RecipeCard } from '../components/RecipeCard/RecipeCard';
 import { useEffect, useState } from 'react';
+import { Container, Stack } from '@mui/material';
 
 // TODO: Replace MOCK_RECIPE_DATA with data fetched from the backend API
 const MOCK_RECIPE_DATA = [
@@ -64,21 +64,26 @@ export default function Home() {
   }, []);
   // TODO: replace inline styles with CSS classes
   return (
-    <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
-      
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        {MOCK_RECIPE_DATA.map((recipe, index) => (
-          <RecipeCard key={index} {...recipe} />
-        ))}
-      </div>
+    <Container style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
+      <Stack spacing={2} style={{ marginBottom: '2rem' }}>
+        <div className="recipe-card-container">
+          {MOCK_RECIPE_DATA.map((recipe, index) => (
+            <RecipeCard key={index} {...recipe} />
+          ))}
+        </div>
+      </Stack>
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && (
+        <p style={{ color: 'red' }}>
+          <strong>{error}</strong>
+        </p>
+      )}
 
       {!error && (
         <p>
           Message from API: <strong>{message}</strong>
         </p>
       )}
-    </main>
+    </Container>
   );
 }

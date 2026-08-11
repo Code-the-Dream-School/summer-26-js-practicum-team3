@@ -1,24 +1,37 @@
 import { Link, Outlet } from 'react-router';
+import styled from 'styled-components';
+
+const AnchorLink = styled(Link)`
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  margin-right: 1rem;
+  cursor: pointer;
+
+  &:hover {
+    color: #007bff;
+  }
+`;
 
 export default function AppLayout() {
   return (
     <div>
-      <nav>
-        <ul>
+      <nav className="app-nav">
+        <ul className="app-nav-list">
           <li>
-            <Link to="/">Home</Link>
+            <AnchorLink to="/">Home</AnchorLink>
           </li>
           <li>
-            <Link to="/daily-planner">Daily Planner</Link>
+            <AnchorLink to="/daily-planner">Daily Planner</AnchorLink>
           </li>
           <li>
-            <Link to="/goals">Goals</Link>
+            <AnchorLink to="/goals">Goals</AnchorLink>
           </li>
           <li>
-            <Link to="/add-recipe">Add Recipe</Link>
+            <AnchorLink to="/add-recipe">Add Recipe</AnchorLink>
           </li>
           <li>
-            <Link to="/profile">Profile</Link>
+            <AnchorLink to="/profile">Profile</AnchorLink>
           </li>
         </ul>
       </nav>
