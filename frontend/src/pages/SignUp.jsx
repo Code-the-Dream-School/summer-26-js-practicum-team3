@@ -8,7 +8,7 @@ function SignUp() {
       <Card variant="outlined" sx={{ borderRadius: 3 }}>
         <CardContent sx={{ p: 4 }}>
           <Typography
-            variant="h4"
+            variant="h5"
             fontWeight={600}
             align="center"
             sx={{ mb: 3 }}
