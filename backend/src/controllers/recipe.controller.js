@@ -1,5 +1,6 @@
 import { prisma } from '../db.js';
 
+
 /**
  * @swagger
  * /recipes:
@@ -49,7 +50,7 @@ export async function getRecipes(req, res) {
   const limit = parseInt(req.query.limit) || 9;
   const skip = (page - 1) * limit;
 
-  if (page < 0) {
+  if (page < 0 || limit < 0) {
     res
       .status(404)
       .json({ message: 'Invalid page number', error: 'Improper Paging' });
@@ -189,8 +190,8 @@ export async function createRecipe(req, res) {
   //This will be replaced with validations later
   const cleanedData = normalizeData(req.body);
 
-  // cleanedData.user_id = req?.user?.id;
-  cleanedData.user_id = 1;
+  cleanedData.user_id = req?.user?.id;
+  // cleanedData.user_id = 1;
 
   let newRecipeCreated = null;
   try {
@@ -283,8 +284,8 @@ export async function createRecipe(req, res) {
  */
 export async function updateRecipe(req, res, next) {
   const recipeIndex = parseInt(req.params?.id);
-  // const user_id = req.user.id;
-  const user_id = 1;
+  const user_id = req.user.id;
+  // const user_id = 1;
 
   if ((recipeIndex < 0) | (user_id < 0)) {
     res.status(400).json({ message: 'Validation Error', error: 'invalid id' });
@@ -353,8 +354,8 @@ export async function updateRecipe(req, res, next) {
  */
 export async function deleteRecipe(req, res) {
   const recipeIndex = parseInt(req.params?.id);
-  // const user_id = req.user.id;
-  const user_id = 1;
+  const user_id = req.user.id;
+  // const user_id = 1;
 
   if ((recipeIndex < 0) | (user_id < 0)) {
     res.status(400).json({ message: 'Validation Error', error: 'invalid id' });
