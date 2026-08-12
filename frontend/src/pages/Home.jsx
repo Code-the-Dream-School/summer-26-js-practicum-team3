@@ -1,6 +1,6 @@
-
 import { RecipeCard } from '../components/RecipeCard/RecipeCard';
 import { useEffect, useState } from 'react';
+import AppLayout from './AppLayout';
 
 // TODO: Replace MOCK_RECIPE_DATA with data fetched from the backend API
 const MOCK_RECIPE_DATA = [
@@ -47,38 +47,22 @@ export default function Home() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState(null);
   useEffect(() => {
-    // Call the backend API
-    fetch('http://localhost:8080/api/hello')
-      .then((response) => {
-        if (!response.ok) {
+    //basic get req
+    async function baseFetch() {
+      let data = null;
+      try {
+        const resp = await fetch('http://localhost:8080/api/hello');
+        data = resp.json();
+        setMessage(data.message);
+        if (!resp.ok) {
           throw new Error('Failed to fetch from backend');
         }
-        return response.json();
-      })
-      .then((data) => {
-        setMessage(data.message);
-      })
-      .catch((err) => {
-        setError(err.message);
-      });
+      } catch (error) {
+        setError(error.message);
+      }
+    }
+    baseFetch();
   }, []);
   // TODO: replace inline styles with CSS classes
-  return (
-    <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
-      
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        {MOCK_RECIPE_DATA.map((recipe, index) => (
-          <RecipeCard key={index} {...recipe} />
-        ))}
-      </div>
-
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-
-      {!error && (
-        <p>
-          Message from API: <strong>{message}</strong>
-        </p>
-      )}
-    </main>
-  );
+  return <AppLayout />;
 }
