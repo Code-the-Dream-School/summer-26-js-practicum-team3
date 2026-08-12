@@ -37,7 +37,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/v1/recipes', RecipeRouter);
 
 // swagger route
-app.use('/swagger/v1/docs', SwaggerRouter);
+// app.use('/swagger/v1/docs', SwaggerRouter);
 
 // Root route
 app.get('/', (req, res) => {
