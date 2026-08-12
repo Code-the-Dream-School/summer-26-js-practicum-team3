@@ -1,6 +1,6 @@
 import { RecipeCard } from '../components/RecipeCard/RecipeCard';
 import { useEffect, useState } from 'react';
-import AppLayout from './AppLayout';
+// import AppLayout from './AppLayout';
 
 // TODO: Replace MOCK_RECIPE_DATA with data fetched from the backend API
 const MOCK_RECIPE_DATA = [
@@ -63,6 +63,6 @@ export default function Home() {
     }
     baseFetch();
   }, []);
-  // TODO: replace inline styles with CSS classes
-  return <AppLayout />;
+  // TODO: dashboard
+  // return <Dashboard />;
 }
