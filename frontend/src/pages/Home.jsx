@@ -64,8 +64,17 @@ export default function Home() {
   }, []);
   // TODO: replace inline styles with CSS classes
   return (
-    <Container style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
-      <Stack spacing={2} style={{ marginBottom: '2rem' }}>
+    <Container
+      sx={{
+        minHeight: '100vh',
+        bgcolor: '#f8fafc',
+        borderRadius: 3,
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.06)',
+        py: 3,
+        px: { xs: 2, md: 4 },
+      }}
+    >
+      <Stack spacing={3}>
         <div className="recipe-card-container">
           {MOCK_RECIPE_DATA.map((recipe, index) => (
             <RecipeCard key={index} {...recipe} />
@@ -74,13 +83,13 @@ export default function Home() {
       </Stack>
 
       {error && (
-        <p style={{ color: 'red' }}>
+        <p style={{ color: 'red', marginTop: '1rem' }}>
           <strong>{error}</strong>
         </p>
       )}
 
       {!error && (
-        <p>
+        <p style={{ marginTop: '1rem' }}>
           Message from API: <strong>{message}</strong>
         </p>
       )}
