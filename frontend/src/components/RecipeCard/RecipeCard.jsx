@@ -64,6 +64,8 @@ export function RecipeCard({
         ingredients={ingredients}
         instructions={instructions}
         title={title}
+        total_time_minutes={total_time_minutes}
+        servings={servings}
       />
     </div>
   );
