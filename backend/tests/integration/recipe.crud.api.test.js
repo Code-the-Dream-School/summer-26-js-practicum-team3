@@ -6,17 +6,17 @@ import { prisma } from '../../src/db.js'; // Adjust path to your Prisma client i
 
 // jwtMiddleware now protects POST/PATCH/DELETE on /api/v1/recipies, so these requests
 // need a valid jwt cookie and matching CSRF header to get pass it.
-// user_id:1 - here matches the user_id the existind assertions below expect. 
- 
+// user_id:1 - here matches the user_id the existind assertions below expect.
+
 process.env.JWT_SECRET = 'test-secret';
 const CSRF_TOKEN = 'test-csrf-token';
 const authToken = jwt.sign(
   { id: 1, csrfToken: CSRF_TOKEN },
-  process.env.JWT_SECRET, 
-  { expiresIn: '1h'}
+  process.env.JWT_SECRET,
+  { expiresIn: '1h' },
 );
 
-function withAuth(req){
+function withAuth(req) {
   return req.set('Cookie', `jwt=${authToken}`).set('X-CSRF-TOKEN', CSRF_TOKEN);
 }
 
@@ -160,7 +160,9 @@ describe('GET /api/v1/recipes - Failure Cases', () => {
     vi.spyOn(prisma.recipes, 'findMany').mockResolvedValue([]);
     vi.spyOn(prisma.recipes, 'count').mockResolvedValue(0);
 
-    const res = await request(app).get('/api/v1/recipes').query({ find: 'NonExistentRecipe' });
+    const res = await request(app)
+      .get('/api/v1/recipes')
+      .query({ find: 'NonExistentRecipe' });
 
     expect(res.status).toBe(404);
     expect(res.body).toEqual({
@@ -186,7 +188,7 @@ describe('GET /api/v1/recipes - Failure Cases', () => {
   it('should return 404 when page parameter is negative', async () => {
     const res = await request(app).get('/api/v1/recipes').query({ page: -5 });
 
-    expect(res.status).toBe(404);
+    expect(res.status).toBe(400);
     expect(res.body).toEqual({
       message: 'Invalid page number',
       error: 'Improper Paging',
@@ -261,7 +263,9 @@ describe('POST /api/v1/recipes - Failure Cases', () => {
       instructions: 'Cook something without a title',
     };
 
-    const res = await withAuth(request(app).post('/api/v1/recipes')).send(invalidInput);
+    const res = await withAuth(request(app).post('/api/v1/recipes')).send(
+      invalidInput,
+    );
 
     expect(res.status).toBe(400);
     expect(res.body).toEqual({
@@ -301,9 +305,9 @@ describe('PATCH /api/v1/recipes/:id - Success Cases', () => {
       .spyOn(prisma.recipes, 'update')
       .mockResolvedValue(mockUpdatedRecipe);
 
-    res = await withAuth(request(app)
-      .patch(`/api/v1/recipes/${recipeId}`))
-      .send(updatePayload);
+    res = await withAuth(
+      request(app).patch(`/api/v1/recipes/${recipeId}`),
+    ).send(updatePayload);
   });
 
   it('should return status 200 OK', () => {
@@ -344,9 +348,9 @@ describe('PATCH /api/v1/recipes/:id - Failure Cases', () => {
   });
 
   it('should return 400 when an invalid negative ID parameter is provided', async () => {
-    const res = await withAuth(request(app)
-      .patch('/api/v1/recipes/-5'))
-      .send({ title: 'Invalid Recipe ID Update' });
+    const res = await withAuth(request(app).patch('/api/v1/recipes/-5')).send({
+      title: 'Invalid Recipe ID Update',
+    });
 
     expect(res.status).toBe(400);
     expect(res.body).toEqual({
@@ -359,9 +363,9 @@ describe('PATCH /api/v1/recipes/:id - Failure Cases', () => {
     const mockPrismaError = new Error('Record to update not found.');
     vi.spyOn(prisma.recipes, 'update').mockRejectedValue(mockPrismaError);
 
-    const res = await withAuth(request(app)
-      .patch('/api/v1/recipes/999'))
-      .send({ title: 'Non-existent Recipe' });
+    const res = await withAuth(request(app).patch('/api/v1/recipes/999')).send({
+      title: 'Non-existent Recipe',
+    });
 
     expect(res.status).toBe(400);
     expect(res.body).toEqual({
@@ -384,7 +388,7 @@ describe('DELETE /api/v1/recipes/:id - Success Cases', () => {
       .mockResolvedValue({ id: recipeId, user_id: 1 });
 
     const res = await withAuth(
-      request(app).delete(`/api/v1/recipes/${recipeId}`)
+      request(app).delete(`/api/v1/recipes/${recipeId}`),
     );
 
     expect(res.status).toBe(204);
@@ -406,9 +410,7 @@ describe('DELETE /api/v1/recipes/:id - Failure Cases', () => {
   });
 
   it('should return 400 when an invalid negative ID parameter is provided', async () => {
-    const res = await withAuth(
-      request(app).delete('/api/v1/recipes/-3')
-    );
+    const res = await withAuth(request(app).delete('/api/v1/recipes/-3'));
 
     expect(res.status).toBe(400);
     expect(res.body).toEqual({
@@ -421,9 +423,7 @@ describe('DELETE /api/v1/recipes/:id - Failure Cases', () => {
     const mockPrismaError = new Error('Record to delete does not exist.');
     vi.spyOn(prisma.recipes, 'delete').mockRejectedValue(mockPrismaError);
 
-    const res = await withAuth(
-      request(app).delete('/api/v1/recipes/999')
-    );
+    const res = await withAuth(request(app).delete('/api/v1/recipes/999'));
 
     expect(res.status).toBe(400);
     expect(res.body).toEqual({

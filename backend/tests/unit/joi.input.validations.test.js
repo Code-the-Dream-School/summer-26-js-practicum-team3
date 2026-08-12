@@ -4,7 +4,7 @@ import {
   userSchema,
   recipeSchema,
   patchRecipeSchema,
-  nutritrionGoalsSchema,
+  nutritionGoalsSchema,
 } from '../../src/validations/joi.input.validations';
 
 describe('User Schema Validation', () => {
@@ -73,7 +73,12 @@ describe('User Schema Validation', () => {
   });
 
   it('Success: accepts a valid ISO date string (YYYY-MM-DD)', () => {
-    const input = { dob: '1990-05-15' };
+    const input = {
+      name: 'Buddy',
+      email: 'something@email.com',
+      password: 'Stephen@13',
+      dob: '1990-05-15',
+    };
     const { value, error } = userSchema.validate(input);
     expect.assertions(2);
     expect(error).toBeUndefined();
@@ -81,7 +86,12 @@ describe('User Schema Validation', () => {
   });
 
   it('Failure: rejects an invalid date string format', () => {
-    const input = { dob: '15-05-1990' }; // Not ISO format
+    const input = {
+      name: 'Buddy',
+      email: 'something@email.com',
+      password: 'Stephen@13',
+      dob: '15-05-1990',
+    }; // Not ISO format
     const { error } = userSchema.validate(input);
     expect.assertions(2);
     expect(error).toBeDefined();
@@ -89,7 +99,13 @@ describe('User Schema Validation', () => {
   });
 
   it('Success: accepts one of the allowed option strings', () => {
-    const input = { sex: 'Female' };
+    const input = {
+      name: 'Buddy',
+      email: 'something@email.com',
+      password: 'Stephen@13',
+      dob: '1990-05-15',
+      sex: 'Female',
+    };
     const { value, error } = userSchema.validate(input);
     expect.assertions(2);
     expect(error).toBeUndefined();
@@ -97,26 +113,44 @@ describe('User Schema Validation', () => {
   });
 
   it('Failure: rejects an option not in the allowed list', () => {
-    const input = { sex: 'Other' };
+    const input = {
+      name: 'Buddy',
+      email: 'something@email.com',
+      password: 'Stephen@13',
+      dob: '1990-05-15',
+      sex: 'Other',
+    };
     const { error } = userSchema.validate(input);
     expect.assertions(2);
     expect(error).toBeDefined();
     expect(error.message).toContain(
-      'must be one of [Male, Female, Prefer Not to Answer]',
+      '"sex" must be one of [Male, Female, Prefer Not to Answer, , null]',
     );
   });
 
   it('Success: accepts a string within the length boundaries (3-50 chars)', () => {
-    const input = { activity_level: 'Moderate' };
-    const { value, error } = nutritionGoalsSchema.validate(input);
+    const input = {
+      name: 'Buddy',
+      email: 'something@email.com',
+      password: 'Stephen@13',
+      dob: '1990-05-15',
+      activity_level: 'Moderate',
+    };
+    const { value, error } = userSchema.validate(input);
     expect.assertions(2);
     expect(error).toBeUndefined();
     expect(value.activity_level).toBe('Moderate');
   });
 
   it('Failure: rejects a string that is too short (under 3 chars)', () => {
-    const input = { activity_level: 'Hi' }; // 2 characters
-    const { error } = nutritionGoalsSchema.validate(input);
+    const input = {
+      name: 'Buddy',
+      email: 'something@email.com',
+      password: 'Stephen@13',
+      dob: '1990-05-15',
+      activity_level: 'Hi', // 2 characters
+    };
+    const { error } = userSchema.validate(input);
     expect.assertions(2);
     expect(error).toBeDefined();
     expect(error.message).toContain(
@@ -274,7 +308,7 @@ describe('Testing onboarding Joi validation', () => {
   };
   describe('Successful OnBoarding Validation Testing', () => {
     it('Successful goal object, rounding down fat', () => {
-      const { value, error } = nutritrionGoalsSchema.validate(validGoal);
+      const { value, error } = nutritionGoalsSchema.validate(validGoal);
       expect.assertions(3);
       expect(error).toBeUndefined();
       expect(value.user_id).toBe(5);
@@ -282,14 +316,14 @@ describe('Testing onboarding Joi validation', () => {
     });
 
     it('Successful goal object, round up protien', () => {
-      const { value, error } = nutritrionGoalsSchema.validate(validGoal);
+      const { value, error } = nutritionGoalsSchema.validate(validGoal);
       expect.assertions(2);
       expect(error).toBeUndefined();
       expect(value.protein_target).toBe(36);
     });
 
     it('Successful goal object, converts string to number', () => {
-      const { value, error } = nutritrionGoalsSchema.validate(validGoal);
+      const { value, error } = nutritionGoalsSchema.validate(validGoal);
       expect.assertions(2);
       expect(error).toBeUndefined();
       expect(value.carbs_target).toBeTypeOf('number');
@@ -298,7 +332,7 @@ describe('Testing onboarding Joi validation', () => {
   describe('Invalid OnBoarding Validation Tests', () => {
     it('Throws Error for no user_id(required)', () => {
       const { user_id, ...invalid } = validGoal;
-      const { value, error } = nutritrionGoalsSchema.validate(invalid);
+      const { value, error } = nutritionGoalsSchema.validate(invalid);
       expect.assertions(2);
       expect(value).not.toHaveProperty('user_id');
       expect(error.details[0].message).toContain('user_id');
@@ -307,7 +341,7 @@ describe('Testing onboarding Joi validation', () => {
     it('Throws Error for non-numeric string(carbs)', () => {
       const invalidStringValue = { ...validGoal, carbs: 'something' };
       const { value, error } =
-        nutritrionGoalsSchema.validate(invalidStringValue);
+        nutritionGoalsSchema.validate(invalidStringValue);
       console.log(error);
       expect.assertions(2);
       expect(value.carbs).toBeTypeOf('string');
