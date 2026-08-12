@@ -1,6 +1,7 @@
 {
   "name": "summer-26-js-practicum-team3",
   "version": "0.0.1",
+  "type": "module",
   "private": true,
   "workspaces": [
     "backend",
