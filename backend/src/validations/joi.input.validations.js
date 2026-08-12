@@ -93,14 +93,14 @@ const patchRecipeSchema = Joi.object({
 
 /**
  *
- * @typedef {object} nutritrionGoalsSchema
+ * @typedef {object} nutritionGoalsSchema
  * @prop {number} user_id - REQUIRED. comes from Auth
  * @prop {number} - fat_target for tailored recipes
  * @prop {number} - calories_target for tailored recipes
  * @prop {number} - protein_target for tailored recipes
  * @prop {number} - carbs_target for tailored recipes
  */
-const nutritrionGoalsSchema = Joi.object({
+const nutritionGoalsSchema = Joi.object({
   user_id: Joi.number().integer().required(),
   fat_target: Joi.number().precision(0).integer().min(0).allow(null),
   calories_target: Joi.number().precision(0).integer().min(0).allow(null),
@@ -108,4 +108,4 @@ const nutritrionGoalsSchema = Joi.object({
   carbs_target: Joi.number().precision(0).integer().min(0).allow(null),
 });
 
-export { userSchema, loginSchema, recipeSchema, patchRecipeSchema, nutritrionGoalsSchema };
+export { userSchema, loginSchema, recipeSchema, patchRecipeSchema, nutritionGoalsSchema };

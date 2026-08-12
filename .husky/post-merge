@@ -1,0 +1,1 @@
+node .husky/scripts/check_pull_changes.js
