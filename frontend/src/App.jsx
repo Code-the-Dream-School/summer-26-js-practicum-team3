@@ -8,6 +8,7 @@ import Profile from './pages/Profile';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
+import OnboardingPage from './pages/OnboardingPage';
 import NotFound from './pages/NotFound';
 import { AuthProvider } from './features/auth/context/AuthContext';
 import './App.css';

@@ -1,4 +1,6 @@
 import { prisma } from '../db.js';
+import { StatusCodes } from 'http-status-codes';
+import { recipeSchema, patchRecipeSchema } from '../validations/joi.input.validations.js';
 
 
 /**
@@ -52,7 +54,7 @@ export async function getRecipes(req, res) {
 
   if (page < 0 || limit < 0) {
     res
-      .status(404)
+      .status(StatusCodes.BAD_REQUEST)
       .json({ message: 'Invalid page number', error: 'Improper Paging' });
     return;
   }
@@ -103,7 +105,9 @@ export async function getRecipes(req, res) {
     total = await prisma.recipes.count({ where: whereClause });
   } catch (error) {
     console.log('Error in get catch', error);
-    res.status(400).json({ message: 'Prisma Error', error: error.message });
+    res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: 'Prisma Error', error: error.message });
     return;
   }
 
@@ -117,14 +121,14 @@ export async function getRecipes(req, res) {
   };
 
   if (recipes.length === 0) {
-    return res.status(404).json({
+    return res.status(StatusCodes.NOT_FOUND).json({
       error: 'No recipes could be found',
       message: 'No recipes meet the search criteria',
     });
     return;
   }
 
-  res.status(200).json({ recipes, pagination });
+  res.status(StatusCodes.OK).json({ recipes, pagination });
   return;
 }
 
@@ -181,22 +185,20 @@ export async function getRecipes(req, res) {
  *         description: Server or database connection error.
  */
 export async function createRecipe(req, res) {
-  // if (!req.user.id) {
-  //   return res
-  //     .status(404)
-  //     .json({ error: 'Bad Request', message: 'Need a user' });
-  // }
+  const { error, value } = recipeSchema.validate(req.body ?? {}, {
+    abortEarly: false,
+  });
 
-  //This will be replaced with validations later
-  const cleanedData = normalizeData(req.body);
+  if (error) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
+  }
 
-  cleanedData.user_id = req?.user?.id;
-  // cleanedData.user_id = 1;
+  value.user_id = req.user.id;
 
   let newRecipeCreated = null;
   try {
     newRecipeCreated = await prisma.recipes.create({
-      data: cleanedData,
+      data: value,
       select: {
         id: true,
         instructions: true,
@@ -212,14 +214,14 @@ export async function createRecipe(req, res) {
     });
   } catch (error) {
     console.log('Create Recipe catch', error);
-    res.status(400).json({
+    res.status(StatusCodes.BAD_REQUEST).json({
       error: error.message,
       message: 'Prisma Error',
     });
     return;
   }
 
-  res.status(201).json(newRecipeCreated);
+  res.status(StatusCodes.CREATED).json(newRecipeCreated);
   return;
 }
 
@@ -283,18 +285,25 @@ export async function createRecipe(req, res) {
  *         description: "Validation error or database connection issue."
  */
 export async function updateRecipe(req, res, next) {
+  const { error, value } = patchRecipeSchema.validate(req.body ?? {}, {
+    abortEarly: false,
+  });
+  if (error) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
+  }
+
   const recipeIndex = parseInt(req.params?.id);
   const user_id = req.user.id;
   // const user_id = 1;
 
   if ((recipeIndex < 0) | (user_id < 0)) {
-    res.status(400).json({ message: 'Validation Error', error: 'invalid id' });
+    res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: 'Validation Error', error: 'invalid id' });
     return;
   }
-  // to be replaced with joi validation
-  const cleanedData = normalizeData(req.body);
-
-  cleanedData.user_id = user_id;
+  
+  value.user_id = user_id;
 
   let updatedRecipe = null;
   try {
@@ -303,7 +312,7 @@ export async function updateRecipe(req, res, next) {
         id: recipeIndex,
         user_id: user_id,
       },
-      data: cleanedData,
+      data: value,
       select: {
         id: true,
         instructions: true,
@@ -319,11 +328,13 @@ export async function updateRecipe(req, res, next) {
     });
   } catch (error) {
     console.log('Update Recipe Catch', error);
-    res.status(400).json({ message: 'Prisma Error', error: error.message });
+    res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: 'Prisma Error', error: error.message });
     return;
   }
 
-  res.status(200).json(updatedRecipe);
+  res.status(StatusCodes.OK).json(updatedRecipe);
   return;
 }
 
@@ -358,7 +369,9 @@ export async function deleteRecipe(req, res) {
   // const user_id = 1;
 
   if ((recipeIndex < 0) | (user_id < 0)) {
-    res.status(400).json({ message: 'Validation Error', error: 'invalid id' });
+    res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: 'Validation Error', error: 'invalid id' });
     return;
   }
 
@@ -371,11 +384,13 @@ export async function deleteRecipe(req, res) {
     });
   } catch (error) {
     console.log('Update Recipe Catch', error);
-    res.status(400).json({ message: 'Prisma Error', error: error.message });
+    res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: 'Prisma Error', error: error.message });
     return;
   }
 
-  res.status(204).end();
+  res.status(StatusCodes.NO_CONTENT).end();
 }
 
 const normalizeData = (reqBody) => {
