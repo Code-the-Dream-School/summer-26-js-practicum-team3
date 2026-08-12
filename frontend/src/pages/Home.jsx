@@ -46,7 +46,10 @@ export default function Home() {
   const [recipes, setRecipes] = useState([]);
   const [message, setMessage] = useState('');
   const [error, setError] = useState(null);
+
   useEffect(() => {
+    let stopDoubles = false;
+
     //basic get req
     //we will need something that gets their macros values
     // to create a tailored search
@@ -58,14 +61,22 @@ export default function Home() {
           throw new Error('Failed to fetch from backend');
         }
         setMessage('Fetch Success');
+        data = await resp.json();
+        // console.log(data.recipes);
+        if (!stopDoubles) {
+          setRecipes((previous) => [...previous, ...data.recipes]);
+        }
       } catch (error) {
         setError(error.message);
-      } finally {
-        data = await resp.json();
-        console.log('fetch data', data);
       }
     }
+
     baseFetch();
+
+    return () => {
+      console.log('one render clean-up');
+      stopDoubles = true;
+    };
   }, []);
   // TODO: dashboard
   // return <Dashboard />;
@@ -75,7 +86,7 @@ export default function Home() {
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {!error && <p>{message}</p>}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        {MOCK_RECIPE_DATA.map((recipe, index) => (
+        {recipes.map((recipe, index) => (
           <RecipeCard key={index} {...recipe} />
         ))}
       </div>
