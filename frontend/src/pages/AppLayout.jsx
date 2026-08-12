@@ -12,7 +12,17 @@ const BOTTOM_NAV_CONTAINER = {
   borderTopLeftRadius: 0,
   borderTopRightRadius: 0,
 };
-
+const TOP_NAV_CONTAINER = {
+  top: 0,
+  bottom: 'auto',
+  maxWidth: 'sm',
+  left: 0,
+  right: 0,
+  margin: '0 auto',
+  borderRadius: 1,
+  borderBottomLeftRadius: 0,
+  borderBottomRightRadius: 0,
+};
 const APP_CONTAINER = {
   pb: 7,
   maxWidth: 'sm',
@@ -26,6 +36,24 @@ const APP_CONTAINER = {
 export default function AppLayout() {
   return (
     <Box sx={APP_CONTAINER}>
+      {/* Top Navigation */}
+      <AppBar
+        position="fixed"
+        color="primary"
+        sx={TOP_NAV_CONTAINER}
+        component="nav"
+        aria-label="Top navigation"
+      >
+        <Toolbar sx={{ justifyContent: 'space-around' }}>
+          <Button color="inherit" component={Link} to="/">
+            Home
+          </Button>
+          <Button color="inherit" component={Link} to="/logout">
+            Log Out
+          </Button>
+        </Toolbar>
+      </AppBar>
+
       {/* Main content renders above navigation */}
       <main>
         <Outlet />
