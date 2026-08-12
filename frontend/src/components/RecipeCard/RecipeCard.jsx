@@ -7,6 +7,7 @@ const NO_OP = () => {};
 /**
  *
  * @typedef {object} RecipeCardProps
+ * @prop {string} id
  * @prop {string} title
  * @prop {number} total_time_minutes
  * @prop {string} ingredients
@@ -37,12 +38,7 @@ export function RecipeCard({
   return (
     <div className={styles.root}>
       <h2>{title}</h2>
-      <h3>Summary</h3>
-      <ul>
-        <li>Time: {total_time_minutes}</li>
-        <li>Servings: {servings}</li>
-      </ul>
-      <h3>Nutrition facts</h3>
+      <h3>Macro facts</h3>
       <ul className={styles.nutritionList}>
         <li className={styles.nutritionItem}>
           <span>{calories}</span>
@@ -75,9 +71,15 @@ export function RecipeCard({
 
 /**
  *
- * @param {Pick<RecipeCardProps, 'ingredients' | 'instructions' | 'title'>} props
+ * @param {Pick<RecipeCardProps, 'ingredients' | 'instructions' | 'title'|'total_time_minutes'|'servings'>} props
  */
-function RecipeCardDetails({ ingredients, instructions, title }) {
+function RecipeCardDetails({
+  ingredients,
+  instructions,
+  title,
+  total_time_minutes,
+  servings,
+}) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
@@ -93,6 +95,11 @@ function RecipeCardDetails({ ingredients, instructions, title }) {
       <div>
         <h3>Instructions</h3>
         <span>{instructions}</span>
+      </div>
+      <div>
+        <h3>Summary</h3>
+        <span>Time: {total_time_minutes}</span>
+        <span>Servings: {servings}</span>
       </div>
     </details>
   );
