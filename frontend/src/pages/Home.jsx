@@ -1,6 +1,5 @@
 import { RecipeCard } from '../components/RecipeCard/RecipeCard';
 import { useEffect, useState } from 'react';
-// import AppLayout from './AppLayout';
 
 // TODO: Replace MOCK_RECIPE_DATA with data fetched from the backend API
 const MOCK_RECIPE_DATA = [
@@ -44,25 +43,42 @@ const MOCK_RECIPE_DATA = [
 ];
 
 export default function Home() {
+  const [recipes, setRecipes] = useState([]);
   const [message, setMessage] = useState('');
   const [error, setError] = useState(null);
   useEffect(() => {
     //basic get req
+    //we will need something that gets their macros values
+    // to create a tailored search
     async function baseFetch() {
       let data = null;
       try {
-        const resp = await fetch('http://localhost:8080/api/hello');
-        data = resp.json();
-        setMessage(data.message);
+        const resp = await fetch('http://localhost:8080/api/v1/recipes/');
         if (!resp.ok) {
           throw new Error('Failed to fetch from backend');
         }
+        setMessage('Fetch Success');
       } catch (error) {
         setError(error.message);
+      } finally {
+        data = await resp.json();
+        console.log('fetch data', data);
       }
     }
     baseFetch();
   }, []);
   // TODO: dashboard
   // return <Dashboard />;
+
+  return (
+    <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {!error && <p>{message}</p>}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        {MOCK_RECIPE_DATA.map((recipe, index) => (
+          <RecipeCard key={index} {...recipe} />
+        ))}
+      </div>
+    </main>
+  );
 }
