@@ -30,6 +30,17 @@ const userSchema = Joi.object({
     }),
 });
 
+/** 
+ * @typedef {object} loginSchema 
+ * @prop {string} email - REQUIRED.
+ * @prop {string} password - REQUIRED. No strength rules here -
+ *  login only checks the credentials that were already accepted at
+ *  registration time, it doesn't re-validate password strength.
+ */
+const loginSchema = Joi.object({
+  email: Joi.string().trim().lowercase().email().required(),
+  password: Joi.string().required(),
+});
 /**
  * @typedef {object} recipeSchema
  * @prop {string} title - REQUIRED.
@@ -82,14 +93,14 @@ const patchRecipeSchema = Joi.object({
 
 /**
  *
- * @typedef {object} nutritrionGoalsSchema
+ * @typedef {object} nutritionGoalsSchema
  * @prop {number} user_id - REQUIRED. comes from Auth
  * @prop {number} - fat_target for tailored recipes
  * @prop {number} - calories_target for tailored recipes
  * @prop {number} - protein_target for tailored recipes
  * @prop {number} - carbs_target for tailored recipes
  */
-const nutritrionGoalsSchema = Joi.object({
+const nutritionGoalsSchema = Joi.object({
   user_id: Joi.number().integer().required(),
   fat_target: Joi.number().precision(0).integer().min(0).allow(null),
   calories_target: Joi.number().precision(0).integer().min(0).allow(null),
@@ -97,4 +108,4 @@ const nutritrionGoalsSchema = Joi.object({
   carbs_target: Joi.number().precision(0).integer().min(0).allow(null),
 });
 
-export { userSchema, recipeSchema, patchRecipeSchema, nutritrionGoalsSchema };
+export { userSchema, loginSchema, recipeSchema, patchRecipeSchema, nutritionGoalsSchema };
