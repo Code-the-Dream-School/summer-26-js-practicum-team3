@@ -1,6 +1,12 @@
 import { useState } from 'react';
-
-import styles from './RecipeCard.module.css';
+import {
+  Card,
+  CardContent,
+  Button,
+  Typography,
+  Stack,
+  Box,
+} from '@mui/material';
 
 const NO_OP = () => {};
 
@@ -36,38 +42,92 @@ export function RecipeCard({
   handleAddToPlanner = NO_OP,
 }) {
   return (
-    <div className={styles.root}>
-      <h2>{title}</h2>
-      <h3>Macro facts</h3>
-      <ul className={styles.nutritionList}>
-        <li className={styles.nutritionItem}>
-          <span>{calories}</span>
-          <span>Calories</span>
-        </li>
-        <li className={styles.nutritionItem}>
-          <span>{carbs}g</span>
-          <span>Carbs</span>
-        </li>
-        <li className={styles.nutritionItem}>
-          <span>{fat}g</span>
-          <span>Fat</span>
-        </li>
-        <li className={styles.nutritionItem}>
-          <span>{protein}g</span>
-          <span>Protein</span>
-        </li>
-      </ul>
-      <button type="button" onClick={() => handleAddToPlanner(id)}>
-        Add To Planner
-      </button>
-      <RecipeCardDetails
-        ingredients={ingredients}
-        instructions={instructions}
-        title={title}
-        total_time_minutes={total_time_minutes}
-        servings={servings}
-      />
-    </div>
+    <Card variant="outlined">
+      <CardContent sx={{ textAlign: 'left' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <Typography variant="h5" component="h2">
+            {title}
+          </Typography>
+          <Button variant="contained" onClick={() => handleAddToPlanner(id)}>
+            Add To Planner
+          </Button>
+        </Box>
+
+        <Stack
+          direction="row"
+          spacing={3}
+          component="ul"
+          sx={{ p: 0, m: 0, listStyle: 'none' }}
+        >
+          <Box component="li" sx={{ textAlign: 'center' }}>
+            <Typography variant="h6" component="span" display="block">
+              {calories}
+            </Typography>
+            <Typography
+              variant="caption"
+              component="span"
+              color="text.secondary"
+            >
+              Calories
+            </Typography>
+          </Box>
+
+          <Box component="li" sx={{ textAlign: 'center' }}>
+            <Typography variant="h6" component="span" display="block">
+              {carbs}g
+            </Typography>
+            <Typography
+              variant="caption"
+              component="span"
+              color="text.secondary"
+            >
+              Carbs
+            </Typography>
+          </Box>
+
+          <Box component="li" sx={{ textAlign: 'center' }}>
+            <Typography variant="h6" component="span" display="block">
+              {fat}g
+            </Typography>
+            <Typography
+              variant="caption"
+              component="span"
+              color="text.secondary"
+            >
+              Fat
+            </Typography>
+          </Box>
+
+          <Box component="li" sx={{ textAlign: 'center' }}>
+            <Typography variant="h6" component="span" display="block">
+              {protein}g
+            </Typography>
+            <Typography
+              variant="caption"
+              component="span"
+              color="text.secondary"
+            >
+              Protein
+            </Typography>
+          </Box>
+        </Stack>
+
+        {/* Accordion will go here with the rest of the info */}
+        <RecipeCardDetails
+          ingredients={ingredients}
+          instructions={instructions}
+          title={title}
+          total_time_minutes={total_time_minutes}
+          servings={servings}
+        />
+      </CardContent>
+    </Card>
   );
 }
 
@@ -75,6 +135,7 @@ export function RecipeCard({
  *
  * @param {Pick<RecipeCardProps, 'ingredients' | 'instructions' | 'title'|'total_time_minutes'|'servings'>} props
  */
+
 function RecipeCardDetails({
   ingredients,
   instructions,
@@ -87,21 +148,31 @@ function RecipeCardDetails({
   return (
     <details open={isExpanded} onToggle={() => setIsExpanded((prev) => !prev)}>
       <summary>
-        <span>{isExpanded ? 'Hide' : 'Show'} ingredients</span>
-        <span className="visually-hidden">for {title}</span>
+        <Typography component="span">
+          {isExpanded ? 'Hide' : 'Show'} ingredients
+        </Typography>
+        <Typography component="span" sx={{ display: 'none' }}>
+          for {title}
+        </Typography>
       </summary>
       <div>
-        <h3>Ingredients</h3>
-        <span>{ingredients}</span>
+        <Typography component="h3" variant="h6">
+          Ingredients
+        </Typography>
+        <Typography component="span">{ingredients}</Typography>
       </div>
       <div>
-        <h3>Instructions</h3>
-        <span>{instructions}</span>
+        <Typography component="h3" variant="h6">
+          Instructions
+        </Typography>
+        <Typography component="span">{instructions}</Typography>
       </div>
       <div>
-        <h3>Summary</h3>
-        <span>Time: {total_time_minutes}</span>
-        <span>Servings: {servings}</span>
+        <Typography component="h3" variant="h6">
+          Summary
+        </Typography>
+        <Typography component="span">Time: {total_time_minutes}</Typography>
+        <Typography component="span">Servings: {servings}</Typography>
       </div>
     </details>
   );
