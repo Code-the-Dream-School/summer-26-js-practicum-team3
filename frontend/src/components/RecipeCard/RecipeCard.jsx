@@ -28,6 +28,23 @@ const NO_OP = () => {};
 /**
  * @param {RecipeCardProps} props
  */
+
+const CARD_CONTAINER = { width: '75%', justifySelf: 'center' };
+const CARD_CONTEXT = {
+  textAlign: 'left',
+  p: '8px',
+  '&:last-child': { pb: '12px' },
+};
+const FLEX_COLUMN = { display: 'flex', flexDirection: 'column' };
+const STACKED_TEXT = { textAlign: 'center', ...FLEX_COLUMN };
+const EXPANDED_CARD_TEXT = { textAlign: 'left', display: 'flex' };
+const TITLE_BUTTON_CONTAINER = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+};
+const LIST_CONTROL = { p: 0, m: 0, listStyle: 'none' };
+const TEXT_HIDDEN_FOR_SCREEN_READERS = { display: 'none' };
 export function RecipeCard({
   id,
   title,
@@ -42,15 +59,9 @@ export function RecipeCard({
   handleAddToPlanner = NO_OP,
 }) {
   return (
-    <Card variant="outlined">
-      <CardContent sx={{ textAlign: 'left' }}>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
+    <Card variant="outlined" sx={CARD_CONTAINER}>
+      <CardContent sx={CARD_CONTEXT}>
+        <Box sx={TITLE_BUTTON_CONTAINER}>
           <Typography variant="h5" component="h2">
             {title}
           </Typography>
@@ -59,13 +70,8 @@ export function RecipeCard({
           </Button>
         </Box>
 
-        <Stack
-          direction="row"
-          spacing={3}
-          component="ul"
-          sx={{ p: 0, m: 0, listStyle: 'none' }}
-        >
-          <Box component="li" sx={{ textAlign: 'center' }}>
+        <Stack direction="row" spacing={3} component="ul" sx={LIST_CONTROL}>
+          <Box component="li" sx={STACKED_TEXT}>
             <Typography variant="h6" component="span" display="block">
               {calories}
             </Typography>
@@ -78,7 +84,7 @@ export function RecipeCard({
             </Typography>
           </Box>
 
-          <Box component="li" sx={{ textAlign: 'center' }}>
+          <Box component="li" sx={STACKED_TEXT}>
             <Typography variant="h6" component="span" display="block">
               {carbs}g
             </Typography>
@@ -91,7 +97,7 @@ export function RecipeCard({
             </Typography>
           </Box>
 
-          <Box component="li" sx={{ textAlign: 'center' }}>
+          <Box component="li" sx={STACKED_TEXT}>
             <Typography variant="h6" component="span" display="block">
               {fat}g
             </Typography>
@@ -104,7 +110,7 @@ export function RecipeCard({
             </Typography>
           </Box>
 
-          <Box component="li" sx={{ textAlign: 'center' }}>
+          <Box component="li" sx={STACKED_TEXT}>
             <Typography variant="h6" component="span" display="block">
               {protein}g
             </Typography>
@@ -151,7 +157,7 @@ function RecipeCardDetails({
         <Typography component="span">
           {isExpanded ? 'Hide' : 'Show'} ingredients
         </Typography>
-        <Typography component="span" sx={{ display: 'none' }}>
+        <Typography component="span" sx={TEXT_HIDDEN_FOR_SCREEN_READERS}>
           for {title}
         </Typography>
       </summary>
@@ -159,21 +165,38 @@ function RecipeCardDetails({
         <Typography component="h3" variant="h6">
           Ingredients
         </Typography>
-        <Typography component="span">{ingredients}</Typography>
+        <Typography variant="caption" component="span" color="text.secondary">
+          {ingredients}
+        </Typography>
       </div>
       <div>
         <Typography component="h3" variant="h6">
           Instructions
         </Typography>
-        <Typography component="span">{instructions}</Typography>
-      </div>
-      <div>
-        <Typography component="h3" variant="h6">
-          Summary
+        <Typography variant="caption" component="span" color="text.secondary">
+          {instructions?.startsWith('http') ? (
+            <a href={instructions} about="_blank">
+              Link to site
+            </a>
+          ) : (
+            instructions
+          )}
         </Typography>
-        <Typography component="span">Time: {total_time_minutes}</Typography>
-        <Typography component="span">Servings: {servings}</Typography>
       </div>
+      <Stack direction="row" spacing={3} component="ul" sx={LIST_CONTROL}>
+        <Box sx={STACKED_TEXT}>
+          <Typography component="span">{total_time_minutes}</Typography>
+          <Typography variant="caption" component="span" color="text.secondary">
+            Minutes
+          </Typography>
+        </Box>
+        <Box sx={STACKED_TEXT}>
+          <Typography component="span">{servings}</Typography>
+          <Typography variant="caption" component="span" color="text.secondary">
+            Servings
+          </Typography>
+        </Box>
+      </Stack>
     </details>
   );
 }
