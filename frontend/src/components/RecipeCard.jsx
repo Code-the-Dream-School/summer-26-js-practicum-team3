@@ -7,7 +7,7 @@ import {
   Stack,
   Box,
 } from '@mui/material';
-
+import { visuallyHidden } from '@mui/utils';
 const NO_OP = () => {};
 
 /**
@@ -44,7 +44,7 @@ const TITLE_BUTTON_CONTAINER = {
   alignItems: 'center',
 };
 const LIST_CONTROL = { p: 0, m: 0, listStyle: 'none' };
-const TEXT_HIDDEN_FOR_SCREEN_READERS = { display: 'none' };
+const TEXT_HIDDEN_FOR_SCREEN_READERS = visuallyHidden;
 export function RecipeCard({
   id,
   title,
@@ -175,7 +175,7 @@ function RecipeCardDetails({
         </Typography>
         <Typography variant="caption" component="span" color="text.secondary">
           {instructions?.startsWith('http') ? (
-            <a href={instructions} about="_blank">
+            <a href={instructions} target="_blank" rel="noopener noreferrer">
               Link to site
             </a>
           ) : (
