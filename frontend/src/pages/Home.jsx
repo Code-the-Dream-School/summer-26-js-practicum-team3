@@ -1,4 +1,4 @@
-import { RecipeCard } from '../components/RecipeCard/RecipeCard';
+import { RecipeCard } from '../components/RecipeCard.jsx';
 import { useEffect, useState } from 'react';
 
 // TODO: Replace MOCK_RECIPE_DATA with data fetched from the backend API
@@ -62,7 +62,7 @@ export default function Home() {
         }
         setMessage('Fetch Success');
         data = await resp.json();
-        // console.log(data.recipes);
+        console.log(data.recipes);
         if (!stopDoubles) {
           setRecipes((previous) => [...previous, ...data.recipes]);
         }
@@ -85,7 +85,14 @@ export default function Home() {
     <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {!error && <p>{message}</p>}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '1rem',
+        }}
+      >
         {recipes.map((recipe, index) => (
           <RecipeCard key={index} {...recipe} />
         ))}
