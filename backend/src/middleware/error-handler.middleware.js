@@ -1,3 +1,4 @@
+import { Prisma } from '../generated/prisma/client.ts';
 import { StatusCodes } from 'http-status-codes';
 
 // Prisma error codes for "the database itself is unreachable", not a bad query. 
@@ -14,14 +15,41 @@ const DB_CONNECTION_ERROR_CODES = new Set([
   'ECONNREFUSED', // raw driver code, seen with PrismaPg against a closed port
 ]);
 
-const errorHandler = (err, req, res, next) => {
-  if (DB_CONNECTION_ERROR_CODES.has(err.code)) {
-    console.error(
-      `DB connection error (${err.code}) - is the database running/reachable?`,
-    );
-  }
+// Query-level Prisma errors: the DB responded, but rejected the query semantically.
+const PRISMA_QUERY_ERROR_STATUS = {
+  P2002: StatusCodes.CONFLICT,      // unique constraint
+  P2014: StatusCodes.CONFLICT,      // relation violation
+  P2001: StatusCodes.NOT_FOUND,     // record in where clause not found
+  P2015: StatusCodes.NOT_FOUND,
+  P2018: StatusCodes.NOT_FOUND,
+  P2025: StatusCodes.NOT_FOUND,     // record required for update/delete not found
+  P2003: StatusCodes.BAD_REQUEST,   // foreign key
+  P2004: StatusCodes.BAD_REQUEST,
+  P2006: StatusCodes.BAD_REQUEST,
+  P2007: StatusCodes.BAD_REQUEST,
+  P2011: StatusCodes.BAD_REQUEST,   // null violation
+  P2012: StatusCodes.BAD_REQUEST,
+};
 
-  const statusCode = err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
+const errorHandler = (err, req, res, next) => {
+  if (res.headersSent) return next(err);
+
+  let statusCode = err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
+  let clientMessage = err.message;
+
+  if (err instanceof Prisma.PrismaClientKnownRequestError) {
+    if (DB_CONNECTION_ERROR_CODES.has(err.code)) {
+      console.error(
+        `DB connection error (${err.code}) - is the database running/reachable?`,
+      );
+      statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+    } else if (PRISMA_QUERY_ERROR_STATUS[err.code]) {
+      statusCode = PRISMA_QUERY_ERROR_STATUS[err.code];
+      clientMessage = 'Request could not be completed'; // don't leak table/column names from err.message
+    } else {
+      statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+    }
+  }
 
   if (statusCode >= 400 && statusCode < 500) {
     console.warn(`WARN: ${err.name} - ${err.message}`);
@@ -32,9 +60,8 @@ const errorHandler = (err, req, res, next) => {
   const message =
     statusCode === StatusCodes.INTERNAL_SERVER_ERROR
       ? 'Something went wrong, please try again'
-      : err.message;
+      : clientMessage;
 
-  if (res.headersSent) return next(err);
   res.status(statusCode).json({ message });
 };
 
