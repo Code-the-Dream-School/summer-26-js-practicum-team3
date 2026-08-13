@@ -31,23 +31,25 @@ app.use(express.json());
 app.use(morgan('dev'));
 app.use(cookieParser());
 
-app.use((req, res, next) => {
-  console.log(req.method, req.path, req.query);
-  next();
-});
-
-app.use((req, res, next) => {
-  res.on('finish', () => {
-    console.log({
-      method: req.method,
-      path: req.path,
-      query: req.query,
-      status: res.statusCode,
-      headers: res.getHeaders(),
-    });
+if (process.env.NODE_ENV !== 'test') {
+  app.use((req, res, next) => {
+    console.log(req.method, req.path, req.query);
+    next();
   });
-  next();
-});
+
+  app.use((req, res, next) => {
+    res.on('finish', () => {
+      console.log({
+        method: req.method,
+        path: req.path,
+        query: req.query,
+        status: res.statusCode,
+        headers: res.getHeaders(),
+      });
+    });
+    next();
+  });
+}
 
 // Routes
 app.use('/api/hello', helloRoutes);
