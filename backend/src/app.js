@@ -10,6 +10,7 @@ import authRoutes from './routes/auth.routes.js';
 import RecipeRouter from './routes/recipe.routes.js';
 import SwaggerRouter from './routes/swagger-docs.routes.js';
 import notFound from './middleware/not-found.middleware.js';
+import errorHandler from './middleware/error-handler.middleware.js'
 
 const app = express();
 
