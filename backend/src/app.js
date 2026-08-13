@@ -8,6 +8,8 @@ import cookieParser from 'cookie-parser';
 import helloRoutes from './routes/hello.routes.js';
 import authRoutes from './routes/auth.routes.js';
 import RecipeRouter from './routes/recipe.routes.js';
+import UserRouter from './routes/user.routes.js';
+import NutritionGoalsRouter from './routes/nutritionGoals.routes.js';
 import SwaggerRouter from './routes/swagger-docs.routes.js';
 
 const app = express();
@@ -35,6 +37,10 @@ app.use('/api/auth', authRoutes);
 
 //recipe routes
 app.use('/api/v1/recipes', RecipeRouter);
+
+// onboarding routes
+app.use('/api/v1/users', UserRouter);
+app.use('/api/v1/nutrition-goals', NutritionGoalsRouter);
 
 // swagger route
 // app.use('/swagger/v1/docs', SwaggerRouter);
