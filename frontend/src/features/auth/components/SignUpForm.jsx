@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { registerUser } from '../api/authApi';
 import {
   isValidName,
@@ -6,6 +7,8 @@ import {
   isValidPassword,
 } from '../utils/validators';
 import { TextField, Button, Stack, Alert } from '@mui/material';
+import DuplicateEmail from './DuplicateEmail';
+import Modal from '../../../components/shared/Modal';
 
 function SignUpForm() {
   const [name, setName] = useState('');
@@ -14,38 +17,35 @@ function SignUpForm() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [errorType, setErrorType] = useState('');
+  const [modalOpen, setModalOpen] = useState(false);
   const isFormValid =
     isValidName(name) && isValidEmail(email) && isValidPassword(password);
 
   const nameError = name.length > 0 && !isValidName(name);
   const emailError = email.length > 0 && !isValidEmail(email);
   const passwordError = password.length > 0 && !isValidPassword(password);
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
     setErrorMessage('');
     setSuccessMessage('');
-    setErrorType('');
 
     try {
       const response = await registerUser(name, email, password);
 
       if (response.status !== 201) {
         if (response.status === 409) {
-          setErrorMessage('This email is already in use. Please log in.');
-          setErrorType('emailTaken');
+          setModalOpen(true);
         } else if (response.status === 400) {
           setErrorMessage('Invalid input data. Please check your fields.');
-          setErrorType('validation');
         } else {
           setErrorMessage(response.data.message || 'Something went wrong.');
         }
         return;
       }
       setSuccessMessage('Account created successfully!');
-      console.log('Registered user:', response.data);
     } catch (error) {
       setErrorMessage('Submission failed: A critical error occurred');
       console.error(error);
@@ -103,12 +103,12 @@ function SignUpForm() {
         </Alert>
       )}
 
-      {errorType === 'emailTaken' && (
-        <>
-          <button type="button">Log In</button>
-          <button type="button">Try Again</button>
-        </>
-      )}
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+        <DuplicateEmail
+          onSignIn={() => navigate('/login')}
+          onTryAgain={() => setModalOpen(false)}
+        />
+      </Modal>
       {successMessage && (
         <Alert severity="success" aria-live="polite" sx={{ mt: 2 }}>
           {successMessage}
