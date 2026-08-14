@@ -27,6 +27,7 @@ export default function App() {
           </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/onboarding" element={<OnboardingPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>

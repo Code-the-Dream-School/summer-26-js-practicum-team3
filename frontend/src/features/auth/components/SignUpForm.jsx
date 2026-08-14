@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { registerUser } from '../api/authApi';
 import {
@@ -25,6 +25,13 @@ function SignUpForm() {
   const emailError = email.length > 0 && !isValidEmail(email);
   const passwordError = password.length > 0 && !isValidPassword(password);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!successMessage) return;
+
+    const timerId = setTimeout(() => navigate('/onboarding'), 3000);
+    return () => clearTimeout(timerId);
+  }, [successMessage, navigate]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
