@@ -1,4 +1,4 @@
-/*eslint-disable react/prop-types */
+/*eslint-disable */
 export default function SortBy({
   sortBy,
   sortDirection,

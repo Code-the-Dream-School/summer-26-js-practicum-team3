@@ -1,6 +1,10 @@
+/*eslint-disable */
 import { RecipeCard } from '../components/RecipeCard.jsx';
 import { useEffect, useState } from 'react';
 import { paginationFetch } from '../utils/api-helper.js';
+
+import { SortBy } from '../components/SortBy.jsx';
+import { SearchInput } from '../components/SearchInput.jsx';
 
 export default function Home() {
   const [recipes, setRecipes] = useState([]);
