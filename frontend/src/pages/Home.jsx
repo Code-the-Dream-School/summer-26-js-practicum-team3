@@ -4,12 +4,14 @@ import { paginationFetch } from '../utils/api-helper.js';
 
 export default function Home() {
   const [recipes, setRecipes] = useState([]);
+  const [count, setCount] = useState(0);
+
   const [message, setMessage] = useState('');
   const [error, setError] = useState(null);
-  const [pageLimit, setPageLimit] = useState(8);
+
   const [databasepageNumber, setDatabasePageNumber] = useState(1);
-  const [page, setPage] = useState({});
-  console.log('top level', recipes);
+  const [pagination, setPagination] = useState({});
+
   useEffect(() => {
     let stopDoubles = false;
 
@@ -28,7 +30,7 @@ export default function Home() {
         console.log(data.recipes);
         if (!stopDoubles) {
           setRecipes(data.recipes);
-          // setRecipes((previous) => [...previous, ...data.recipes]);
+          setPagination(data.pagination);
         }
       } catch (error) {
         setError(error.message);
@@ -40,8 +42,6 @@ export default function Home() {
       stopDoubles = true;
     };
   }, []);
-  // TODO: dashboard
-  // return <Dashboard />;
 
   async function getMore() {
     const nextPageNumber = databasepageNumber + 1;
@@ -50,8 +50,9 @@ export default function Home() {
     const nextSetOfRecipes = await paginationFetch(
       `http://localhost:8080/api/v1/recipes/?page=${nextPageNumber}`,
     );
-    setRecipes(nextSetOfRecipes.recipes);
-    setPage(nextSetOfRecipes.pagination);
+    setRecipes((prev) => [...nextSetOfRecipes.recipes]);
+    setPagination(nextSetOfRecipes.pagination);
+    setCount(0);
   }
 
   return (
@@ -66,13 +67,27 @@ export default function Home() {
           gap: '1rem',
         }}
       >
-        {recipes.map((recipe, index) => (
+        <button
+          type="button"
+          disabled={count === 0 ? true : false}
+          onClick={() => setCount((prev) => prev - 2)}
+        >
+          prev
+        </button>
+        <button type="button" onClick={getMore}>
+          Get More
+        </button>
+        <button
+          type="button"
+          disabled={count === 8 ? true : false}
+          onClick={() => setCount((prev) => prev + 2)}
+        >
+          next
+        </button>
+        {recipes.slice(count, count + 2).map((recipe, index) => (
           <RecipeCard key={index} {...recipe} />
         ))}
       </div>
-      <button type="button" onClick={getMore}>
-        Get More
-      </button>
     </main>
   );
 }
