@@ -21,7 +21,9 @@ export default function Home() {
     async function baseFetch() {
       let data = null;
       try {
-        const resp = await fetch('http://localhost:8080/api/v1/recipes/');
+        const resp = await fetch(
+          'http://localhost:8080/api/v1/recipes/?limit=10',
+        );
         if (!resp.ok) {
           throw new Error('Failed to fetch from backend');
         }
@@ -48,13 +50,15 @@ export default function Home() {
     setDatabasePageNumber(nextPageNumber);
     console.log('something', databasepageNumber);
     const nextSetOfRecipes = await paginationFetch(
-      `http://localhost:8080/api/v1/recipes/?page=${nextPageNumber}`,
+      `http://localhost:8080/api/v1/recipes/?page=${nextPageNumber}&limit=10`,
     );
     setRecipes((prev) => [...nextSetOfRecipes.recipes]);
     setPagination(nextSetOfRecipes.pagination);
     setCount(0);
   }
-
+  function prev() {
+    setCount((prev) => prev - 2);
+  }
   return (
     <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
       {error && <p style={{ color: 'red' }}>{error}</p>}
@@ -70,7 +74,7 @@ export default function Home() {
         <button
           type="button"
           disabled={count === 0 ? true : false}
-          onClick={() => setCount((prev) => prev - 2)}
+          onClick={prev}
         >
           prev
         </button>
