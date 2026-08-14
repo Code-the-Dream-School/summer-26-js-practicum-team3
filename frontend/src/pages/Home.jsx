@@ -62,7 +62,6 @@ export default function Home() {
   function next() {
     setCount((prev) => prev + 2);
     count + 2 === 10 ? getMore() : false;
-    console.log('count', count + 2);
   }
   return (
     <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
@@ -83,9 +82,7 @@ export default function Home() {
         >
           prev
         </button>
-        <button type="button" onClick={getMore}>
-          Get More
-        </button>
+
         <button
           type="button"
           disabled={count === 10 ? true : false}
