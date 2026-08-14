@@ -59,6 +59,11 @@ export default function Home() {
   function prev() {
     setCount((prev) => prev - 2);
   }
+  function next() {
+    setCount((prev) => prev + 2);
+    count + 2 === 10 ? getMore() : false;
+    console.log('count', count + 2);
+  }
   return (
     <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
       {error && <p style={{ color: 'red' }}>{error}</p>}
@@ -83,8 +88,8 @@ export default function Home() {
         </button>
         <button
           type="button"
-          disabled={count === 8 ? true : false}
-          onClick={() => setCount((prev) => prev + 2)}
+          disabled={count === 10 ? true : false}
+          onClick={next}
         >
           next
         </button>
