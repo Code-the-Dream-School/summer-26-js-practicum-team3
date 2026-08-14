@@ -268,9 +268,9 @@ describe('POST /api/v1/recipes - Failure Cases', () => {
     );
 
     expect(res.status).toBe(400);
+    //this is only thing returned via prisma error.
     expect(res.body).toEqual({
-      message: 'Prisma Error',
-      error: 'Field title is missing',
+      message: '"title" is required',
     });
   });
 });
@@ -279,6 +279,7 @@ describe('PATCH /api/v1/recipes/:id - Success Cases', () => {
   const recipeId = 5;
   const updatePayload = {
     title: 'Updated Chicken Curry',
+    instructions: 'Update Instructions',
     total_time_minutes: 45,
   };
 
@@ -350,6 +351,7 @@ describe('PATCH /api/v1/recipes/:id - Failure Cases', () => {
   it('should return 400 when an invalid negative ID parameter is provided', async () => {
     const res = await withAuth(request(app).patch('/api/v1/recipes/-5')).send({
       title: 'Invalid Recipe ID Update',
+      instructions: 'These are required as well',
     });
 
     expect(res.status).toBe(400);
@@ -365,6 +367,7 @@ describe('PATCH /api/v1/recipes/:id - Failure Cases', () => {
 
     const res = await withAuth(request(app).patch('/api/v1/recipes/999')).send({
       title: 'Non-existent Recipe',
+      instructions: 'These are required as well',
     });
 
     expect(res.status).toBe(400);

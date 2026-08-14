@@ -19,6 +19,7 @@
     "db:pull": "npm run --workspace=backend db:pull",
     "test": "npm run --workspace=backend test",
     "test:joi": "npm run --workspace=backend test:joi",
+    "test:recipe-api":"npm run --workspace=backend test:recipe-api",
     "prepare": "husky"
   },
   "devDependencies": {
