@@ -61,7 +61,9 @@ export default function Home() {
   }
   function next() {
     setCount((prev) => prev + 2);
-    count + 2 === 10 ? getMore() : false;
+    {
+      count + 2 === 10 && getMore();
+    }
   }
   return (
     <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
