@@ -33,7 +33,7 @@ beforeEach(() => {
   process.env.JWT_SECRET = 'test-secret';
 });
 
-describe('POST /api/auth/register', () => {
+describe('POST /api/v1/auth/register', () => {
   const validBody = {
     email: 'anyemail@fake.com',
     // userSchema requires upper+lower+digit+special char, unlike the old
@@ -141,7 +141,7 @@ describe('POST /api/auth/register', () => {
   });
 });
 
-describe('POST /api/auth/login', () => {
+describe('POST /api/v1/auth/login', () => {
   const password = 'super_long_password';
   let validHash;
 
@@ -247,7 +247,7 @@ describe('POST /api/auth/login', () => {
   });
 });
 
-describe('POST /api/auth/logout', () => {
+describe('POST /api/v1/auth/logout', () => {
   it('clears the "jwt" cookie with the matching cookie flags', () => {
     const req = { cookies: { jwt: 'some-valid-token' } };
     const res = mockRes();

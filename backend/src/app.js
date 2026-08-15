@@ -55,7 +55,7 @@ if (process.env.NODE_ENV !== 'test') {
 
 // Routes
 app.use('/api/hello', helloRoutes);
-app.use('/api/auth', authRoutes);
+app.use('/api/v1/auth', authRoutes);
 
 //recipe routes
 app.use('/api/v1/recipes', RecipeRouter);
