@@ -21,6 +21,8 @@ export default function Home() {
   const [pagination, setPagination] = useState({});
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState('' | 'created_at');
+  const [sortDirection, setSortDirection] = useState('' | 'desc');
 
   //  const statusFilter = searchParams.get('status') || '1'; //<--This could be how we pick from our recipes and theirs. simple button or filter
   const debouncedFilterTerm = useDebounce(searchTerm, 500);
@@ -28,37 +30,42 @@ export default function Home() {
   useEffect(() => {
     let stopDoubles = false;
 
-    //basic get req
-    //we will need something that gets their macros values
-    // to create a tailored search
+    // const paramsObj = {
+    //   sortBy,
+    //   sortDirection,
+    //   limit: 10,
+    // };
 
-    const paramsObj = {
-      sortBy,
-      sortDirection,
-      limit: 10,
-    };
-    if (debouncedFilterTerm) {
-      paramsObj.find = debouncedFilterTerm;
-    }
+    // if (debouncedFilterTerm) {
+    //   paramsObj.find = debouncedFilterTerm;
+    // }
 
-    const params = new URLSearchParams(paramsObj);
+    // const params = new URLSearchParams(paramsObj.find);
 
     async function baseFetch() {
       let data = null;
+      let resp = null;
 
-      const options = {
-        headers: { 'X-CSRF-TOKEN': token },
-        credentials: 'include',
-      };
+      // const options = {
+      //   headers: { 'X-CSRF-TOKEN': token },
+      //   credentials: 'include',
+      // };
 
       setIsLoading(true);
 
       try {
-        const resp = await fetch(`${BASE_URL}?${params}`, options);
-        if (!resp.ok) {
+        if (debouncedFilterTerm) {
+          resp = await fetch(
+            `${BASE_URL}?search=${debouncedFilterTerm}&limit=10`,
+          );
+        } else {
+          resp = await fetch(`${BASE_URL}?limit=10`);
+        }
+
+        if (!resp?.ok) {
           throw new Error('Failed to fetch from backend');
         }
-        setMessage('Fetch Success');
+        // setMessage('Fetch Success');
         data = await resp.json();
         console.log(data.recipes);
         if (!stopDoubles) {
@@ -67,15 +74,15 @@ export default function Home() {
         }
         setIsLoading(false);
       } catch (error) {
-        if (
-          debouncedFilterTerm ||
-          sortBy !== initialTodoState.sortBy ||
-          sortDirection !== initialTodoState.sortDirection
-        ) {
-          setError(`Search and Filter Error\n${error.message}`);
-        } else {
-          setError(`Fetch Error\n${error.message}`);
-        }
+        // if (
+        //   debouncedFilterTerm ||
+        //   sortBy !== initialTodoState.sortBy ||
+        //   sortDirection !== initialTodoState.sortDirection
+        // ) {
+        //   setError(`Search and Filter Error\n${error.message}`);
+        // } else {
+        setError(`Fetch Error\n${error.message}`);
+        // }
       }
     }
 
@@ -84,14 +91,14 @@ export default function Home() {
       console.log('one render clean-up');
       stopDoubles = true;
     };
-  }, []);
+  }, [debouncedFilterTerm]);
 
   async function getMore() {
     const nextPageNumber = databasepageNumber + 1;
     setDatabasePageNumber(nextPageNumber);
     console.log('something', databasepageNumber);
     const nextSetOfRecipes = await paginationFetch(
-      `http://localhost:8080/api/v1/recipes/?page=${nextPageNumber}&limit=10&search=${searchTerm}`,
+      `http://localhost:8080/api/v1/recipes/?page=${nextPageNumber}&limit=10&search=${debouncedFilterTerm}`,
     );
     setRecipes((prev) => [...nextSetOfRecipes.recipes]);
     setPagination(nextSetOfRecipes.pagination);
