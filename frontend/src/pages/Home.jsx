@@ -5,6 +5,9 @@ import { paginationFetch } from '../utils/api-helper.js';
 
 import { SortBy } from '../components/SortBy.jsx';
 import { SearchInput } from '../components/SearchInput.jsx';
+import useDebounce from '../utils/useDebounce.js';
+import { isValid } from '../utils/isValid.js';
+import { sanitizeInput } from '../utils/sanatize.js';
 
 export default function Home() {
   const [recipes, setRecipes] = useState([]);
@@ -15,6 +18,11 @@ export default function Home() {
 
   const [databasepageNumber, setDatabasePageNumber] = useState(1);
   const [pagination, setPagination] = useState({});
+
+  const [searchTerm, setSearchTerm] = useState('');
+
+  //  const statusFilter = searchParams.get('status') || '1'; //<--This could be how we pick from our recipes and theirs. simple button or filter
+  const debouncedFilterTerm = useDebounce(filterTerm, 500);
 
   useEffect(() => {
     let stopDoubles = false;
@@ -69,10 +77,28 @@ export default function Home() {
       count + 2 === 10 && getMore();
     }
   }
+
+  function handlefilterChange(newTerm) {
+    if (isValid(newTerm)) {
+      if (sanitizeInput(newTerm) === '') {
+        //error
+        setError('Only non-malicous character');
+        return;
+      }
+    }
+    //search returned
+    setSearchTerm;
+    // dispatch({ type: TODO_ACTIONS.SET_S_E_O, filterTerm: newTerm });
+  }
+
   return (
     <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {!error && <p>{message}</p>}
+      <SearchInput
+        searchTerm={searchTerm}
+        onFilterChange={handleFilterChange}
+      />
       <div
         style={{
           display: 'flex',
