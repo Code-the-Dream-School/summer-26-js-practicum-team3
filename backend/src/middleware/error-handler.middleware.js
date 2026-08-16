@@ -5,7 +5,7 @@ import { StatusCodes } from 'http-status-codes';
 // These come from Prisma's own normalized layer (P1xxx = "common" errors) 
 // and work the same whether we're on PrismaNeon or PrismaPg - unlike err.name, 
 // which with driver adapters is always PrismaClientKnownRequestError, never PrismaClientInitializationError
-const DB_CONNECTION_ERROR_CODES = new Set([
+export const DB_CONNECTION_ERROR_CODES = new Set([
   'P1000',        // authentication failed
   'P1001',        // can't reach database server
   'P1002',        // database server was reached but timed out
