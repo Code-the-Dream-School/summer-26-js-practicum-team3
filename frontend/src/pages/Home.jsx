@@ -21,26 +21,26 @@ export default function Home() {
   const [pagination, setPagination] = useState({});
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('' | 'created_at');
+  const [sortBy, setSortBy] = useState('' | 'calories');
   const [sortDirection, setSortDirection] = useState('' | 'desc');
 
   //  const statusFilter = searchParams.get('status') || '1'; //<--This could be how we pick from our recipes and theirs. simple button or filter
   const debouncedFilterTerm = useDebounce(searchTerm, 500);
-
+  console.log(debouncedFilterTerm);
   useEffect(() => {
     let stopDoubles = false;
 
-    // const paramsObj = {
-    //   sortBy,
-    //   sortDirection,
-    //   limit: 10,
-    // };
+    const paramsObj = {
+      sortBy,
+      sortDirection,
+      limit: 10,
+    };
 
-    // if (debouncedFilterTerm) {
-    //   paramsObj.find = debouncedFilterTerm;
-    // }
-
-    // const params = new URLSearchParams(paramsObj.find);
+    if (debouncedFilterTerm) {
+      paramsObj.find = debouncedFilterTerm;
+    }
+    console.log(paramsObj);
+    const params = new URLSearchParams(paramsObj.find);
 
     async function baseFetch() {
       let data = null;
@@ -54,18 +54,11 @@ export default function Home() {
       setIsLoading(true);
 
       try {
-        if (debouncedFilterTerm) {
-          resp = await fetch(
-            `${BASE_URL}?search=${debouncedFilterTerm}&limit=10`,
-          );
-        } else {
-          resp = await fetch(`${BASE_URL}?limit=10`);
-        }
-
+        resp = await fetch(`${BASE_URL}?${params}`);
         if (!resp?.ok) {
           throw new Error('Failed to fetch from backend');
         }
-        // setMessage('Fetch Success');
+
         data = await resp.json();
         console.log(data.recipes);
         if (!stopDoubles) {
@@ -91,7 +84,7 @@ export default function Home() {
       console.log('one render clean-up');
       stopDoubles = true;
     };
-  }, [debouncedFilterTerm]);
+  }, [debouncedFilterTerm, sortBy, sortDirection]);
 
   async function getMore() {
     const nextPageNumber = databasepageNumber + 1;
@@ -131,6 +124,12 @@ export default function Home() {
       <SearchInput
         searchTerm={searchTerm}
         onFilterChange={handleSearchChange}
+      />
+      <SortBy
+        onSortByChange={setSortBy}
+        onSortDirectionChange={setSortDirection}
+        sortBy={sortBy}
+        sortDirection={sortDirection}
       />
       <div
         style={{
