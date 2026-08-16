@@ -47,7 +47,7 @@ export default function AddRecipe() {
   }
 
   return (
-    <Box sx={{ mb: 2 }}>
+    <Box sx={{ padding: '2rem', margin: '2rem' }}>
       <h2>Add Recipe</h2>
       <form className={styles.formContainer} onSubmit={handleSubmit}>
         <Box sx={{ mb: 2 }}>
