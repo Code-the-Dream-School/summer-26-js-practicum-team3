@@ -23,7 +23,7 @@ export default function Home() {
   const [sortBy, setSortBy] = useState('' | 'calories');
   const [sortDirection, setSortDirection] = useState('' | 'asc');
 
-  //  const statusFilter = searchParams.get('status') || '1'; //<--This could be how we pick from our recipes and theirs. simple button or filter
+  //  const statusFilter = searchParams.get('user_id') || '1'; //<--This could be how we pick from our recipes and theirs. simple button or filter
   const debouncedFilterTerm = useDebounce(searchTerm, 500);
 
   useEffect(() => {
@@ -49,6 +49,7 @@ export default function Home() {
       //   headers: { 'X-CSRF-TOKEN': token },
       //   credentials: 'include',
       // };
+
       setError('');
       setIsLoading(true);
 
@@ -59,7 +60,7 @@ export default function Home() {
         }
 
         data = await resp.json();
-        console.log(data.recipes);
+
         if (!stopDoubles) {
           setRecipes(data.recipes);
           setPagination(data.pagination);
@@ -88,10 +89,11 @@ export default function Home() {
   async function getMore() {
     const nextPageNumber = databasepageNumber + 1;
     setDatabasePageNumber(nextPageNumber);
-    console.log('something', databasepageNumber);
+
     const nextSetOfRecipes = await paginationFetch(
       `${BASE_URL}?page=${nextPageNumber}&sortBy=${sortBy}&sortDirection=${sortDirection}&limit=10&find=${debouncedFilterTerm}`,
     );
+
     setRecipes((prev) => [...nextSetOfRecipes.recipes]);
     setPagination(nextSetOfRecipes.pagination);
     setCount(0);
