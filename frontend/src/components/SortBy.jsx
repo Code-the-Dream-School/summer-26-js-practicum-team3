@@ -15,6 +15,7 @@ export function SortBy({
         value={sortBy}
         onChange={(e) => onSortByChange(e.target.value)}
       >
+        <option value="">--Select Your Options--</option>
         <option value="calories">Calories</option>
         <option value="carbs">Carbs</option>
         <option value="fats">Fats</option>
@@ -29,6 +30,7 @@ export function SortBy({
         name="order"
         id="order"
       >
+        <option value="">--Select Which Direction--</option>
         <option value="asc">Ascending</option>
         <option value="desc">Descending</option>
       </select>
