@@ -70,3 +70,15 @@ async function shutdown(code = 0) {
 
 process.on('SIGINT', () => shutdown(0)); //Ctrl+c
 process.on('SIGTERM', () => shutdown(0));  // e.g. `docker stop`
+
+// Catches errors that happen outside a normal request (for example in a background job or a timer). 
+// Errors inside route handlers are already handled by Express and errorHandler,
+// this is just a backup for everything else, so the app doesn't crash with no logs.
+process.on('uncaughtException', (err) => {
+   console.error('Uncaught exception:', err);
+   shutdown(1);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('Unhandled rejection:', reason);
+  shutdown(1);
+});
