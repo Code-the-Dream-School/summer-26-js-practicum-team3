@@ -6,7 +6,7 @@ import { SortBy } from '../components/SortBy.jsx';
 import { SearchInput } from '../components/SearchInput.jsx';
 import useDebounce from '../utils/useDebounce.js';
 import { isValid } from '../utils/isValid.js';
-import { sanitizeInput } from '../utils/sanatize.js';
+import { sanitizeInput } from '../utils/sanitize.js';
 
 const BASE_URL = 'http://localhost:8080/api/v1/recipes/';
 
