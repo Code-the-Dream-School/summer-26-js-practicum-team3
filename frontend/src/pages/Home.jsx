@@ -20,8 +20,8 @@ export default function Home() {
   const [pagination, setPagination] = useState({});
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('' | 'calories');
-  const [sortDirection, setSortDirection] = useState('' | 'asc');
+  const [sortBy, setSortBy] = useState('');
+  const [sortDirection, setSortDirection] = useState('asc');
 
   //  const statusFilter = searchParams.get('user_id') || '1'; //<--This could be how we pick from our recipes and theirs. simple button or filter
   const debouncedFilterTerm = useDebounce(searchTerm, 500);
@@ -64,6 +64,7 @@ export default function Home() {
         if (!stopDoubles) {
           setRecipes(data.recipes);
           setPagination(data.pagination);
+          setCount(0);
         }
         setIsLoading(false);
       } catch (error) {
@@ -165,7 +166,7 @@ export default function Home() {
           next
         </button>
         {recipes.slice(count, count + 2).map((recipe, index) => (
-          <RecipeCard key={index} {...recipe} />
+          <RecipeCard key={recipe.id} {...recipe} />
         ))}
       </div>
     </main>
