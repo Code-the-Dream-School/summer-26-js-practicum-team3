@@ -3,7 +3,10 @@ import jwt from 'jsonwebtoken';
 import crypto from 'node:crypto';
 import util from 'util';
 import { StatusCodes } from 'http-status-codes';
-import { userSchema, loginSchema } from '../validations/joi.input.validations.js';
+import {
+  userSchema,
+  loginSchema,
+} from '../validations/joi.input.validations.js';
 
 const scrypt = util.promisify(crypto.scrypt);
 const SALT_BYTES = 16;
@@ -23,7 +26,7 @@ async function hashPassword(password) {
 }
 
 async function verifyPassword(password, password_hash) {
-  const [salt, key] = password_hash.split(':'); 
+  const [salt, key] = password_hash.split(':');
   const keyBuffer = Buffer.from(key, 'hex');
   const derivedKey = await scrypt(password, salt, KEY_LENGTH);
   if (keyBuffer.length !== derivedKey.length) {
@@ -83,7 +86,7 @@ const register = async (req, res) => {
   if (error) {
     return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
   }
-  
+
   const { email, password, name } = value;
 
   try {
@@ -154,7 +157,7 @@ const login = async (req, res) => {
     const user = await prisma.users.findUnique({ where: { email } });
     if (!user) {
       return res.status(StatusCodes.UNAUTHORIZED).json({
-        message: 'Invalid email or password'
+        message: 'Invalid email or password',
       });
     }
     const passwordMatches = await verifyPassword(password, user.password_hash);
@@ -168,13 +171,16 @@ const login = async (req, res) => {
       name: user.name,
       csrfToken,
     });
-  } catch(error) {
-    console.error('Login error - full object:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
-     return res
-       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-       .json({ message: 'Something went wrong, please try again' });
+  } catch (error) {
+    console.error(
+      'Login error - full object:',
+      JSON.stringify(error, Object.getOwnPropertyNames(error), 2),
+    );
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: 'Something went wrong, please try again' });
   }
-}
+};
 
 /**
  * @swagger
@@ -191,4 +197,48 @@ const logout = (req, res) => {
   return res.status(StatusCodes.OK).json({ message: 'Logged out' });
 };
 
-export { register, login, logout, hashPassword, verifyPassword };
+/**
+ * @swagger
+ * /auth/profile:
+ *   get:
+ *     summary: Get the current user's profile
+ *     description: "Retrieve the authenticated user's profile information."
+ *     responses:
+ *      200:
+ *       description: "Successfully retrieved user profile."
+ *      401:
+ *       description: "Unauthorized - user not authenticated."
+ *      500:
+ *       description: "Server error."
+ */
+const getProfile = async (req, res) => {
+  try {
+    const user = await prisma.users.findUnique({
+      where: { id: req.user.id },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        sex: true,
+        dob: true,
+        activity_level: true,
+        created_at: true,
+      },
+    });
+
+    if (!user) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: 'Error: User not found' });
+    }
+
+    return res.status(StatusCodes.OK).json(user);
+  } catch (error) {
+    console.error('Get profile error:', error);
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: 'Error: Server not responding' });
+  }
+};
+
+export { register, login, logout, getProfile, hashPassword, verifyPassword };
