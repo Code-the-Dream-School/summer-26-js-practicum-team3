@@ -26,13 +26,6 @@ function SignUpForm() {
   const passwordError = password.length > 0 && !isValidPassword(password);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!successMessage) return;
-
-    const timerId = setTimeout(() => navigate('/onboarding'), 3000);
-    return () => clearTimeout(timerId);
-  }, [successMessage, navigate]);
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
@@ -52,7 +45,7 @@ function SignUpForm() {
         }
         return;
       }
-      setSuccessMessage('Account created successfully!');
+      navigate('/onboarding');
     } catch (error) {
       setErrorMessage('Submission failed: A critical error occurred');
       console.error(error);
