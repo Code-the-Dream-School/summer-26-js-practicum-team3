@@ -1,7 +1,9 @@
 import { prisma } from '../db.js';
 import { StatusCodes } from 'http-status-codes';
-import { recipeSchema, patchRecipeSchema } from '../validations/joi.input.validations.js';
-
+import {
+  recipeSchema,
+  patchRecipeSchema,
+} from '../validations/joi.input.validations.js';
 
 /**
  * @swagger
@@ -49,7 +51,7 @@ import { recipeSchema, patchRecipeSchema } from '../validations/joi.input.valida
  */
 export async function getRecipes(req, res) {
   const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 9;
+  const limit = parseInt(req.query.limit) || 10;
   const skip = (page - 1) * limit;
 
   if (page < 0 || limit < 0) {
@@ -72,7 +74,7 @@ export async function getRecipes(req, res) {
 
   function getOrderBy(query) {
     const validSortFields = ['protein', 'carbs', 'fat', 'calories'];
-    const sortBy = query.sortBy || 'created_at';
+    const sortBy = query.sortBy || 'calories';
     const sortDirection = query.sortDirection === 'asc' ? 'asc' : 'desc';
 
     if (validSortFields.includes(sortBy)) {
@@ -81,7 +83,7 @@ export async function getRecipes(req, res) {
 
     return { created_at: sortDirection };
   }
-
+  console.log('This is the where clause aka search/sort: \n', whereClause);
   try {
     recipes = await prisma.recipes.findMany({
       where: whereClause,
@@ -302,7 +304,7 @@ export async function updateRecipe(req, res, next) {
       .json({ message: 'Validation Error', error: 'invalid id' });
     return;
   }
-  
+
   value.user_id = user_id;
 
   let updatedRecipe = null;
