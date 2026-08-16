@@ -100,8 +100,20 @@ export default function Home() {
     setCount(0);
   }
 
-  function prev() {
+  async function prev() {
     setCount((prev) => prev - 2);
+    if (count === 0 && databasepageNumber > 1) {
+      const nextPageNumber = databasepageNumber - 1;
+      setDatabasePageNumber(nextPageNumber);
+
+      const nextSetOfRecipes = await paginationFetch(
+        `${BASE_URL}?page=${nextPageNumber}&sortBy=${sortBy}&sortDirection=${sortDirection}&limit=10&find=${debouncedFilterTerm}`,
+      );
+
+      setRecipes((prev) => [...nextSetOfRecipes.recipes]);
+      setPagination(nextSetOfRecipes.pagination);
+      setCount(0);
+    }
   }
 
   function next() {
@@ -152,7 +164,7 @@ export default function Home() {
       >
         <button
           type="button"
-          disabled={count === 0 ? true : false}
+          disabled={count === 0 && databasepageNumber === 1}
           onClick={prev}
         >
           prev
