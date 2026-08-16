@@ -1,5 +1,5 @@
 /*eslint-disable */
-export default function SortBy({
+export function SortBy({
   sortBy,
   sortDirection,
   onSortByChange,
