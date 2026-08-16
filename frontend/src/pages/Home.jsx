@@ -1,4 +1,3 @@
-/*eslint-disable */
 import { RecipeCard } from '../components/RecipeCard.jsx';
 import { useEffect, useState } from 'react';
 import { paginationFetch } from '../utils/api-helper.js';
@@ -22,11 +21,11 @@ export default function Home() {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('' | 'calories');
-  const [sortDirection, setSortDirection] = useState('' | 'desc');
+  const [sortDirection, setSortDirection] = useState('' | 'asc');
 
   //  const statusFilter = searchParams.get('status') || '1'; //<--This could be how we pick from our recipes and theirs. simple button or filter
   const debouncedFilterTerm = useDebounce(searchTerm, 500);
-  console.log(debouncedFilterTerm);
+
   useEffect(() => {
     let stopDoubles = false;
 
@@ -39,8 +38,8 @@ export default function Home() {
     if (debouncedFilterTerm) {
       paramsObj.find = debouncedFilterTerm;
     }
-    console.log(paramsObj);
-    const params = new URLSearchParams(paramsObj.find);
+    console.log('ParamsObj', paramsObj);
+    const params = new URLSearchParams(paramsObj);
 
     async function baseFetch() {
       let data = null;
@@ -50,7 +49,7 @@ export default function Home() {
       //   headers: { 'X-CSRF-TOKEN': token },
       //   credentials: 'include',
       // };
-
+      setError('');
       setIsLoading(true);
 
       try {
@@ -67,15 +66,15 @@ export default function Home() {
         }
         setIsLoading(false);
       } catch (error) {
-        // if (
-        //   debouncedFilterTerm ||
-        //   sortBy !== initialTodoState.sortBy ||
-        //   sortDirection !== initialTodoState.sortDirection
-        // ) {
-        //   setError(`Search and Filter Error\n${error.message}`);
-        // } else {
-        setError(`Fetch Error\n${error.message}`);
-        // }
+        if (
+          debouncedFilterTerm ||
+          sortBy !== sortBy ||
+          sortDirection !== sortDirection
+        ) {
+          setError(`Search and Filter Error\n${error.message}`);
+        } else {
+          setError(`Fetch Error\n${error.message}`);
+        }
       }
     }
 
@@ -91,19 +90,21 @@ export default function Home() {
     setDatabasePageNumber(nextPageNumber);
     console.log('something', databasepageNumber);
     const nextSetOfRecipes = await paginationFetch(
-      `http://localhost:8080/api/v1/recipes/?page=${nextPageNumber}&limit=10&search=${debouncedFilterTerm}`,
+      `${BASE_URL}?page=${nextPageNumber}&sortBy=${sortBy}&sortDirection=${sortDirection}&limit=10&find=${debouncedFilterTerm}`,
     );
     setRecipes((prev) => [...nextSetOfRecipes.recipes]);
     setPagination(nextSetOfRecipes.pagination);
     setCount(0);
   }
+
   function prev() {
     setCount((prev) => prev - 2);
   }
+
   function next() {
     setCount((prev) => prev + 2);
-    {
-      count + 2 === 10 && getMore();
+    if (count + 2 === 10) {
+      getMore();
     }
   }
 
@@ -117,6 +118,13 @@ export default function Home() {
     setSearchTerm(newTerm);
   }
 
+  function handleChangeSortBy(newMacroSort) {
+    setSortBy(newMacroSort);
+  }
+  function handleChangeSortDirection(newSortDirection) {
+    setSortDirection(newSortDirection);
+  }
+
   return (
     <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
       {error && <p style={{ color: 'red' }}>{error}</p>}
@@ -126,8 +134,8 @@ export default function Home() {
         onFilterChange={handleSearchChange}
       />
       <SortBy
-        onSortByChange={setSortBy}
-        onSortDirectionChange={setSortDirection}
+        onSortByChange={handleChangeSortBy}
+        onSortDirectionChange={handleChangeSortDirection}
         sortBy={sortBy}
         sortDirection={sortDirection}
       />
