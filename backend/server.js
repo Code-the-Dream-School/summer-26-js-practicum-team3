@@ -30,6 +30,43 @@ async function checkDatabaseConnection() {
 // Otherwise the server could start taking requests while the check is still running.
 await checkDatabaseConnection();
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+
+server.on('error', (err) => {
+  if (err.code == 'EADDRINUSE') {
+     console.error(`Port ${PORT} is already in use.`);
+  } else {
+    console.error('Server error:', err)
+  }
+  process.exit(1);
+})
+
+// Shuts the server down safely when it's stoped (Ctrl+C, docker stop, etc).
+let isShuttingDown = false;
+async function shutdown(code = 0) {
+  if (isShuttingDown) return;
+  isShuttingDown = true;
+  console.log('Shutting down gracefully...');
+  try{
+    // server.close() only stops NEW connections - it waits for existing
+    // ones (including idle keep-alive sockets) to close on their own,
+    // which can hang forever if a client keeps a connection open.
+    // closeIdleConnections() forces those idle sockets shut immediately.
+    server.closeIdleConnections();
+    await new Promise((resolve) => server.close(resolve));
+    console.log('HTTP server closed.');
+    await prisma.$disconnect();
+    console.log('Prisma disconnected');
+  } catch (err) {
+     console.error('Error during shutdown:', err);
+     code = 1;
+  } finally {
+    console.log('Exiting process...');
+    process.exit(code);
+  }
+}
+
+process.on('SIGINT', () => shutdown(0)); //Ctrl+c
+process.on('SIGTERM', () => shutdown(0));  // e.g. `docker stop`
