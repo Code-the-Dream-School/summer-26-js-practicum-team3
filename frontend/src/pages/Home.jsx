@@ -15,9 +15,7 @@ export default function Home() {
   const [recipes, setRecipes] = useState([]);
   const [count, setCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState(null);
+  const [error, setError] = useState('');
 
   const [databasepageNumber, setDatabasePageNumber] = useState(1);
   const [pagination, setPagination] = useState({});
@@ -52,9 +50,11 @@ export default function Home() {
         headers: { 'X-CSRF-TOKEN': token },
         credentials: 'include',
       };
+
       setIsLoading(true);
+
       try {
-        const resp = await fetch(`${BASE_URL}${params}`, options);
+        const resp = await fetch(`${BASE_URL}?${params}`, options);
         if (!resp.ok) {
           throw new Error('Failed to fetch from backend');
         }
@@ -65,8 +65,17 @@ export default function Home() {
           setRecipes(data.recipes);
           setPagination(data.pagination);
         }
+        setIsLoading(false);
       } catch (error) {
-        setError(error.message);
+        if (
+          debouncedFilterTerm ||
+          sortBy !== initialTodoState.sortBy ||
+          sortDirection !== initialTodoState.sortDirection
+        ) {
+          setError(`Search and Filter Error\n${error.message}`);
+        } else {
+          setError(`Fetch Error\n${error.message}`);
+        }
       }
     }
 
@@ -111,7 +120,7 @@ export default function Home() {
   return (
     <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      {!error && <p>{message}</p>}
+      {isLoading && <p>Loading Recipes...</p>}
       <SearchInput
         searchTerm={searchTerm}
         onFilterChange={handleSearchChange}
