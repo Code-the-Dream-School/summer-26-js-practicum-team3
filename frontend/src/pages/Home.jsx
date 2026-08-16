@@ -9,9 +9,12 @@ import useDebounce from '../utils/useDebounce.js';
 import { isValid } from '../utils/isValid.js';
 import { sanitizeInput } from '../utils/sanatize.js';
 
+const BASE_URL = 'http://localhost:8080/api/v1/recipes/';
+
 export default function Home() {
   const [recipes, setRecipes] = useState([]);
   const [count, setCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [message, setMessage] = useState('');
   const [error, setError] = useState(null);
@@ -22,7 +25,7 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
 
   //  const statusFilter = searchParams.get('status') || '1'; //<--This could be how we pick from our recipes and theirs. simple button or filter
-  const debouncedFilterTerm = useDebounce(filterTerm, 500);
+  const debouncedFilterTerm = useDebounce(searchTerm, 500);
 
   useEffect(() => {
     let stopDoubles = false;
@@ -30,12 +33,28 @@ export default function Home() {
     //basic get req
     //we will need something that gets their macros values
     // to create a tailored search
+
+    const paramsObj = {
+      sortBy,
+      sortDirection,
+      limit: 10,
+    };
+    if (debouncedFilterTerm) {
+      paramsObj.find = debouncedFilterTerm;
+    }
+
+    const params = new URLSearchParams(paramsObj);
+
     async function baseFetch() {
       let data = null;
+
+      const options = {
+        headers: { 'X-CSRF-TOKEN': token },
+        credentials: 'include',
+      };
+      setIsLoading(true);
       try {
-        const resp = await fetch(
-          'http://localhost:8080/api/v1/recipes/?limit=10',
-        );
+        const resp = await fetch(`${BASE_URL}${params}`, options);
         if (!resp.ok) {
           throw new Error('Failed to fetch from backend');
         }
@@ -50,6 +69,7 @@ export default function Home() {
         setError(error.message);
       }
     }
+
     baseFetch();
     return () => {
       console.log('one render clean-up');
@@ -62,7 +82,7 @@ export default function Home() {
     setDatabasePageNumber(nextPageNumber);
     console.log('something', databasepageNumber);
     const nextSetOfRecipes = await paginationFetch(
-      `http://localhost:8080/api/v1/recipes/?page=${nextPageNumber}&limit=10`,
+      `http://localhost:8080/api/v1/recipes/?page=${nextPageNumber}&limit=10&search=${searchTerm}`,
     );
     setRecipes((prev) => [...nextSetOfRecipes.recipes]);
     setPagination(nextSetOfRecipes.pagination);
@@ -78,17 +98,14 @@ export default function Home() {
     }
   }
 
-  function handlefilterChange(newTerm) {
+  function handleSearchChange(newTerm) {
     if (isValid(newTerm)) {
       if (sanitizeInput(newTerm) === '') {
-        //error
         setError('Only non-malicous character');
         return;
       }
     }
-    //search returned
-    setSearchTerm;
-    // dispatch({ type: TODO_ACTIONS.SET_S_E_O, filterTerm: newTerm });
+    setSearchTerm(newTerm);
   }
 
   return (
@@ -97,7 +114,7 @@ export default function Home() {
       {!error && <p>{message}</p>}
       <SearchInput
         searchTerm={searchTerm}
-        onFilterChange={handleFilterChange}
+        onFilterChange={handleSearchChange}
       />
       <div
         style={{
