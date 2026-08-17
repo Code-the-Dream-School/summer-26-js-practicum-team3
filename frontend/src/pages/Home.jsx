@@ -10,7 +10,7 @@ export default function Home() {
   const [error, setError] = useState(null);
 
   const [databasepageNumber, setDatabasePageNumber] = useState(1);
-  const [pagination, setPagination] = useState({});
+  const [, setPagination] = useState({});
 
   useEffect(() => {
     let stopDoubles = false;
@@ -52,11 +52,11 @@ export default function Home() {
     const nextSetOfRecipes = await paginationFetch(
       `http://localhost:8080/api/v1/recipes/?page=${nextPageNumber}&limit=10`,
     );
-    setRecipes((prev) => [...nextSetOfRecipes.recipes]);
+    setRecipes(() => [...nextSetOfRecipes.recipes]);
     setPagination(nextSetOfRecipes.pagination);
     setCount(0);
   }
-  function prev() {
+  function previous() {
     setCount((prev) => prev - 2);
   }
   function next() {
@@ -80,7 +80,7 @@ export default function Home() {
         <button
           type="button"
           disabled={count === 0 ? true : false}
-          onClick={prev}
+          onClick={previous}
         >
           prev
         </button>
