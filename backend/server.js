@@ -5,7 +5,7 @@ import { DB_CONNECTION_ERROR_CODES } from './src/middleware/error-handler.middle
 const PORT = process.env.PORT || 8081;
 
 //Protects against: server coming up "healtly" while the DB is actually unreachable.
-// Prisma connects lazily by default, so without this, the pocess would only discover 
+// Prisma connects lazily by default, so without this, the process would only discover 
 // a broken DB on the first real request.
 async function checkDatabaseConnection() {
   try {
