@@ -5,8 +5,8 @@ import Joi from 'joi';
  * @prop {string} email - REQUIRED.
  * @prop {string} name - REQUIRED.
  * @prop {string} dob - Date Of Birth. allows ''|null
- * @prop {string} sex - matabalism. allows ''|null
- * @prop {string} activity_level - TBD. allows ''|null
+ * @prop {string} sex - one of male|female|prefer_not_to_say) . allows ''|null
+ * @prop {string} activity_level - one of sedentary|lightly_active|moderately_active|very_active. allows ''|null
  * @prop {string} password - REQUIRED. Password must be at least 8 characters
  *  long and include upper and lower case letters, a number, and a special
  *  character
@@ -16,9 +16,11 @@ const userSchema = Joi.object({
   name: Joi.string().trim().min(3).max(30).required(),
   dob: Joi.date().iso().allow('', null), //yyyy-mm-dd
   sex: Joi.string()
-    .valid('Male', 'Female', 'Prefer Not to Answer')
+    .valid('male', 'female', 'prefer_not_to_say')
     .allow('', null),
-  activity_level: Joi.string().min(3).max(50).allow('', null),
+  activity_level: Joi.string()
+    .valid('sedentary', 'lightly_active', 'moderately_active', 'very_active')
+    .allow('', null),
   password: Joi.string()
     .trim()
     .min(8)
@@ -94,14 +96,12 @@ const patchRecipeSchema = Joi.object({
 /**
  *
  * @typedef {object} nutritionGoalsSchema
- * @prop {number} user_id - REQUIRED. comes from Auth
  * @prop {number} - fat_target for tailored recipes
  * @prop {number} - calories_target for tailored recipes
  * @prop {number} - protein_target for tailored recipes
  * @prop {number} - carbs_target for tailored recipes
  */
 const nutritionGoalsSchema = Joi.object({
-  user_id: Joi.number().integer().required(),
   fat_target: Joi.number().precision(0).integer().min(0).allow(null),
   calories_target: Joi.number().precision(0).integer().min(0).allow(null),
   protein_target: Joi.number().precision(0).integer().min(0).allow(null),
