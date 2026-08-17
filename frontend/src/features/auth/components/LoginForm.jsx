@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { loginUser } from '../api/authApi';
 import { isValidEmail } from '../utils/validators';
 import { TextField, Button, Stack, Alert } from '@mui/material';
@@ -12,6 +13,7 @@ function LoginForm() {
   const isFormValid = isValidEmail(email) && password.length > 0;
   const emailError = email.length > 0 && !isValidEmail(email);
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -32,6 +34,7 @@ function LoginForm() {
         return;
       }
       login(response.data);
+      navigate('/daily-planner');
     } catch (error) {
       setErrorMessage('Submission failed: A critical error occurred');
       console.error(error);

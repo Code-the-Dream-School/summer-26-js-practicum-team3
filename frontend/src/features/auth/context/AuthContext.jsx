@@ -9,6 +9,7 @@ function AuthProvider({ children }) {
     setName(data.name);
     setCsrfToken(data.csrfToken);
   };
+  
   return (
     <AuthContext.Provider value={{ userName: name, csrfToken, login }}>
       {children}
