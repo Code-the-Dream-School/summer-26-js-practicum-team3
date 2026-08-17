@@ -8,7 +8,11 @@ import cookieParser from 'cookie-parser';
 import helloRoutes from './routes/hello.routes.js';
 import authRoutes from './routes/auth.routes.js';
 import RecipeRouter from './routes/recipe.routes.js';
+import UserRouter from './routes/user.routes.js';
+import NutritionGoalsRouter from './routes/nutritionGoals.routes.js';
 import SwaggerRouter from './routes/swagger-docs.routes.js';
+import notFound from './middleware/not-found.middleware.js';
+import errorHandler from './middleware/error-handler.middleware.js'
 
 const app = express();
 
@@ -29,12 +33,36 @@ app.use(express.json());
 app.use(morgan('dev'));
 app.use(cookieParser());
 
+if (process.env.NODE_ENV !== 'test') {
+  app.use((req, res, next) => {
+    console.log(req.method, req.path, req.query);
+    next();
+  });
+
+  app.use((req, res, next) => {
+    res.on('finish', () => {
+      console.log({
+        method: req.method,
+        path: req.path,
+        query: req.query,
+        status: res.statusCode,
+        headers: res.getHeaders(),
+      });
+    });
+    next();
+  });
+}
+
 // Routes
 app.use('/api/hello', helloRoutes);
-app.use('/api/auth', authRoutes);
+app.use('/api/v1/auth', authRoutes);
 
 //recipe routes
 app.use('/api/v1/recipes', RecipeRouter);
+
+// onboarding routes
+app.use('/api/v1/users', UserRouter);
+app.use('/api/v1/nutrition-goals', NutritionGoalsRouter);
 
 // swagger route
 // app.use('/swagger/v1/docs', SwaggerRouter);
@@ -44,4 +72,6 @@ app.get('/', (req, res) => {
   res.send('Backend API is running');
 });
 
+app.use(notFound);
+app.use(errorHandler);
 export default app;

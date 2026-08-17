@@ -3,10 +3,8 @@ import jwt from 'jsonwebtoken';
 import crypto from 'node:crypto';
 import util from 'util';
 import { StatusCodes } from 'http-status-codes';
-import {
-  userSchema,
-  loginSchema,
-} from '../validations/joi.input.validations.js';
+import { userSchema, loginSchema } from '../validations/joi.input.validations.js';
+import { ValidationError, ConflictError, UnauthorizedError } from '../errors/index.js';
 
 const scrypt = util.promisify(crypto.scrypt);
 const SALT_BYTES = 16;
@@ -84,35 +82,22 @@ const register = async (req, res) => {
     abortEarly: false,
   });
   if (error) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
+    throw new ValidationError(error.message);
   }
 
   const { email, password, name } = value;
 
-  try {
-    const existingUser = await prisma.users.findUnique({ where: { email } });
-    if (existingUser) {
-      return res
-        .status(StatusCodes.CONFLICT)
-        .json({ message: 'Email already registered' });
-    }
-    const password_hash = await hashPassword(password);
-
-    const user = await prisma.users.create({
-      data: { email, password_hash, name },
-    });
-
-    const csrfToken = setJwtCookie(req, res, user);
-    return res.status(StatusCodes.CREATED).json({ name: user.name, csrfToken });
-  } catch (error) {
-    console.error(
-      'Registration error - full object:',
-      JSON.stringify(error, Object.getOwnPropertyNames(error), 2),
-    );
-    return res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ message: 'Something went wrong, please try again' });
+  const existingUser = await prisma.users.findUnique({ where: { email } });
+  if (existingUser) {
+      throw new ConflictError('Email already registered');
   }
+  
+  const password_hash = await hashPassword(password);
+  const user = await prisma.users.create({
+    data: { email, password_hash, name },
+  });
+  const csrfToken = setJwtCookie(req, res, user);
+  return res.status(StatusCodes.CREATED).json({ name: user.name, csrfToken });
 };
 
 /**
@@ -149,38 +134,24 @@ const login = async (req, res) => {
     abortEarly: false,
   });
   if (error) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
+    throw new ValidationError(error.message);
   }
+  
   const { email, password } = value;
-
-  try {
-    const user = await prisma.users.findUnique({ where: { email } });
-    if (!user) {
-      return res.status(StatusCodes.UNAUTHORIZED).json({
-        message: 'Invalid email or password',
-      });
-    }
-    const passwordMatches = await verifyPassword(password, user.password_hash);
-    if (!passwordMatches) {
-      return res.status(StatusCodes.UNAUTHORIZED).json({
-        message: 'Invalid email or password',
-      });
-    }
-    const csrfToken = setJwtCookie(req, res, user);
-    return res.status(StatusCodes.OK).json({
-      name: user.name,
-      csrfToken,
-    });
-  } catch (error) {
-    console.error(
-      'Login error - full object:',
-      JSON.stringify(error, Object.getOwnPropertyNames(error), 2),
-    );
-    return res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ message: 'Something went wrong, please try again' });
+  const user = await prisma.users.findUnique({ where: { email } });
+  if (!user) {
+    throw new UnauthorizedError('Invalid email or password');
   }
-};
+  const passwordMatches = await verifyPassword(password, user.password_hash);
+  if (!passwordMatches) {
+    throw new UnauthorizedError('Invalid email or password');
+  }
+  const csrfToken = setJwtCookie(req, res, user);
+  return res.status(StatusCodes.OK).json({
+    name: user.name,
+    csrfToken,
+  });
+}
 
 /**
  * @swagger
