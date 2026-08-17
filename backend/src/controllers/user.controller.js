@@ -18,7 +18,8 @@ import { StatusCodes } from 'http-status-codes';
  *                 example: "1990-05-14"
  *               sex:
  *                 type: string
- *                 example: "Female"
+ *                 enum: [male, female, prefer_not_to_say]
+ *                 example: "male"
  *               activity_level:
  *                 type: string
  *                 example: "moderately_active"
@@ -32,7 +33,6 @@ export function updateOnboardingProfile(req, res) {
   const { dob = null, sex = null, activity_level = null } = req.body ?? {};
 
   return res.status(StatusCodes.OK).json({
-    id: req.user.id,
     dob,
     sex,
     activity_level,

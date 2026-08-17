@@ -104,12 +104,12 @@ describe('User Schema Validation', () => {
       email: 'something@email.com',
       password: 'Stephen@13',
       dob: '1990-05-15',
-      sex: 'Female',
+      sex: 'female',
     };
     const { value, error } = userSchema.validate(input);
     expect.assertions(2);
     expect(error).toBeUndefined();
-    expect(value.sex).toBe('Female');
+    expect(value.sex).toBe('female');
   });
 
   it('Failure: rejects an option not in the allowed list', () => {
@@ -124,11 +124,25 @@ describe('User Schema Validation', () => {
     expect.assertions(2);
     expect(error).toBeDefined();
     expect(error.message).toContain(
-      '"sex" must be one of [Male, Female, Prefer Not to Answer, , null]',
+      '"sex" must be one of [male, female, prefer_not_to_say, , null]',
     );
   });
 
-  it('Success: accepts a string within the length boundaries (3-50 chars)', () => {
+  it('Success: accepts one of the allowed activity_level values', () => {
+    const input = {
+      name: 'Buddy',
+      email: 'something@email.com',
+      password: 'Stephen@13',
+      dob: '1990-05-15',
+      activity_level: 'moderately_active',
+    };
+    const { value, error } = userSchema.validate(input);
+    expect.assertions(2);
+    expect(error).toBeUndefined();
+    expect(value.activity_level).toBe('moderately_active');
+  });
+
+  it('Failure: rejects an activity_level not in the allowed list', () => {
     const input = {
       name: 'Buddy',
       email: 'something@email.com',
@@ -136,25 +150,11 @@ describe('User Schema Validation', () => {
       dob: '1990-05-15',
       activity_level: 'Moderate',
     };
-    const { value, error } = userSchema.validate(input);
-    expect.assertions(2);
-    expect(error).toBeUndefined();
-    expect(value.activity_level).toBe('Moderate');
-  });
-
-  it('Failure: rejects a string that is too short (under 3 chars)', () => {
-    const input = {
-      name: 'Buddy',
-      email: 'something@email.com',
-      password: 'Stephen@13',
-      dob: '1990-05-15',
-      activity_level: 'Hi', // 2 characters
-    };
     const { error } = userSchema.validate(input);
     expect.assertions(2);
     expect(error).toBeDefined();
     expect(error.message).toContain(
-      'length must be at least 3 characters long',
+      '"activity_level" must be one of [sedentary, lightly_active, moderately_active, very_active, , null]',
     );
   });
 });
@@ -300,7 +300,6 @@ describe('Patch Recipe Schema Validation', () => {
 
 describe('Testing onboarding Joi validation', () => {
   const validGoal = {
-    user_id: 5,
     fat_target: 15.3,
     calories_target: 250,
     protein_target: 35.8,
@@ -309,9 +308,8 @@ describe('Testing onboarding Joi validation', () => {
   describe('Successful OnBoarding Validation Testing', () => {
     it('Successful goal object, rounding down fat', () => {
       const { value, error } = nutritionGoalsSchema.validate(validGoal);
-      expect.assertions(3);
+      expect.assertions(2);
       expect(error).toBeUndefined();
-      expect(value.user_id).toBe(5);
       expect(value.fat_target).toBe(15);
     });
 
@@ -330,12 +328,11 @@ describe('Testing onboarding Joi validation', () => {
     });
   });
   describe('Invalid OnBoarding Validation Tests', () => {
-    it('Throws Error for no user_id(required)', () => {
-      const { user_id, ...invalid } = validGoal;
-      const { value, error } = nutritionGoalsSchema.validate(invalid);
-      expect.assertions(2);
-      expect(value).not.toHaveProperty('user_id');
-      expect(error.details[0].message).toContain('user_id');
+    it('Throws Error when user_id is sent in the body (it must come from the JWT, not the client)', () => {
+      const invalid = { ...validGoal, user_id: 5 };
+      const { error } = nutritionGoalsSchema.validate(invalid);
+      expect.assertions(1);
+      expect(error.details[0].message).toContain('"user_id" is not allowed');
     });
 
     it('Throws Error for non-numeric string(carbs)', () => {

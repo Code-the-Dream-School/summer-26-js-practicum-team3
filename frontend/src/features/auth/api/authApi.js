@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:8080/api/auth';
+const BASE_URL = 'http://localhost:8080/api/v1/auth';
 
 async function registerUser(name, email, password) {
   try {

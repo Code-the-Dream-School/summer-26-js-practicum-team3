@@ -33,7 +33,7 @@ beforeEach(() => {
   process.env.JWT_SECRET = 'test-secret';
 });
 
-describe('POST /api/auth/register', () => {
+describe('POST /api/v1/auth/register', () => {
   const validBody = {
     email: 'anyemail@fake.com',
     // userSchema requires upper+lower+digit+special char, unlike the old
@@ -46,8 +46,7 @@ describe('POST /api/auth/register', () => {
     const req = { body: { ...validBody, email: 'not-an-email' } };
     const res = mockRes();
 
-    await register(req, res);
-    expect(res.status).toHaveBeenCalledWith(400);
+    await expect(register(req, res)).rejects.toMatchObject({ statusCode: 400 });
     // the fake DB should never be reached if validation fails first.
     expect(prisma.users.findUnique).not.toHaveBeenCalled();
   });
@@ -56,16 +55,14 @@ describe('POST /api/auth/register', () => {
     const req = { body: { ...validBody, password: 'short' } };
     const res = mockRes();
 
-    await register(req, res);
-    expect(res.status).toHaveBeenCalledWith(400);
+    await expect(register(req, res)).rejects.toMatchObject({ statusCode: 400 });
   });
 
   it('returns 400 when name is missing or empty', async () => {
     const req = { body: { ...validBody, name: '   ' } };
     const res = mockRes();
 
-    await register(req, res);
-    expect(res.status).toHaveBeenCalledWith(400);
+    await expect(register(req, res)).rejects.toMatchObject({ statusCode: 400 });
   });
 
   it('returns 409 when the email is already registered', async () => {
@@ -77,8 +74,7 @@ describe('POST /api/auth/register', () => {
     const req = { body: validBody };
     const res = mockRes();
 
-    await register(req, res);
-    expect(res.status).toHaveBeenCalledWith(409);
+    await expect(register(req, res)).rejects.toMatchObject({ statusCode: 409 });
     expect(prisma.users.create).not.toHaveBeenCalled();
   });
 
@@ -134,18 +130,18 @@ describe('POST /api/auth/register', () => {
     expect(cookieOptions.httpOnly).toBe(true);
   });
 
-  it('returns 500 when the database throws an unexpected error', async () => {
+  it('propagates unexpected database errors to the centralized error handler', async () => {
     // make the fake DB call reject, like a real database failure would.
+    // no .statusCode on this error -> errorHandler defaults it to 500.
     prisma.users.findUnique.mockRejectedValue(new Error('DB is down'));
     const req = { body: validBody };
     const res = mockRes();
 
-    await register(req, res);
-    expect(res.status).toHaveBeenCalledWith(500);
+    await expect(register(req, res)).rejects.toThrow('DB is down');
   });
 });
 
-describe('POST /api/auth/login', () => {
+describe('POST /api/v1/auth/login', () => {
   const password = 'super_long_password';
   let validHash;
 
@@ -158,24 +154,21 @@ describe('POST /api/auth/login', () => {
     const req = { body: { email: 'not-an-email', password } };
     const res = mockRes();
 
-    await login(req, res);
-    expect(res.status).toHaveBeenCalledWith(400);
+    await expect(login(req, res)).rejects.toMatchObject({ statusCode: 400 });
   });
 
   it('returns 400 when email is missing', async () => {
     const req = { body: { password } };
     const res = mockRes();
 
-    await login(req, res);
-    expect(res.status).toHaveBeenCalledWith(400);
+    await expect(login(req, res)).rejects.toMatchObject({ statusCode: 400 });
   });
 
   it('returns 400 when password is missing', async () => {
     const req = { body: { email: 'anyemail@fake.com' } };
     const res = mockRes();
 
-    await login(req, res);
-    expect(res.status).toHaveBeenCalledWith(400);
+    await expect(login(req, res)).rejects.toMatchObject({ statusCode: 400 });
   });
 
   it('returns 401 when no user is found for the email', async () => {
@@ -184,8 +177,7 @@ describe('POST /api/auth/login', () => {
     const req = { body: { email: 'a@b.com', password } };
     const res = mockRes();
 
-    await login(req, res);
-    expect(res.status).toHaveBeenCalledWith(401);
+    await expect(login(req, res)).rejects.toMatchObject({ statusCode: 401 });
   });
 
   it('returns 401 when the password is wrong', async () => {
@@ -198,8 +190,7 @@ describe('POST /api/auth/login', () => {
     const req = { body: { email: 'a@b.com', password: 'WrongPassword123' } };
     const res = mockRes();
 
-    await login(req, res);
-    expect(res.status).toHaveBeenCalledWith(401);
+    await expect(login(req, res)).rejects.toMatchObject({ statusCode: 401 });
   });
 
   it('returns 200 and the correct response shape on success', async () => {
@@ -247,17 +238,16 @@ describe('POST /api/auth/login', () => {
     expect(cookieOptions.httpOnly).toBe(true);
   });
 
-  it('returns 500 when the database throws an unexpected error', async () => {
+  it('propagates unexpected database errors to the centralized error handler', async () => {
     prisma.users.findUnique.mockRejectedValue(new Error('DB is down'));
     const req = { body: { email: 'a@b.com', password } };
     const res = mockRes();
 
-    await login(req, res);
-    expect(res.status).toHaveBeenCalledWith(500);
+    await expect(login(req, res)).rejects.toThrow('DB is down');
   });
 });
 
-describe('POST /api/auth/logout', () => {
+describe('POST /api/v1/auth/logout', () => {
   it('clears the "jwt" cookie with the matching cookie flags', () => {
     const req = { cookies: { jwt: 'some-valid-token' } };
     const res = mockRes();
