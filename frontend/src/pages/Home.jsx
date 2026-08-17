@@ -1,6 +1,6 @@
 import { RecipeCard } from '../components/RecipeCard.jsx';
 import { useEffect, useState } from 'react';
-import { paginationFetch } from '../utils/api-helper.js';
+import { baseFetch } from '../utils/api-helper.js';
 
 export default function Home() {
   const [recipes, setRecipes] = useState([]);
@@ -18,15 +18,12 @@ export default function Home() {
     //basic get req
     //we will need something that gets their macros values
     // to create a tailored search
-    async function baseFetch() {
+    async function initialFetch() {
       let data = null;
       try {
-        const resp = await fetch(
+        const resp = await baseFetch(
           'http://localhost:8080/api/v1/recipes/?limit=10',
         );
-        if (!resp.ok) {
-          throw new Error('Failed to fetch from backend');
-        }
         setMessage('Fetch Success');
         data = await resp.json();
         console.log(data.recipes);
@@ -38,7 +35,7 @@ export default function Home() {
         setError(error.message);
       }
     }
-    baseFetch();
+    initialFetch();
     return () => {
       console.log('one render clean-up');
       stopDoubles = true;
@@ -49,7 +46,7 @@ export default function Home() {
     const nextPageNumber = databasepageNumber + 1;
     setDatabasePageNumber(nextPageNumber);
     console.log('something', databasepageNumber);
-    const nextSetOfRecipes = await paginationFetch(
+    const nextSetOfRecipes = await baseFetch(
       `http://localhost:8080/api/v1/recipes/?page=${nextPageNumber}&limit=10`,
     );
     setRecipes(() => [...nextSetOfRecipes.recipes]);
