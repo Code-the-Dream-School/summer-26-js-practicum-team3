@@ -9,7 +9,7 @@ import { prisma } from '../../src/db.js';
 // actually reach it and come back out as the right HTTP response.
 process.env.JWT_SECRET = 'test-secret';
 
-describe('POST /api/auth/register - through the full Express stack', () => {
+describe('POST /api/v1/auth/register - through the full Express stack', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
   });
@@ -22,7 +22,7 @@ describe('POST /api/auth/register - through the full Express stack', () => {
 
   it('returns 400 with the Joi validation message for a bad body', async () => {
     const res = await request(app)
-      .post('/api/auth/register')
+      .post('/api/v1/auth/register')
       .send({ ...validBody, email: 'not-an-email' });
 
     expect(res.status).toBe(400);
@@ -35,7 +35,7 @@ describe('POST /api/auth/register - through the full Express stack', () => {
       email: validBody.email,
     });
 
-    const res = await request(app).post('/api/auth/register').send(validBody);
+    const res = await request(app).post('/api/v1/auth/register').send(validBody);
 
     expect(res.status).toBe(409);
     expect(res.body).toEqual({ message: 'Email already registered' });
@@ -45,7 +45,7 @@ describe('POST /api/auth/register - through the full Express stack', () => {
     vi.spyOn(prisma.users, 'findUnique').mockResolvedValue(null);
     vi.spyOn(prisma.users, 'create').mockResolvedValue({ id: 1, ...validBody });
 
-    const res = await request(app).post('/api/auth/register').send(validBody);
+    const res = await request(app).post('/api/v1/auth/register').send(validBody);
 
     expect(res.status).toBe(201);
     expect(res.body).toEqual({
@@ -60,7 +60,7 @@ describe('POST /api/auth/register - through the full Express stack', () => {
       new Error('Connection terminated unexpectedly'),
     );
 
-    const res = await request(app).post('/api/auth/register').send(validBody);
+    const res = await request(app).post('/api/v1/auth/register').send(validBody);
 
     expect(res.status).toBe(500);
     // errorHandler must not leak the raw error message to the client
@@ -68,14 +68,14 @@ describe('POST /api/auth/register - through the full Express stack', () => {
   });
 });
 
-describe('POST /api/auth/login - through the full Express stack', () => {
+describe('POST /api/v1/auth/login - through the full Express stack', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
   });
 
   it('returns 400 with the Joi validation message for a bad body', async () => {
     const res = await request(app)
-      .post('/api/auth/login')
+      .post('/api/v1/auth/login')
       .send({ email: 'not-an-email', password: 'whatever123' });
 
     expect(res.status).toBe(400);
@@ -86,7 +86,7 @@ describe('POST /api/auth/login - through the full Express stack', () => {
     vi.spyOn(prisma.users, 'findUnique').mockResolvedValue(null);
 
     const res = await request(app)
-      .post('/api/auth/login')
+      .post('/api/v1/auth/login')
       .send({ email: 'nobody@fake.com', password: 'whatever123' });
 
     expect(res.status).toBe(401);
@@ -99,7 +99,7 @@ describe('POST /api/auth/login - through the full Express stack', () => {
     );
 
     const res = await request(app)
-      .post('/api/auth/login')
+      .post('/api/v1/auth/login')
       .send({ email: 'nobody@fake.com', password: 'whatever123' });
 
     expect(res.status).toBe(500);
