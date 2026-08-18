@@ -1,5 +1,7 @@
-import { Link, Outlet } from 'react-router';
+import { Link, Outlet, useNavigate } from 'react-router';
 import { AppBar, Toolbar, Box, Button } from '@mui/material';
+import { useAuth } from '../features/auth/context/AuthContext';
+import { logoutUser } from '../features/auth/api/authApi';
 
 const BOTTOM_NAV_CONTAINER = {
   top: 'auto',
@@ -34,6 +36,14 @@ const APP_CONTAINER = {
 };
 
 export default function AppLayout() {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+    logoutUser();
+  };
   return (
     <Box sx={APP_CONTAINER}>
       {/* Top Navigation */}
@@ -48,7 +58,7 @@ export default function AppLayout() {
           <Button color="inherit" component={Link} to="/">
             Home
           </Button>
-          <Button color="inherit" component={Link} to="/logout">
+          <Button color="inherit" onClick={handleLogout}>
             Log Out
           </Button>
         </Toolbar>
