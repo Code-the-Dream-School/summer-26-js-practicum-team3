@@ -52,7 +52,7 @@ if (process.env.NODE_ENV !== 'test') {
   });
 }
 
-// Routes
+// auth routes
 app.use('/api/v1/auth', authRoutes);
 
 //recipe routes
