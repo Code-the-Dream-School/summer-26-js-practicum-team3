@@ -71,6 +71,7 @@ model users {
   created_at      DateTime?         @default(now()) @db.Timestamp(6)
   dob             DateTime?         @db.Date
   activity_level  String?           @db.VarChar
+  on_boarding     Boolean?          @default(false)
   daily_menus     daily_menus[]
   nutrition_goals nutrition_goals[]
   recipes         recipes[]
