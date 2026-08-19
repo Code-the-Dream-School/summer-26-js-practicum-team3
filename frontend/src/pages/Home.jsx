@@ -1,6 +1,6 @@
 import { RecipeCard } from '../components/RecipeCard.jsx';
 import { useEffect, useState } from 'react';
-import { paginationFetch } from '../utils/api-helper.js';
+import { baseFetch } from '../utils/api-helper.js';
 
 import { SortBy } from '../components/SortBy.jsx';
 import { SearchInput } from '../components/SearchInput.jsx';
@@ -17,7 +17,7 @@ export default function Home() {
   const [error, setError] = useState('');
 
   const [databasepageNumber, setDatabasePageNumber] = useState(1);
-  const [pagination, setPagination] = useState({});
+  const [, setPagination] = useState({});
 
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('');
@@ -41,7 +41,10 @@ export default function Home() {
     console.log('ParamsObj', paramsObj);
     const params = new URLSearchParams(paramsObj);
 
-    async function baseFetch() {
+    //basic get req
+    //we will need something that gets their macros values
+    // to create a tailored search
+    async function initialFetch() {
       let data = null;
       let resp = null;
 
@@ -54,7 +57,7 @@ export default function Home() {
       setIsLoading(true);
 
       try {
-        resp = await fetch(`${BASE_URL}?${params}`);
+        resp = await baseFetch(`${BASE_URL}?${params}`);
         if (!resp?.ok) {
           throw new Error('Failed to fetch from backend');
         }
@@ -79,8 +82,7 @@ export default function Home() {
         }
       }
     }
-
-    baseFetch();
+    initialFetch();
     return () => {
       console.log('one render clean-up');
       stopDoubles = true;
@@ -90,27 +92,25 @@ export default function Home() {
   async function getMore() {
     const nextPageNumber = databasepageNumber + 1;
     setDatabasePageNumber(nextPageNumber);
-
-    const nextSetOfRecipes = await paginationFetch(
-      `${BASE_URL}?page=${nextPageNumber}&sortBy=${sortBy}&sortDirection=${sortDirection}&limit=10&find=${debouncedFilterTerm}`,
+    console.log('something', databasepageNumber);
+    const nextSetOfRecipes = await baseFetch(
+      `http://localhost:8080/api/v1/recipes/?page=${nextPageNumber}&limit=10`,
     );
-
-    setRecipes((prev) => [...nextSetOfRecipes.recipes]);
+    setRecipes(() => [...nextSetOfRecipes.recipes]);
     setPagination(nextSetOfRecipes.pagination);
     setCount(0);
   }
-
-  async function prev() {
+  async function previous() {
     setCount((prev) => prev - 2);
     if (count === 0 && databasepageNumber > 1) {
       const nextPageNumber = databasepageNumber - 1;
       setDatabasePageNumber(nextPageNumber);
 
-      const nextSetOfRecipes = await paginationFetch(
+      const nextSetOfRecipes = await baseFetch(
         `${BASE_URL}?page=${nextPageNumber}&sortBy=${sortBy}&sortDirection=${sortDirection}&limit=10&find=${debouncedFilterTerm}`,
       );
 
-      setRecipes((prev) => [...nextSetOfRecipes.recipes]);
+      setRecipes(() => [...nextSetOfRecipes.recipes]);
       setPagination(nextSetOfRecipes.pagination);
       setCount(0);
     }
@@ -165,7 +165,7 @@ export default function Home() {
         <button
           type="button"
           disabled={count === 0 && databasepageNumber === 1}
-          onClick={prev}
+          onClick={previous}
         >
           prev
         </button>
@@ -177,7 +177,7 @@ export default function Home() {
         >
           next
         </button>
-        {recipes.slice(count, count + 2).map((recipe, index) => (
+        {recipes.slice(count, count + 2).map((recipe) => (
           <RecipeCard key={recipe.id} {...recipe} />
         ))}
       </div>
