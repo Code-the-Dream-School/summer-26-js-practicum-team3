@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router';
 import AppLayout from './pages/AppLayout';
 import DailyPlanner from './pages/DailyPlanner';
-import Goals from './pages/Goals';
 import AddRecipe from './pages/AddRecipe/AddRecipe';
 import Profile from './pages/Profile';
 import Home from './pages/Home';
