@@ -8,11 +8,12 @@ import {
 } from '@mui/material';
 const CONTAINER = {
   mx: 0,
-  maxWidth: '90%',
+  maxWidth: '100%',
   display: 'flex',
   flexDirection: 'row',
-  justifyContent: 'space-between',
+  justifyContent: 'space-around',
   alignItems: 'center',
+  mb: 2,
 };
 const DISPLAY_SIZE = { width: '40%', p: 0 };
 export function SortBy({
