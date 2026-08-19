@@ -86,9 +86,9 @@ export default function Home() {
   async function getMore() {
     const nextPageNumber = databasepageNumber + 1;
     setDatabasePageNumber(nextPageNumber);
-    console.log('something', databasepageNumber);
+
     const nextSetOfRecipes = await baseFetch(
-      `http://localhost:8080/api/v1/recipes/?page=${nextPageNumber}&limit=10`,
+      `${BASE_URL}?page=${nextPageNumber}&sortBy=${sortBy}&sortDirection=${sortDirection}&limit=10&find=${searchTerm}`,
     );
     setRecipes(() => [...nextSetOfRecipes.recipes]);
     setPagination(nextSetOfRecipes.pagination);
@@ -100,12 +100,12 @@ export default function Home() {
       const nextPageNumber = databasepageNumber - 1;
       setDatabasePageNumber(nextPageNumber);
 
-      const nextSetOfRecipes = await baseFetch(
-        `${BASE_URL}?page=${nextPageNumber}&sortBy=${sortBy}&sortDirection=${sortDirection}&limit=10&find=${debouncedFilterTerm}`,
+      const previousSetOfRecipes = await baseFetch(
+        `${BASE_URL}?page=${nextPageNumber}&sortBy=${sortBy}&sortDirection=${sortDirection}&limit=10&find=${searchTerm}`,
       );
 
-      setRecipes(() => [...nextSetOfRecipes.recipes]);
-      setPagination(nextSetOfRecipes.pagination);
+      setRecipes(() => [...previousSetOfRecipes.recipes]);
+      setPagination(previousSetOfRecipes.pagination);
       setCount(0);
     }
   }
