@@ -38,12 +38,8 @@ export default function Home() {
     if (debouncedFilterTerm) {
       paramsObj.find = debouncedFilterTerm;
     }
-    console.log('ParamsObj', paramsObj);
     const params = new URLSearchParams(paramsObj);
 
-    //basic get req
-    //we will need something that gets their macros values
-    // to create a tailored search
     async function initialFetch() {
       let data = null;
       let resp = null;
@@ -57,12 +53,10 @@ export default function Home() {
       setIsLoading(true);
 
       try {
+        console.log('ParamsObj', `${BASE_URL}?${params}`);
         resp = await baseFetch(`${BASE_URL}?${params}`);
-        if (!resp?.ok) {
-          throw new Error('Failed to fetch from backend');
-        }
 
-        data = await resp.json();
+        data = await resp;
 
         if (!stopDoubles) {
           setRecipes(data.recipes);
