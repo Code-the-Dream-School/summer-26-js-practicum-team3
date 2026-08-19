@@ -83,7 +83,7 @@ export async function getRecipes(req, res) {
 
     return { created_at: sortDirection };
   }
-  console.log('This is the where clause aka search/sort: \n', whereClause);
+
   try {
     recipes = await prisma.recipes.findMany({
       where: whereClause,
@@ -106,7 +106,6 @@ export async function getRecipes(req, res) {
 
     total = await prisma.recipes.count({ where: whereClause });
   } catch (error) {
-    console.log('Error in get catch', error);
     res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: 'Prisma Error', error: error.message });
