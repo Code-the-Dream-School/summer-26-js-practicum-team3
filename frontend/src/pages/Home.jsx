@@ -1,5 +1,7 @@
 import { RecipeCard } from '../components/RecipeCard.jsx';
 import { useEffect, useState } from 'react';
+import { Button, Box } from '@mui/material';
+
 import { baseFetch } from '../utils/api-helper.js';
 
 import { SortBy } from '../components/SortBy.jsx';
@@ -20,7 +22,7 @@ export default function Home() {
   const [, setPagination] = useState({});
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('');
+  const [sortBy, setSortBy] = useState('calories');
   const [sortDirection, setSortDirection] = useState('asc');
 
   //  const statusFilter = searchParams.get('user_id') || '1'; //<--This could be how we pick from our recipes and theirs. simple button or filter
@@ -33,6 +35,7 @@ export default function Home() {
       sortBy,
       sortDirection,
       limit: 10,
+      page: databasepageNumber,
     };
 
     if (debouncedFilterTerm) {
@@ -43,11 +46,6 @@ export default function Home() {
     async function initialFetch() {
       let data = null;
       let resp = null;
-
-      // const options = {
-      //   headers: { 'X-CSRF-TOKEN': token },
-      //   credentials: 'include',
-      // };
 
       setError('');
       setIsLoading(true);
@@ -81,31 +79,14 @@ export default function Home() {
       console.log('one render clean-up');
       stopDoubles = true;
     };
-  }, [debouncedFilterTerm, sortBy, sortDirection]);
+  }, [debouncedFilterTerm, sortBy, sortDirection, databasepageNumber]);
 
-  async function getMore() {
-    const nextPageNumber = databasepageNumber + 1;
-    setDatabasePageNumber(nextPageNumber);
-
-    const nextSetOfRecipes = await baseFetch(
-      `${BASE_URL}?page=${nextPageNumber}&sortBy=${sortBy}&sortDirection=${sortDirection}&limit=10&find=${searchTerm}`,
-    );
-    setRecipes(() => [...nextSetOfRecipes.recipes]);
-    setPagination(nextSetOfRecipes.pagination);
-    setCount(0);
-  }
   async function previous() {
     setCount((prev) => prev - 2);
     if (count === 0 && databasepageNumber > 1) {
-      const nextPageNumber = databasepageNumber - 1;
-      setDatabasePageNumber(nextPageNumber);
+      const previousPageNumber = databasepageNumber - 1;
+      setDatabasePageNumber(previousPageNumber);
 
-      const previousSetOfRecipes = await baseFetch(
-        `${BASE_URL}?page=${nextPageNumber}&sortBy=${sortBy}&sortDirection=${sortDirection}&limit=10&find=${searchTerm}`,
-      );
-
-      setRecipes(() => [...previousSetOfRecipes.recipes]);
-      setPagination(previousSetOfRecipes.pagination);
       setCount(0);
     }
   }
@@ -113,7 +94,7 @@ export default function Home() {
   function next() {
     setCount((prev) => prev + 2);
     if (count + 2 === 10) {
-      getMore();
+      setDatabasePageNumber((p) => p + 1);
     }
   }
 
@@ -133,11 +114,25 @@ export default function Home() {
   function handleChangeSortDirection(newSortDirection) {
     setSortDirection(newSortDirection);
   }
-
+  const MAIN_CONTAINER = {
+    // border: '2px solid red',
+    height: '79dvh',
+    padding: '8px',
+    fontFamily: 'sans-serif',
+    position: 'relative',
+  };
+  const RECIPE_NAV = {
+    position: 'absolute',
+    bottom: '10px',
+    left: 0,
+    right: 0,
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    px: 2,
+  };
   return (
-    <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {isLoading && <p>Loading Recipes...</p>}
+    <main style={MAIN_CONTAINER}>
       <SearchInput
         searchTerm={searchTerm}
         onFilterChange={handleSearchChange}
@@ -148,33 +143,32 @@ export default function Home() {
         sortBy={sortBy}
         sortDirection={sortDirection}
       />
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '1rem',
-        }}
-      >
-        <button
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {isLoading && <h1>Loading Recipes...</h1>}
+      {recipes.slice(count, count + 2).map((recipe) => (
+        <RecipeCard key={recipe.id} {...recipe} />
+      ))}
+      <Box sx={RECIPE_NAV}>
+        <Button
+          variant="contained"
+          size="large"
           type="button"
           disabled={count === 0 && databasepageNumber === 1}
           onClick={previous}
         >
           prev
-        </button>
+        </Button>
 
-        <button
+        <Button
+          variant="contained"
+          size="large"
           type="button"
-          disabled={count === 10 ? true : false}
+          disabled={count === 10}
           onClick={next}
         >
           next
-        </button>
-        {recipes.slice(count, count + 2).map((recipe) => (
-          <RecipeCard key={recipe.id} {...recipe} />
-        ))}
-      </div>
+        </Button>
+      </Box>
     </main>
   );
 }
