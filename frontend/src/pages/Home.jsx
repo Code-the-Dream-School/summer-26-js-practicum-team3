@@ -12,6 +12,24 @@ import { sanitizeInput } from '../utils/sanitize.js';
 
 const BASE_URL = 'http://localhost:8080/api/v1/recipes/';
 
+const MAIN_CONTAINER = {
+  // border: '2px solid red',
+  height: '79dvh',
+  padding: '8px',
+  fontFamily: 'sans-serif',
+  position: 'relative',
+};
+const RECIPE_NAV = {
+  position: 'absolute',
+  bottom: '10px',
+  left: 0,
+  right: 0,
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  px: 2,
+};
+
 export default function Home() {
   const [recipes, setRecipes] = useState([]);
   const [count, setCount] = useState(0);
@@ -86,8 +104,8 @@ export default function Home() {
     if (count === 0 && databasepageNumber > 1) {
       const previousPageNumber = databasepageNumber - 1;
       setDatabasePageNumber(previousPageNumber);
-
       setCount(0);
+      setRecipes([]);
     }
   }
 
@@ -114,23 +132,7 @@ export default function Home() {
   function handleChangeSortDirection(newSortDirection) {
     setSortDirection(newSortDirection);
   }
-  const MAIN_CONTAINER = {
-    // border: '2px solid red',
-    height: '79dvh',
-    padding: '8px',
-    fontFamily: 'sans-serif',
-    position: 'relative',
-  };
-  const RECIPE_NAV = {
-    position: 'absolute',
-    bottom: '10px',
-    left: 0,
-    right: 0,
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    px: 2,
-  };
+
   return (
     <main style={MAIN_CONTAINER}>
       <SearchInput
