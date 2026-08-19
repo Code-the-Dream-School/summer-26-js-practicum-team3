@@ -15,7 +15,9 @@ export default function DailyPlanner() {
 
   return (
     <>
-      <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
+      <div
+        style={{ margin: '2rem', padding: '2rem', fontFamily: 'sans-serif' }}
+      >
         <section className="container">
           <h2>Nutrition Tracker</h2>
           <table>

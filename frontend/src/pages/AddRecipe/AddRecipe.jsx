@@ -1,5 +1,6 @@
 import styles from './AddRecipe.module.css';
 import { useState } from 'react';
+import { Box, TextField } from '@mui/material';
 
 export default function AddRecipe() {
   const [formData, setFormData] = useState({
@@ -46,109 +47,127 @@ export default function AddRecipe() {
   }
 
   return (
-    <div className={styles.root}>
+    <Box sx={{ padding: '2rem', margin: '2rem' }}>
       <h2>Add Recipe</h2>
       <form className={styles.formContainer} onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="title">Recipe Name</label>
-          <input
+        <Box sx={{ mb: 2 }}>
+          <TextField
+            fullWidth
+            variant="outlined"
             id="title"
+            label="Title"
             type="text"
             name="title"
             value={formData.title}
             required
             onChange={handleChange}
           />
-        </div>
-        <div>
-          <label htmlFor="instructions">Instructions</label>
-          <input
+        </Box>
+        <Box sx={{ mb: 2 }}>
+          <TextField
+            fullWidth
+            variant="outlined"
             id="instructions"
+            label="Instructions"
             type="text"
             name="instructions"
+            value={formData.instructions}
             required
             onChange={handleChange}
-            value={formData.instructions}
           />
-        </div>
-        <div>
-          <label htmlFor="ingredients">Ingredients</label>
-          <input
+        </Box>
+        <Box sx={{ mb: 2 }}>
+          <TextField
+            fullWidth
+            variant="outlined"
             id="ingredients"
+            label="Ingredients"
             type="text"
             name="ingredients"
-            onChange={handleChange}
             value={formData.ingredients}
+            onChange={handleChange}
           />
-        </div>
-        <div>
-          <label htmlFor="total_time_minutes">Total cook time</label>
-          <input
+        </Box>
+        <Box sx={{ mb: 2 }}>
+          <TextField
+            fullWidth
+            variant="outlined"
             id="total_time_minutes"
+            label="Total cook time"
             type="text"
             name="total_time_minutes"
-            inputMode="numeric"
+            slotProps={{ htmlinput: { inputMode: 'numeric' } }}
             onChange={handleChange}
             value={formData.total_time_minutes}
           />
-        </div>
-        <div>
-          <label htmlFor="servings">Servings</label>
-          <input
+        </Box>
+        <Box sx={{ mb: 2 }}>
+          <TextField
+            fullWidth
+            variant="outlined"
             id="servings"
+            label="Servings"
             type="text"
             name="servings"
-            inputMode="numeric"
+            slotProps={{ htmlinput: { inputMode: 'numeric' } }}
             onChange={handleChange}
             value={formData.servings}
           />
-        </div>
-        <div>
-          <label htmlFor="calories">Calories</label>
-          <input
+        </Box>
+        <Box sx={{ mb: 2 }}>
+          <TextField
+            fullWidth
+            variant="outlined"
             id="calories"
+            label="Calories"
             type="text"
             name="calories"
-            inputMode="numeric"
+            slotProps={{ htmlinput: { inputMode: 'numeric' } }}
             onChange={handleChange}
             value={formData.calories}
           />
-        </div>
-        <div>
-          <label htmlFor="protein">Protein</label>
-          <input
+        </Box>
+        <Box sx={{ mb: 2 }}>
+          <TextField
+            fullWidth
+            variant="outlined"
             id="protein"
+            label="Protein"
             type="text"
             name="protein"
-            inputMode="numeric"
+            slotProps={{ htmlinput: { inputMode: 'numeric' } }}
             onChange={handleChange}
             value={formData.protein}
           />
-        </div>
-        <div>
-          <label htmlFor="carbs">Carbs</label>
-          <input
+        </Box>
+        <Box sx={{ mb: 2 }}>
+          <TextField
+            fullWidth
+            variant="outlined"
             id="carbs"
+            label="Carbs"
             type="text"
             name="carbs"
-            inputMode="numeric"
+            slotProps={{ htmlinput: { inputMode: 'numeric' } }}
             onChange={handleChange}
             value={formData.carbs}
           />
-        </div>
-        <div>
-          <label htmlFor="fat">fat</label>
-          <input
+        </Box>
+        <Box sx={{ mb: 2 }}>
+          <TextField
+            fullWidth
+            variant="outlined"
             id="fat"
+            label="Fat"
             type="text"
             name="fat"
-            inputMode="numeric"
+            slotProps={{ htmlinput: { inputMode: 'numeric' } }}
             onChange={handleChange}
             value={formData.fat}
           />
-        </div>
+        </Box>
         <button type="submit">Save</button>
       </form>
-    </div>
+    </Box>
   );
 }
