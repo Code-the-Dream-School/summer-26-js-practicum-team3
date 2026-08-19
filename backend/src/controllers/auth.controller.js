@@ -24,7 +24,7 @@ async function hashPassword(password) {
 }
 
 async function verifyPassword(password, password_hash) {
-  const [salt, key] = password_hash.split(':'); 
+  const [salt, key] = password_hash.split(':');
   const keyBuffer = Buffer.from(key, 'hex');
   const derivedKey = await scrypt(password, salt, KEY_LENGTH);
   if (keyBuffer.length !== derivedKey.length) {
@@ -84,7 +84,7 @@ const register = async (req, res) => {
   if (error) {
     throw new ValidationError(error.message);
   }
-  
+
   const { email, password, name } = value;
 
   const existingUser = await prisma.users.findUnique({ where: { email } });
@@ -168,4 +168,48 @@ const logout = (req, res) => {
   return res.status(StatusCodes.OK).json({ message: 'Logged out' });
 };
 
-export { register, login, logout, hashPassword, verifyPassword };
+/**
+ * @swagger
+ * /auth/profile:
+ *   get:
+ *     summary: Get the current user's profile
+ *     description: "Retrieve the authenticated user's profile information."
+ *     responses:
+ *      200:
+ *       description: "Successfully retrieved user profile."
+ *      401:
+ *       description: "Unauthorized - user not authenticated."
+ *      500:
+ *       description: "Server error."
+ */
+const getProfile = async (req, res) => {
+  try {
+    const user = await prisma.users.findUnique({
+      where: { id: req.user.id },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        sex: true,
+        dob: true,
+        activity_level: true,
+        created_at: true,
+      },
+    });
+
+    if (!user) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: 'Error: User not found' });
+    }
+
+    return res.status(StatusCodes.OK).json(user);
+  } catch (error) {
+    console.error('Get profile error:', error);
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: 'Error: Server not responding' });
+  }
+};
+
+export { register, login, logout, getProfile, hashPassword, verifyPassword };
