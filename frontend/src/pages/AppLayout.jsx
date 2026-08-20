@@ -1,16 +1,17 @@
-import { Link, Outlet, useLocation } from 'react-router';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router';
 import { AppBar, Toolbar, Box, Button } from '@mui/material';
 import { useAuth } from '../features/auth/context/AuthContext';
+import { logoutUser } from '../features/auth/api/authApi';
 //pull all matching in
 const NAV_BASICS_DEFINED = {
   maxHeight: '50px',
+  maxWidth: 'sm',
   left: 0,
   right: 0,
   margin: '0 auto',
   borderRadius: 1,
   borderTopLeftRadius: 0,
   borderTopRightRadius: 0,
-  maxWidth: 'sm',
 };
 const BOTTOM_NAV_CONTAINER = {
   top: 'auto',
@@ -33,8 +34,15 @@ const APP_CONTAINER = {
 };
 const JUSTIFY_AROUND = { justifyContent: 'space-around' };
 export default function AppLayout() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+    logoutUser();
+  };
   return (
     <Box sx={APP_CONTAINER}>
       {/* Top Navigation */}
@@ -55,7 +63,7 @@ export default function AppLayout() {
           <Button color="inherit" component={Link} to="/contact">
             Contact
           </Button>
-          <Button color="inherit" component={Link} to="/logout">
+          <Button color="inherit" onClick={handleLogout}>
             Log Out
           </Button>
         </Toolbar>
