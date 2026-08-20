@@ -7,6 +7,7 @@ import { baseFetch } from '../utils/api-helper.js';
 import { SortBy } from '../components/SortBy.jsx';
 import { SearchInput } from '../components/SearchInput.jsx';
 import { DailyProgressContainer } from '../features/dailyMenu/components/DailyProgressContainer.jsx';
+import { useHasCompletedOnboarding } from '../features/dailyMenu/useHasCompletedOnboarding.js';
 import useDebounce from '../utils/useDebounce.js';
 import { isValid } from '../utils/isValid.js';
 import { sanitizeInput } from '../utils/sanitize.js';
@@ -46,6 +47,7 @@ export default function Home() {
 
   //  const statusFilter = searchParams.get('user_id') || '1'; //<--This could be how we pick from our recipes and theirs. simple button or filter
   const debouncedFilterTerm = useDebounce(searchTerm, 500);
+  const hasCompletedOnboarding = useHasCompletedOnboarding();
 
   useEffect(() => {
     let stopDoubles = false;
@@ -136,7 +138,7 @@ export default function Home() {
 
   return (
     <main style={MAIN_CONTAINER}>
-      <DailyProgressContainer />
+      {hasCompletedOnboarding && <DailyProgressContainer />}
       <SearchInput
         searchTerm={searchTerm}
         onFilterChange={handleSearchChange}
