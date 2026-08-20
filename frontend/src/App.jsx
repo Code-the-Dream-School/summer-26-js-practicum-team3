@@ -4,6 +4,8 @@ import AppLayout from './pages/AppLayout';
 import DailyPlanner from './pages/DailyPlanner';
 import AddRecipe from './pages/AddRecipe/AddRecipe';
 import Profile from './pages/Profile';
+import About from './pages/About';
+
 import Home from './pages/Home';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
@@ -25,8 +27,10 @@ export default function App() {
           </Route>
           <Route index element={<Home />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/about" element={<About />} />
+          {/* <Route path="/contact" element={<Contact />} /> */}
           <Route path="/signup" element={<SignUp />} />
-          <Route path="*" element={<NotFound />} />
+          <Route path="/*" element={<NotFound />} />
         </Routes>
       </Router>
     </AuthProvider>
