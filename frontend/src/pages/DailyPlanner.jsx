@@ -6,6 +6,7 @@ import { baseFetch } from '../utils/api-helper.js';
 
 import { SortBy } from '../components/SortBy.jsx';
 import { SearchInput } from '../components/SearchInput.jsx';
+import { DailyProgressContainer } from '../features/dailyMenu/components/DailyProgressContainer.jsx';
 import useDebounce from '../utils/useDebounce.js';
 import { isValid } from '../utils/isValid.js';
 import { sanitizeInput } from '../utils/sanitize.js';
@@ -135,6 +136,7 @@ export default function Home() {
 
   return (
     <main style={MAIN_CONTAINER}>
+      <DailyProgressContainer />
       <SearchInput
         searchTerm={searchTerm}
         onFilterChange={handleSearchChange}
