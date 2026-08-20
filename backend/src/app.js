@@ -9,6 +9,7 @@ import authRoutes from './routes/auth.routes.js';
 import RecipeRouter from './routes/recipe.routes.js';
 import UserRouter from './routes/user.routes.js';
 import NutritionGoalsRouter from './routes/nutritionGoals.routes.js';
+import DailyMenuRouter from './routes/dailyMenu.routes.js';
 import SwaggerRouter from './routes/swagger-docs.routes.js';
 import notFound from './middleware/not-found.middleware.js';
 import errorHandler from './middleware/error-handler.middleware.js'
@@ -61,6 +62,9 @@ app.use('/api/v1/recipes', RecipeRouter);
 // onboarding routes
 app.use('/api/v1/users', UserRouter);
 app.use('/api/v1/nutrition-goals', NutritionGoalsRouter);
+
+// daily menu routes
+app.use('/api/v1/daily-menu', DailyMenuRouter);
 
 // swagger route
 // app.use('/swagger/v1/docs', SwaggerRouter);
