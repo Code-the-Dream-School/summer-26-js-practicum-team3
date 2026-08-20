@@ -1,16 +1,19 @@
+import { useState, useEffect } from 'react';
 import { Link, Outlet } from 'react-router';
 import { AppBar, Toolbar, Box, Button } from '@mui/material';
-
+const NAV_HEIGHT = { maxHeight: '50px' };
 const BOTTOM_NAV_CONTAINER = {
   top: 'auto',
   bottom: 0,
   maxWidth: 'sm',
+  // height: '1.2em',
   left: 0,
   right: 0,
   margin: '0 auto',
   borderRadius: 1,
   borderTopLeftRadius: 0,
   borderTopRightRadius: 0,
+  ...NAV_HEIGHT,
 };
 const TOP_NAV_CONTAINER = {
   top: 0,
@@ -22,6 +25,7 @@ const TOP_NAV_CONTAINER = {
   borderRadius: 1,
   borderBottomLeftRadius: 0,
   borderBottomRightRadius: 0,
+  ...NAV_HEIGHT,
 };
 const APP_CONTAINER = {
   pb: 7,
@@ -34,6 +38,21 @@ const APP_CONTAINER = {
 };
 
 export default function AppLayout() {
+  const [hideNavigation, setHideNavigation] = useState(false);
+  useEffect(() => {
+    function hideBottomNavigation() {
+      const allowedPages = [
+        '/daily-palnner',
+        '/add-recipe',
+        '/profile',
+        // '/onboarding',
+      ];
+      const currentPage = location.pathname;
+      console.log(hideNavigation);
+      setHideNavigation(() => !allowedPages.includes(currentPage));
+    }
+    hideBottomNavigation();
+  });
   return (
     <Box sx={APP_CONTAINER}>
       {/* Top Navigation */}
@@ -48,6 +67,12 @@ export default function AppLayout() {
           <Button color="inherit" component={Link} to="/">
             Home
           </Button>
+          <Button color="inherit" component={Link} to="/about">
+            About
+          </Button>
+          <Button color="inherit" component={Link} to="/contact">
+            Contact
+          </Button>
           <Button color="inherit" component={Link} to="/logout">
             Log Out
           </Button>
@@ -58,30 +83,31 @@ export default function AppLayout() {
       <main>
         <Outlet />
       </main>
-
       {/* Navigation pinned to bottom */}
-      <AppBar
-        position="fixed"
-        color="primary"
-        sx={BOTTOM_NAV_CONTAINER}
-        component="nav"
-        aria-label="Bottom navigation"
-      >
-        <Toolbar sx={{ justifyContent: 'space-around' }}>
-          <Button color="inherit" component={Link} to="/daily-planner">
-            Daily Planner
-          </Button>
-          <Button color="inherit" component={Link} to="/goals">
+      {hideNavigation && (
+        <AppBar
+          position="fixed"
+          color="primary"
+          sx={BOTTOM_NAV_CONTAINER}
+          component="nav"
+          aria-label="Bottom navigation"
+        >
+          <Toolbar sx={{ justifyContent: 'space-around' }}>
+            <Button color="inherit" component={Link} to="/daily-planner">
+              Daily Planner
+            </Button>
+            {/* <Button color="inherit" component={Link} to="/goals">
             Goals
-          </Button>
-          <Button color="inherit" component={Link} to="/add-recipe">
-            Add Recipe
-          </Button>
-          <Button color="inherit" component={Link} to="/profile">
-            Profile
-          </Button>
-        </Toolbar>
-      </AppBar>
+          </Button> */}
+            <Button color="inherit" component={Link} to="/add-recipe">
+              Add Recipe
+            </Button>
+            <Button color="inherit" component={Link} to="/profile">
+              Profile
+            </Button>
+          </Toolbar>
+        </AppBar>
+      )}
     </Box>
   );
 }
