@@ -30,7 +30,7 @@ const RECIPE_NAV = {
   px: 2,
 };
 
-export default function Home() {
+export default function DailyPlanner() {
   const [recipes, setRecipes] = useState([]);
   const [count, setCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
