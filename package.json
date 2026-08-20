@@ -28,6 +28,7 @@
     "prettier": "3.9.6"
   },
   "allowScripts": {
-    "dompurify@3.4.13": true
+    "dompurify@3.4.13": true,
+    "husky@9.1.7": true
   }
 }
