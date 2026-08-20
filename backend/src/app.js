@@ -5,7 +5,6 @@ import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import cookieParser from 'cookie-parser';
 
-import helloRoutes from './routes/hello.routes.js';
 import authRoutes from './routes/auth.routes.js';
 import RecipeRouter from './routes/recipe.routes.js';
 import UserRouter from './routes/user.routes.js';
@@ -54,7 +53,6 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 // Routes
-app.use('/api/hello', helloRoutes);
 app.use('/api/v1/auth', authRoutes);
 
 //recipe routes

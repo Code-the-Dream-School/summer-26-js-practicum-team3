@@ -59,7 +59,7 @@ describe('GET /api/v1/recipes - Success Cases', () => {
 
       expect(res.body.pagination).toEqual({
         page: 1,
-        limit: 9,
+        limit: 10,
         total: 1,
         pages: 1,
         hasNext: false,

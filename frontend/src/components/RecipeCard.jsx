@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useState } from 'react';
 import {
   Card,
@@ -29,7 +30,7 @@ const NO_OP = () => {};
  * @param {RecipeCardProps} props
  */
 
-const CARD_CONTAINER = { width: '75%', justifySelf: 'center' };
+const CARD_CONTAINER = { width: '65%', justifySelf: 'center', mb: 3 };
 const CARD_CONTEXT = {
   textAlign: 'left',
   p: '8px',
@@ -37,7 +38,6 @@ const CARD_CONTEXT = {
 };
 const FLEX_COLUMN = { display: 'flex', flexDirection: 'column' };
 const STACKED_TEXT = { textAlign: 'center', ...FLEX_COLUMN };
-const EXPANDED_CARD_TEXT = { textAlign: 'left', display: 'flex' };
 const TITLE_BUTTON_CONTAINER = {
   display: 'flex',
   justifyContent: 'space-between',
@@ -86,7 +86,7 @@ export function RecipeCard({
 
           <Box component="li" sx={STACKED_TEXT}>
             <Typography variant="h6" component="span" display="block">
-              {carbs}g
+              {carbs}
             </Typography>
             <Typography
               variant="caption"
@@ -99,7 +99,7 @@ export function RecipeCard({
 
           <Box component="li" sx={STACKED_TEXT}>
             <Typography variant="h6" component="span" display="block">
-              {fat}g
+              {fat}
             </Typography>
             <Typography
               variant="caption"
@@ -112,7 +112,7 @@ export function RecipeCard({
 
           <Box component="li" sx={STACKED_TEXT}>
             <Typography variant="h6" component="span" display="block">
-              {protein}g
+              {protein}
             </Typography>
             <Typography
               variant="caption"
