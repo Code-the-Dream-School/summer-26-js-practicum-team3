@@ -38,21 +38,17 @@ const APP_CONTAINER = {
 };
 
 export default function AppLayout() {
-  const [hideNavigation, setHideNavigation] = useState(false);
+  const [hideNavigation, setHideNavigation] = useState(true);
+
   useEffect(() => {
     function hideBottomNavigation() {
-      const allowedPages = [
-        '/daily-palnner',
-        '/add-recipe',
-        '/profile',
-        // '/onboarding',
-      ];
+      const allowedPages = ['/daily-planner', '/add-recipe', '/profile'];
       const currentPage = location.pathname;
-      console.log(hideNavigation);
-      setHideNavigation(() => !allowedPages.includes(currentPage));
+      setHideNavigation(() => allowedPages.includes(currentPage));
     }
+
     hideBottomNavigation();
-  });
+  }, [hideNavigation]);
   return (
     <Box sx={APP_CONTAINER}>
       {/* Top Navigation */}
