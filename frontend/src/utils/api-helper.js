@@ -3,6 +3,7 @@
  * @param {*} path
  * @param {*} options
  * @returns
+ * JSON object. - Do not have to "await" the returned object
  */
 export async function baseFetch(path, options) {
   let data = null;
