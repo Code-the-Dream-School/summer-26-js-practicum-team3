@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useState } from 'react';
 import {
   Card,
@@ -37,7 +38,6 @@ const CARD_CONTEXT = {
 };
 const FLEX_COLUMN = { display: 'flex', flexDirection: 'column' };
 const STACKED_TEXT = { textAlign: 'center', ...FLEX_COLUMN };
-const EXPANDED_CARD_TEXT = { textAlign: 'left', display: 'flex' };
 const TITLE_BUTTON_CONTAINER = {
   display: 'flex',
   justifyContent: 'space-between',
