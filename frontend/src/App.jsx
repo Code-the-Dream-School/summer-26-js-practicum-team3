@@ -20,16 +20,15 @@ export default function App() {
       <Router>
         <Routes>
           <Route path="/" element={<AppLayout />}>
+            <Route index element={<Home />} />
+            <Route path="signup" element={<SignUp />} />
+            <Route path="about" element={<About />} />
+            {/* <Route path="/contact" element={<Contact />} /> */}
+            <Route path="login" element={<Login />} />
+            <Route path="onboarding" element={<OnboardingPage />} />
             <Route path="daily-planner" element={<DailyPlanner />} />
             <Route path="add-recipe" element={<AddRecipe />} />
             <Route path="profile" element={<Profile />} />
-            <Route path="onboarding" element={<OnboardingPage />} />
-            <Route index element={<Home />} />
-            <Route path="login" element={<Login />} />
-            <Route path="home" element={<Home />} />
-            <Route path="about" element={<About />} />
-            {/* <Route path="/contact" element={<Contact />} /> */}
-            <Route path="signup" element={<SignUp />} />
             <Route path="*" element={<NotFound />} />
           </Route>
           <Route path="/*" element={<NotFound />} />
