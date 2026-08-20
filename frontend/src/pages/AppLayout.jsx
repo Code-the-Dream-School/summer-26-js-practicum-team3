@@ -1,31 +1,26 @@
-import { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation } from 'react-router';
 import { AppBar, Toolbar, Box, Button } from '@mui/material';
-const NAV_HEIGHT = { maxHeight: '50px' };
-const BOTTOM_NAV_CONTAINER = {
-  top: 'auto',
-  bottom: 0,
-  maxWidth: 'sm',
-  // height: '1.2em',
+import { useAuth } from '../features/auth/context/AuthContext';
+//pull all matching in
+const NAV_BASICS_DEFINED = {
+  maxHeight: '50px',
   left: 0,
   right: 0,
   margin: '0 auto',
   borderRadius: 1,
   borderTopLeftRadius: 0,
   borderTopRightRadius: 0,
-  ...NAV_HEIGHT,
+  maxWidth: 'sm',
+};
+const BOTTOM_NAV_CONTAINER = {
+  top: 'auto',
+  bottom: 0,
+  ...NAV_BASICS_DEFINED,
 };
 const TOP_NAV_CONTAINER = {
   top: 0,
   bottom: 'auto',
-  maxWidth: 'sm',
-  left: 0,
-  right: 0,
-  margin: '0 auto',
-  borderRadius: 1,
-  borderBottomLeftRadius: 0,
-  borderBottomRightRadius: 0,
-  ...NAV_HEIGHT,
+  ...NAV_BASICS_DEFINED,
 };
 const APP_CONTAINER = {
   pb: 7,
@@ -36,23 +31,10 @@ const APP_CONTAINER = {
   mt: '64px',
   minHeight: '78.5dvh',
 };
-
+const JUSTIFY_AROUND = { justifyContent: 'space-around' };
 export default function AppLayout() {
-  const [hideNavigation, setHideNavigation] = useState(true);
-
+  const { user } = useAuth();
   const location = useLocation();
-
-  useEffect(() => {
-    function hideBottomNavigation() {
-      const allowedPages = ['/daily-planner', '/add-recipe', '/profile'];
-      const currentPage = location.pathname;
-      console.log(currentPage);
-      setHideNavigation(() => allowedPages.includes(currentPage));
-    }
-
-    // console.log(hideNavigation);
-    hideBottomNavigation();
-  }, [hideNavigation, location.pathname]);
   return (
     <Box sx={APP_CONTAINER}>
       {/* Top Navigation */}
@@ -63,7 +45,7 @@ export default function AppLayout() {
         component="nav"
         aria-label="Top navigation"
       >
-        <Toolbar sx={{ justifyContent: 'space-around' }}>
+        <Toolbar sx={JUSTIFY_AROUND}>
           <Button color="inherit" component={Link} to="/">
             Home
           </Button>
@@ -84,7 +66,7 @@ export default function AppLayout() {
         <Outlet />
       </main>
       {/* Navigation pinned to bottom */}
-      {hideNavigation && (
+      {(user || location.pathname === '/onboarding') && (
         <AppBar
           position="fixed"
           color="primary"
@@ -92,7 +74,7 @@ export default function AppLayout() {
           component="nav"
           aria-label="Bottom navigation"
         >
-          <Toolbar sx={{ justifyContent: 'space-around' }}>
+          <Toolbar sx={JUSTIFY_AROUND}>
             <Button color="inherit" component={Link} to="/daily-planner">
               Daily Planner
             </Button>
