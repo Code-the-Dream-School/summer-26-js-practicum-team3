@@ -21,7 +21,7 @@ export default function App() {
             <Route path="daily-planner" element={<DailyPlanner />} />
             <Route path="add-recipe" element={<AddRecipe />} />
             <Route path="profile" element={<Profile />} />
-            <Route path="/onboarding" element={<OnboardingPage />} />
+            <Route path="onboarding" element={<OnboardingPage />} />
           </Route>
           <Route index element={<Home />} />
           <Route path="/login" element={<Login />} />
