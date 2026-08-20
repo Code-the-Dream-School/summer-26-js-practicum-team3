@@ -39,7 +39,18 @@ async function loginUser(email, password) {
     return { status: 0, data: { message: 'Unable to reach the server.' } };
   }
 }
-
+async function logoutUser() {
+  try {
+    const response = await fetch(`${BASE_URL}/logout`, {
+      method: 'POST',
+      credentials: 'include',
+    });
+    return { status: response.status };
+  } catch (err) {
+    console.error('logoutUser failed:', err);
+    return { status: 0, data: { message: 'Unable to reach the server.' } };
+  }
+}
 async function getProfile() {
   try {
     const response = await fetch(`${BASE_URL}/profile`, {
@@ -54,4 +65,4 @@ async function getProfile() {
     return { status: 0, data: { message: 'Unable to reach the server.' } };
   }
 }
-export { registerUser, loginUser, getProfile };
+export { registerUser, loginUser, logoutUser, getProfile };
