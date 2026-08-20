@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, Outlet } from 'react-router';
+import { Link, Outlet, useLocation } from 'react-router';
 import { AppBar, Toolbar, Box, Button } from '@mui/material';
 const NAV_HEIGHT = { maxHeight: '50px' };
 const BOTTOM_NAV_CONTAINER = {
@@ -40,15 +40,19 @@ const APP_CONTAINER = {
 export default function AppLayout() {
   const [hideNavigation, setHideNavigation] = useState(true);
 
+  const location = useLocation();
+
   useEffect(() => {
     function hideBottomNavigation() {
       const allowedPages = ['/daily-planner', '/add-recipe', '/profile'];
       const currentPage = location.pathname;
+      console.log(currentPage);
       setHideNavigation(() => allowedPages.includes(currentPage));
     }
 
+    // console.log(hideNavigation);
     hideBottomNavigation();
-  }, [hideNavigation]);
+  }, [hideNavigation, location.pathname]);
   return (
     <Box sx={APP_CONTAINER}>
       {/* Top Navigation */}

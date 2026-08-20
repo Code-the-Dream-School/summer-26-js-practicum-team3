@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+// import { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router';
 import AppLayout from './pages/AppLayout';
 import DailyPlanner from './pages/DailyPlanner';
@@ -24,12 +24,14 @@ export default function App() {
             <Route path="add-recipe" element={<AddRecipe />} />
             <Route path="profile" element={<Profile />} />
             <Route path="onboarding" element={<OnboardingPage />} />
+            <Route index element={<Home />} />
+            <Route path="login" element={<Login />} />
+            <Route path="home" element={<Home />} />
+            <Route path="about" element={<About />} />
+            {/* <Route path="/contact" element={<Contact />} /> */}
+            <Route path="signup" element={<SignUp />} />
+            <Route path="*" element={<NotFound />} />
           </Route>
-          <Route index element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/about" element={<About />} />
-          {/* <Route path="/contact" element={<Contact />} /> */}
-          <Route path="/signup" element={<SignUp />} />
           <Route path="/*" element={<NotFound />} />
         </Routes>
       </Router>
