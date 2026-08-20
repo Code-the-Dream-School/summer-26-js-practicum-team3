@@ -60,7 +60,7 @@ export default function Home() {
   const { csrfToken } = useAuth();
 
   useEffect(() => {
-    let stopDoubles = false;
+    let isRan = false;
 
     const paramsObj = {
       sortBy,
@@ -87,7 +87,7 @@ export default function Home() {
 
         data = await resp;
 
-        if (!stopDoubles) {
+        if (!isRan) {
           setRecipes(data.recipes);
           setPagination(data.pagination);
           setCount(0);
@@ -108,16 +108,16 @@ export default function Home() {
     initialFetch();
     return () => {
       console.log('one render clean-up');
-      stopDoubles = true;
+      isRan = true;
     };
   }, [debouncedFilterTerm, sortBy, sortDirection, databasepageNumber]);
 
   useEffect(() => {
-    let stopDoubles = false;
+    let isRan = false;
 
     async function loadDailyMenu() {
       const { status, data } = await getDailyMenu();
-      if (stopDoubles) return;
+      if (isRan) return;
       if (status === 200) {
         setDailyMenuRecipes(data.recipes);
       }
@@ -126,7 +126,7 @@ export default function Home() {
     loadDailyMenu();
 
     return () => {
-      stopDoubles = true;
+      isRan = true;
     };
   }, []);
 

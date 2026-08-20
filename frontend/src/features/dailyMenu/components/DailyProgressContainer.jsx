@@ -16,12 +16,12 @@ export function DailyProgressContainer({ recipes = [] }) {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    let stopDoubles = false;
+    let isRan = false;
 
     async function loadGoals() {
       const { status, data } = await getNutritionGoals();
 
-      if (stopDoubles) return;
+      if (isRan) return;
 
       if (status !== 200) {
         setError(data.message || 'Could not load your nutrition goals.');
@@ -34,7 +34,7 @@ export function DailyProgressContainer({ recipes = [] }) {
     loadGoals();
 
     return () => {
-      stopDoubles = true;
+      isRan = true;
     };
   }, []);
 
