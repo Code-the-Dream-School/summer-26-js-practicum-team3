@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router';
-import PublicPage from './pages/MainPage/PublicPage';
 import AppLayout from './pages/AppLayout';
 import DailyPlanner from './pages/DailyPlanner';
 import Goals from './pages/Goals';
@@ -19,8 +18,7 @@ export default function App() {
     <AuthProvider>
       <Router>
         <Routes>
-          <Route path="/" element={<PublicPage />}>
-            <Route index element={<Home />} />
+          <Route path="/" element={<Home />}>
             <Route path="/app" element={<AppLayout />} />
             <Route path="daily-planner" element={<DailyPlanner />} />
             <Route path="goals" element={<Goals />} />

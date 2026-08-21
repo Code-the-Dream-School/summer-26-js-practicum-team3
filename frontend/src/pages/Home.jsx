@@ -1,3 +1,4 @@
+import { Box, Stack, Typography, Breadcrumbs, Link } from '@mui/material';
 import { RecipeCard } from '../components/RecipeCard.jsx';
 import { useEffect, useState } from 'react';
 
@@ -78,25 +79,97 @@ export default function Home() {
       stopDoubles = true;
     };
   }, []);
+
+  useEffect(() => {
+    document.title = 'TodayEatz';
+  }, []);
   // TODO: dashboard
   // return <Dashboard />;
 
   return (
-    <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {!error && <p>{message}</p>}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '1rem',
-        }}
-      >
-        {recipes.map((recipe, index) => (
-          <RecipeCard key={index} {...recipe} />
-        ))}
-      </div>
-    </main>
+    <>
+      <Box component="body" sx={{ bgcolor: 'primary.main' }}>
+        <Box
+          component="header"
+          sx={{
+            p: { xs: 2, md: 4 },
+            textAlign: 'center',
+          }}
+        >
+          <Typography
+            component="h1"
+            variant="h1"
+            sx={{
+              mb: 2,
+              color: 'common.white',
+            }}
+          >
+            Welcome to TodayEatz!
+          </Typography>
+          <Typography
+            component="p"
+            variant="subtitle1"
+            sx={{ color: 'common.white' }}
+          >
+            This is a nutritional app for anyone. From here you can be able to
+            set your own healthy goals.
+          </Typography>
+          <Stack component="nav" direction="row" spacing={2} sx={{ mt: 3 }}>
+            <Link
+              href="/login"
+              underline="none"
+              color="inherit"
+              sx={{
+                minwidth: 120,
+                px: 2,
+                py: 1.5,
+                textAlign: 'center',
+                color: 'common.white',
+                border: 2,
+                borderColor: 'common.white',
+                borderRadius: 1,
+              }}
+            >
+              Log In
+            </Link>
+            <Link
+              href="/signup"
+              underline="none"
+              color="inherit"
+              sx={{
+                minwidth: 120,
+                px: 2,
+                py: 1.5,
+                textAlign: 'center',
+                color: 'common.white',
+                border: 2,
+                borderColor: 'common.white',
+                borderRadius: 1,
+              }}
+            >
+              Register
+            </Link>
+          </Stack>
+        </Box>
+        <Box component="main" sx={{ p: { xs: 2, md: 4 } }}>
+          {error && (
+            <Typography color="error" role="alert">
+              {error}
+            </Typography>
+          )}
+          {!error && <Typography>{message}</Typography>}
+          <Stack
+            spacing={2}
+            sx={{
+              mt: 2,
+            }}
+          >
+            {recipes.map((recipe, index) => (
+              <RecipeCard key={index} {...recipe} />
+            ))}
+          </Stack>
+        </Box>
+      </Box>
+    </>
   );
 }
