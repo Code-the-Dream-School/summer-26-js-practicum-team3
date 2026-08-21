@@ -34,9 +34,11 @@ const APP_CONTAINER = {
 };
 const JUSTIFY_AROUND = { justifyContent: 'space-around' };
 export default function AppLayout() {
-  const { user, logout } = useAuth();
+  const { userName, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+
+  console.log(userName);
 
   const handleLogout = () => {
     logout();
@@ -74,7 +76,7 @@ export default function AppLayout() {
         <Outlet />
       </main>
       {/* Navigation pinned to bottom */}
-      {user && location.pathname !== '/onboarding' && (
+      {userName && location.pathname !== '/onboarding' && (
         <AppBar
           position="fixed"
           color="primary"
