@@ -17,6 +17,8 @@ import useDebounce from '../utils/useDebounce.js';
 import { isValid } from '../utils/isValid.js';
 import { sanitizeInput } from '../utils/sanitize.js';
 
+import { OnboardingFlag } from '../components/OnboardingFlag.jsx';
+
 const MAX_DAILY_MEALS = 3;
 
 const BASE_URL = 'http://localhost:8080/api/v1/recipes/';
@@ -82,7 +84,6 @@ export default function DailyPlanner() {
       setIsLoading(true);
 
       try {
-        console.log('ParamsObj', `${BASE_URL}?${params}`);
         resp = await baseFetch(`${BASE_URL}?${params}`);
 
         data = await resp;
@@ -188,6 +189,7 @@ export default function DailyPlanner() {
       />
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {isLoading && <h1>Loading Recipes...</h1>}
+      {!hasCompletedOnboarding && <OnboardingFlag />}
       {recipes.slice(count, count + 2).map((recipe) => (
         <RecipeCard
           key={recipe.id}
