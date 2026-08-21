@@ -84,33 +84,26 @@ export async function getRecipes(req, res) {
     return { created_at: sortDirection };
   }
 
-  try {
-    recipes = await prisma.recipes.findMany({
-      where: whereClause,
-      select: {
-        id: true,
-        instructions: true,
-        ingredients: true,
-        total_time_minutes: true,
-        servings: true,
-        title: true,
-        calories: true,
-        fat: true,
-        protein: true,
-        carbs: true,
-      },
-      skip: skip,
-      take: limit,
-      orderBy: getOrderBy(req.query),
-    });
+  recipes = await prisma.recipes.findMany({
+    where: whereClause,
+    select: {
+      id: true,
+      instructions: true,
+      ingredients: true,
+      total_time_minutes: true,
+      servings: true,
+      title: true,
+      calories: true,
+      fat: true,
+      protein: true,
+      carbs: true,
+    },
+    skip: skip,
+    take: limit,
+    orderBy: getOrderBy(req.query),
+  });
 
-    total = await prisma.recipes.count({ where: whereClause });
-  } catch (error) {
-    res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: 'Prisma Error', error: error.message });
-    return;
-  }
+  total = await prisma.recipes.count({ where: whereClause });
 
   const pagination = {
     page,
@@ -197,30 +190,22 @@ export async function createRecipe(req, res) {
   value.user_id = req.user.id;
 
   let newRecipeCreated = null;
-  try {
-    newRecipeCreated = await prisma.recipes.create({
-      data: value,
-      select: {
-        id: true,
-        instructions: true,
-        ingredients: true,
-        total_time_minutes: true,
-        servings: true,
-        title: true,
-        calories: true,
-        fat: true,
-        protein: true,
-        carbs: true,
-      },
-    });
-  } catch (error) {
-    console.log('Create Recipe catch', error);
-    res.status(StatusCodes.BAD_REQUEST).json({
-      error: error.message,
-      message: 'Prisma Error',
-    });
-    return;
-  }
+
+  newRecipeCreated = await prisma.recipes.create({
+    data: value,
+    select: {
+      id: true,
+      instructions: true,
+      ingredients: true,
+      total_time_minutes: true,
+      servings: true,
+      title: true,
+      calories: true,
+      fat: true,
+      protein: true,
+      carbs: true,
+    },
+  });
 
   res.status(StatusCodes.CREATED).json(newRecipeCreated);
   return;
@@ -295,7 +280,6 @@ export async function updateRecipe(req, res, next) {
 
   const recipeIndex = parseInt(req.params?.id);
   const user_id = req.user.id;
-  // const user_id = 1;
 
   if ((recipeIndex < 0) | (user_id < 0)) {
     res
@@ -307,33 +291,26 @@ export async function updateRecipe(req, res, next) {
   value.user_id = user_id;
 
   let updatedRecipe = null;
-  try {
-    updatedRecipe = await prisma.recipes.update({
-      where: {
-        id: recipeIndex,
-        user_id: user_id,
-      },
-      data: value,
-      select: {
-        id: true,
-        instructions: true,
-        ingredients: true,
-        total_time_minutes: true,
-        servings: true,
-        title: true,
-        calories: true,
-        fat: true,
-        protein: true,
-        carbs: true,
-      },
-    });
-  } catch (error) {
-    console.log('Update Recipe Catch', error);
-    res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: 'Prisma Error', error: error.message });
-    return;
-  }
+
+  updatedRecipe = await prisma.recipes.update({
+    where: {
+      id: recipeIndex,
+      user_id: user_id,
+    },
+    data: value,
+    select: {
+      id: true,
+      instructions: true,
+      ingredients: true,
+      total_time_minutes: true,
+      servings: true,
+      title: true,
+      calories: true,
+      fat: true,
+      protein: true,
+      carbs: true,
+    },
+  });
 
   res.status(StatusCodes.OK).json(updatedRecipe);
   return;
@@ -367,7 +344,6 @@ export async function updateRecipe(req, res, next) {
 export async function deleteRecipe(req, res) {
   const recipeIndex = parseInt(req.params?.id);
   const user_id = req.user.id;
-  // const user_id = 1;
 
   if ((recipeIndex < 0) | (user_id < 0)) {
     res
@@ -376,33 +352,12 @@ export async function deleteRecipe(req, res) {
     return;
   }
 
-  try {
-    await prisma.recipes.delete({
-      where: {
-        id: recipeIndex,
-        user_id: user_id,
-      },
-    });
-  } catch (error) {
-    console.log('Update Recipe Catch', error);
-    res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: 'Prisma Error', error: error.message });
-    return;
-  }
+  await prisma.recipes.delete({
+    where: {
+      id: recipeIndex,
+      user_id: user_id,
+    },
+  });
 
   res.status(StatusCodes.NO_CONTENT).end();
 }
-
-const normalizeData = (reqBody) => {
-  const holder = {};
-  for (let propName in reqBody) {
-    const value = reqBody[propName];
-    if (isNaN(value)) {
-      holder[propName] = value.trim();
-    } else {
-      holder[propName] = Math.trunc(value);
-    }
-  }
-  return holder;
-};
