@@ -6,9 +6,18 @@ import { baseFetch } from '../utils/api-helper.js';
 
 import { SortBy } from '../components/SortBy.jsx';
 import { SearchInput } from '../components/SearchInput.jsx';
+import { DailyProgressContainer } from '../features/dailyMenu/components/DailyProgressContainer.jsx';
+import { useHasCompletedOnboarding } from '../features/dailyMenu/useHasCompletedOnboarding.js';
+import {
+  getDailyMenu,
+  addRecipeToDailyMenu,
+} from '../features/dailyMenu/api/dailyMenuApi.js';
+import { useAuth } from '../features/auth/context/AuthContext';
 import useDebounce from '../utils/useDebounce.js';
 import { isValid } from '../utils/isValid.js';
 import { sanitizeInput } from '../utils/sanitize.js';
+
+const MAX_DAILY_MEALS = 3;
 
 const BASE_URL = 'http://localhost:8080/api/v1/recipes/';
 
@@ -43,11 +52,15 @@ export default function DailyPlanner() {
   const [sortBy, setSortBy] = useState('calories');
   const [sortDirection, setSortDirection] = useState('asc');
 
+  const [dailyMenuRecipes, setDailyMenuRecipes] = useState([]);
+
   //  const statusFilter = searchParams.get('user_id') || '1'; //<--This could be how we pick from our recipes and theirs. simple button or filter
   const debouncedFilterTerm = useDebounce(searchTerm, 500);
+  const hasCompletedOnboarding = useHasCompletedOnboarding();
+  const { csrfToken } = useAuth();
 
   useEffect(() => {
-    let stopDoubles = false;
+    let isRan = false;
 
     const paramsObj = {
       sortBy,
@@ -74,7 +87,7 @@ export default function DailyPlanner() {
 
         data = await resp;
 
-        if (!stopDoubles) {
+        if (!isRan) {
           setRecipes(data.recipes);
           setPagination(data.pagination);
           setCount(0);
@@ -95,9 +108,34 @@ export default function DailyPlanner() {
     initialFetch();
     return () => {
       console.log('one render clean-up');
-      stopDoubles = true;
+      isRan = true;
     };
   }, [debouncedFilterTerm, sortBy, sortDirection, databasepageNumber]);
+
+  useEffect(() => {
+    let isRan = false;
+
+    async function loadDailyMenu() {
+      const { status, data } = await getDailyMenu();
+      if (isRan) return;
+      if (status === 200) {
+        setDailyMenuRecipes(data.recipes);
+      }
+    }
+
+    loadDailyMenu();
+
+    return () => {
+      isRan = true;
+    };
+  }, []);
+
+  async function handleAddToPlanner(recipeId) {
+    const { status, data } = await addRecipeToDailyMenu(recipeId, csrfToken);
+    if (status === 201) {
+      setDailyMenuRecipes((prev) => [...prev, data]);
+    }
+  }
 
   async function previous() {
     setCount((prev) => prev - 2);
@@ -135,6 +173,9 @@ export default function DailyPlanner() {
 
   return (
     <main style={MAIN_CONTAINER}>
+      {hasCompletedOnboarding && (
+        <DailyProgressContainer recipes={dailyMenuRecipes} />
+      )}
       <SearchInput
         searchTerm={searchTerm}
         onFilterChange={handleSearchChange}
@@ -148,7 +189,12 @@ export default function DailyPlanner() {
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {isLoading && <h1>Loading Recipes...</h1>}
       {recipes.slice(count, count + 2).map((recipe) => (
-        <RecipeCard key={recipe.id} {...recipe} />
+        <RecipeCard
+          key={recipe.id}
+          {...recipe}
+          handleAddToPlanner={handleAddToPlanner}
+          disabled={dailyMenuRecipes.length >= MAX_DAILY_MEALS}
+        />
       ))}
       <Box sx={RECIPE_NAV}>
         <Button
