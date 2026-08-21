@@ -1,9 +1,10 @@
-import { Link, Outlet } from 'react-router';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router';
 import { AppBar, Toolbar, Box, Button } from '@mui/material';
-
-const BOTTOM_NAV_CONTAINER = {
-  top: 'auto',
-  bottom: 0,
+import { useAuth } from '../features/auth/context/AuthContext';
+import { logoutUser } from '../features/auth/api/authApi';
+//pull all matching in
+const NAV_BASICS_DEFINED = {
+  maxHeight: '50px',
   maxWidth: 'sm',
   left: 0,
   right: 0,
@@ -12,16 +13,15 @@ const BOTTOM_NAV_CONTAINER = {
   borderTopLeftRadius: 0,
   borderTopRightRadius: 0,
 };
+const BOTTOM_NAV_CONTAINER = {
+  top: 'auto',
+  bottom: 0,
+  ...NAV_BASICS_DEFINED,
+};
 const TOP_NAV_CONTAINER = {
   top: 0,
   bottom: 'auto',
-  maxWidth: 'sm',
-  left: 0,
-  right: 0,
-  margin: '0 auto',
-  borderRadius: 1,
-  borderBottomLeftRadius: 0,
-  borderBottomRightRadius: 0,
+  ...NAV_BASICS_DEFINED,
 };
 const APP_CONTAINER = {
   pb: 7,
@@ -32,8 +32,17 @@ const APP_CONTAINER = {
   mt: '64px',
   minHeight: '78.5dvh',
 };
-
+const JUSTIFY_AROUND = { justifyContent: 'space-around' };
 export default function AppLayout() {
+  const { user, logout } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+    logoutUser();
+  };
   return (
     <Box sx={APP_CONTAINER}>
       {/* Top Navigation */}
@@ -44,11 +53,17 @@ export default function AppLayout() {
         component="nav"
         aria-label="Top navigation"
       >
-        <Toolbar sx={{ justifyContent: 'space-around' }}>
+        <Toolbar sx={JUSTIFY_AROUND}>
           <Button color="inherit" component={Link} to="/">
             Home
           </Button>
-          <Button color="inherit" component={Link} to="/logout">
+          <Button color="inherit" component={Link} to="/about">
+            About
+          </Button>
+          <Button color="inherit" component={Link} to="/contact">
+            Contact
+          </Button>
+          <Button color="inherit" onClick={handleLogout}>
             Log Out
           </Button>
         </Toolbar>
@@ -58,30 +73,31 @@ export default function AppLayout() {
       <main>
         <Outlet />
       </main>
-
       {/* Navigation pinned to bottom */}
-      <AppBar
-        position="fixed"
-        color="primary"
-        sx={BOTTOM_NAV_CONTAINER}
-        component="nav"
-        aria-label="Bottom navigation"
-      >
-        <Toolbar sx={{ justifyContent: 'space-around' }}>
-          <Button color="inherit" component={Link} to="/daily-planner">
-            Daily Planner
-          </Button>
-          <Button color="inherit" component={Link} to="/goals">
+      {user && location.pathname !== '/onboarding' && (
+        <AppBar
+          position="fixed"
+          color="primary"
+          sx={BOTTOM_NAV_CONTAINER}
+          component="nav"
+          aria-label="Bottom navigation"
+        >
+          <Toolbar sx={JUSTIFY_AROUND}>
+            <Button color="inherit" component={Link} to="/daily-planner">
+              Daily Planner
+            </Button>
+            {/* <Button color="inherit" component={Link} to="/goals">
             Goals
-          </Button>
-          <Button color="inherit" component={Link} to="/add-recipe">
-            Add Recipe
-          </Button>
-          <Button color="inherit" component={Link} to="/profile">
-            Profile
-          </Button>
-        </Toolbar>
-      </AppBar>
+          </Button> */}
+            <Button color="inherit" component={Link} to="/add-recipe">
+              Add Recipe
+            </Button>
+            <Button color="inherit" component={Link} to="/profile">
+              Profile
+            </Button>
+          </Toolbar>
+        </AppBar>
+      )}
     </Box>
   );
 }

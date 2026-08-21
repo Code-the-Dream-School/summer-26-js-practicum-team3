@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+// import { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router';
 import AppLayout from './pages/AppLayout';
 import DailyPlanner from './pages/DailyPlanner';
-import Goals from './pages/Goals';
 import AddRecipe from './pages/AddRecipe/AddRecipe';
 import Profile from './pages/Profile';
+import About from './pages/About';
+
 import Home from './pages/Home';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
@@ -21,14 +22,11 @@ export default function App() {
           <Route path="/" element={<Home />}>
             <Route path="/app" element={<AppLayout />} />
             <Route path="daily-planner" element={<DailyPlanner />} />
-            <Route path="goals" element={<Goals />} />
             <Route path="add-recipe" element={<AddRecipe />} />
             <Route path="profile" element={<Profile />} />
+            <Route path="*" element={<NotFound />} />
           </Route>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/onboarding" element={<OnboardingPage />} />
-          <Route path="*" element={<NotFound />} />
+          <Route path="/*" element={<NotFound />} />
         </Routes>
       </Router>
     </AuthProvider>
