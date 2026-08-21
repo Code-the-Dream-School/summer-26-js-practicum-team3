@@ -1,4 +1,3 @@
-import styles from './AddRecipe.module.css';
 import { useState } from 'react';
 import { Box, TextField } from '@mui/material';
 
@@ -49,7 +48,7 @@ export default function AddRecipe() {
   return (
     <Box sx={{ padding: '2rem', margin: '2rem' }}>
       <h2>Add Recipe</h2>
-      <form className={styles.formContainer} onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit}>
         <Box sx={{ mb: 2 }}>
           <TextField
             fullWidth
