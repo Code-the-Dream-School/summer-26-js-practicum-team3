@@ -108,4 +108,19 @@ const nutritionGoalsSchema = Joi.object({
   carbs_target: Joi.number().precision(0).integer().min(0).allow(null),
 });
 
-export { userSchema, loginSchema, recipeSchema, patchRecipeSchema, nutritionGoalsSchema };
+/**
+ * @typedef {object} dailyMenuRecipeSchema
+ * @prop {number} recipe_id - REQUIRED. Id of the recipe to add to today's daily menu.
+ */
+const dailyMenuRecipeSchema = Joi.object({
+  recipe_id: Joi.number().integer().positive().required(),
+});
+
+export {
+  userSchema,
+  loginSchema,
+  recipeSchema,
+  patchRecipeSchema,
+  nutritionGoalsSchema,
+  dailyMenuRecipeSchema,
+};

@@ -9,8 +9,13 @@ function AuthProvider({ children }) {
     setName(data.name);
     setCsrfToken(data.csrfToken);
   };
+
+  const logout = () => {
+    setName(null);
+    setCsrfToken(null);
+  };
   return (
-    <AuthContext.Provider value={{ userName: name, csrfToken, login }}>
+    <AuthContext.Provider value={{ userName: name, csrfToken, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
