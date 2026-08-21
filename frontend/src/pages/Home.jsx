@@ -79,15 +79,14 @@ export default function Home() {
       stopDoubles = true;
     };
   }, []);
-
-  useEffect(() => {
-    document.title = 'TodayEatz';
-  }, []);
   // TODO: dashboard
   // return <Dashboard />;
 
   return (
     <>
+      <Box component="head">
+        <Box component="title">TodayEatz</Box>
+      </Box>
       <Box component="body" sx={{ bgcolor: 'primary.main' }}>
         <Box
           component="header"
