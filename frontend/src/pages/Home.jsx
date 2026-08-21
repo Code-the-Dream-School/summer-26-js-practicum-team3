@@ -1,4 +1,4 @@
-import { Box, Stack, Typography, Breadcrumbs, Link } from '@mui/material';
+import { Box, Stack, Typography, Link } from '@mui/material';
 import { RecipeCard } from '../components/RecipeCard.jsx';
 import { useEffect, useState } from 'react';
 
