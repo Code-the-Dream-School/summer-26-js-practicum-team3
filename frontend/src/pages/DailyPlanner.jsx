@@ -11,6 +11,7 @@ import { useHasCompletedOnboarding } from '../features/dailyMenu/useHasCompleted
 import {
   getDailyMenu,
   addRecipeToDailyMenu,
+  removeRecipeFromDailyMenu,
 } from '../features/dailyMenu/api/dailyMenuApi.js';
 import { useAuth } from '../features/auth/context/AuthContext';
 import useDebounce from '../utils/useDebounce.js';
@@ -30,7 +31,7 @@ const MAIN_CONTAINER = {
 };
 const RECIPE_NAV = {
   position: 'absolute',
-  bottom: '10px',
+  bottom: '3px',
   left: 0,
   right: 0,
   display: 'flex',
@@ -137,6 +138,20 @@ export default function DailyPlanner() {
     }
   }
 
+  async function handleRemoveFromPlanner(dailyMenuRecipeId) {
+    const { status } = await removeRecipeFromDailyMenu(
+      dailyMenuRecipeId,
+      csrfToken,
+    );
+    if (status === 204) {
+      setDailyMenuRecipes((prev) =>
+        prev.filter(
+          (recipe) => recipe.daily_menu_recipe_id !== dailyMenuRecipeId,
+        ),
+      );
+    }
+  }
+
   async function previous() {
     setCount((prev) => prev - 2);
     if (count === 0 && databasepageNumber > 1) {
@@ -174,7 +189,10 @@ export default function DailyPlanner() {
   return (
     <main style={MAIN_CONTAINER}>
       {hasCompletedOnboarding && (
-        <DailyProgressContainer recipes={dailyMenuRecipes} />
+        <DailyProgressContainer
+          recipes={dailyMenuRecipes}
+          onRemoveRecipe={handleRemoveFromPlanner}
+        />
       )}
       <SearchInput
         searchTerm={searchTerm}

@@ -1,6 +1,13 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from 'react';
-import { Box, LinearProgress, Stack, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  LinearProgress,
+  Popover,
+  Stack,
+  Typography,
+} from '@mui/material';
 
 import { getNutritionGoals } from '../api/nutritionGoalsApi';
 
@@ -11,9 +18,16 @@ const MACROS = [
   { goalKey: 'protein_target', recipeKey: 'protein', label: 'Protein' },
 ];
 
-export function DailyProgressContainer({ recipes = [] }) {
+const NO_OP = () => {};
+
+export function DailyProgressContainer({
+  recipes = [],
+  onRemoveRecipe = NO_OP,
+}) {
   const [goals, setGoals] = useState(null);
   const [error, setError] = useState('');
+  const [anchorEl, setAnchorEl] = useState(null);
+  const isExpanded = Boolean(anchorEl);
 
   useEffect(() => {
     let isRan = false;
@@ -65,22 +79,88 @@ export function DailyProgressContainer({ recipes = [] }) {
 
   return (
     <Box sx={{ mb: 3 }}>
-      <Stack spacing={1.5}>
-        {MACROS.map(({ goalKey, recipeKey, label }) => {
-          const goal = Number(goals[goalKey]) || 0;
-          const total = totals[recipeKey] || 0;
-          const percent = goal > 0 ? Math.min((total / goal) * 100, 100) : 0;
+      <Box
+        role="button"
+        tabIndex={0}
+        aria-expanded={isExpanded}
+        onClick={(event) =>
+          setAnchorEl((prev) => (prev ? null : event.currentTarget))
+        }
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            setAnchorEl((prev) => (prev ? null : event.currentTarget));
+          }
+        }}
+        sx={{ cursor: 'pointer' }}
+      >
+        <Stack spacing={1.5}>
+          {MACROS.map(({ goalKey, recipeKey, label }) => {
+            const goal = Number(goals[goalKey]) || 0;
+            const total = totals[recipeKey] || 0;
+            const percent = goal > 0 ? Math.min((total / goal) * 100, 100) : 0;
 
-          return (
-            <Box key={goalKey}>
-              <Typography variant="body2">
-                {label}: {total} / {goal}
-              </Typography>
-              <LinearProgress variant="determinate" value={percent} />
-            </Box>
-          );
-        })}
-      </Stack>
+            return (
+              <Box key={goalKey}>
+                <Typography variant="body2">
+                  {label}: {total} / {goal}
+                </Typography>
+                <LinearProgress variant="determinate" value={percent} />
+              </Box>
+            );
+          })}
+        </Stack>
+      </Box>
+
+      <Popover
+        open={isExpanded}
+        anchorEl={anchorEl}
+        onClose={() => setAnchorEl(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+        slotProps={{ paper: { sx: { width: anchorEl?.offsetWidth, p: 1.5 } } }}
+      >
+        {recipes.length === 0 ? (
+          <Typography variant="body2" color="text.secondary">
+            No meals added yet.
+          </Typography>
+        ) : (
+          <Stack spacing={0}>
+            {recipes.slice(0, 3).map((recipe) => (
+              <Box
+                key={recipe.daily_menu_recipe_id}
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  gap: 1,
+                  py: 0.75,
+                  '&:not(:last-of-type)': {
+                    borderBottom: '1px solid',
+                    borderColor: 'divider',
+                  },
+                }}
+              >
+                <Box>
+                  <Typography variant="body2" fontWeight={600}>
+                    {recipe.title}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {recipe.calories} cal · {recipe.carbs}g carbs · {recipe.fat}
+                    g fat · {recipe.protein}g protein
+                  </Typography>
+                </Box>
+                <Button
+                  size="small"
+                  onClick={() => onRemoveRecipe(recipe.daily_menu_recipe_id)}
+                >
+                  Remove
+                </Button>
+              </Box>
+            ))}
+          </Stack>
+        )}
+      </Popover>
     </Box>
   );
 }
