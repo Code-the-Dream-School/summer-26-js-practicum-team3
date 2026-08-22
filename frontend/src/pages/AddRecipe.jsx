@@ -22,12 +22,10 @@ export default function AddRecipe() {
         body: JSON.stringify(formData),
       });
       if (response.ok) {
-        const data = await response.json();
-        console.log('confirm response', data);
         alert('Recipe saved successfully');
       }
     } catch (error) {
-      console.log('Sending created recipe to back', error);
+      console.log('Sending created recipe failed', error);
     }
   }
 
