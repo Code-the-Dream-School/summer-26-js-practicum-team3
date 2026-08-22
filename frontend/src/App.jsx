@@ -2,7 +2,7 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router';
 import AppLayout from './pages/AppLayout';
 import DailyPlanner from './pages/DailyPlanner';
-import AddRecipe from './pages/AddRecipe/AddRecipe';
+import AddRecipe from './pages/AddRecipe';
 import Profile from './pages/Profile';
 import About from './pages/About';
 

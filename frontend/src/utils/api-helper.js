@@ -3,6 +3,8 @@
  * @param {*} path
  * @param {*} options
  * @returns
+ * data = await res.json();
+ * return data;
  * JSON object. - Do not have to "await" the returned object
  */
 export async function baseFetch(path, options) {
