@@ -3,8 +3,8 @@ import { StatusCodes } from 'http-status-codes';
 import { dailyMenuRecipeSchema } from '../validations/joi.input.validations.js';
 import { ValidationError, NotFoundError } from '../errors/index.js';
 
-// Same field set recipe.controller.js already selects for /recipes, 
-// so a recipe looks the same whether it's coming from the catalog 
+// Same field set recipe.controller.js already selects for /recipes,
+// so a recipe looks the same whether it's coming from the catalog
 // or from a daily menu entry, we do not leak user_id/created_at.
 const RECIPE_SELECT = {
   id: true,
@@ -127,4 +127,49 @@ export async function addRecipeToDailyMenu(req, res) {
     daily_menu_recipe_id: dailyMenuRecipe.id,
     ...dailyMenuRecipe.recipes,
   });
+}
+
+/**
+ * @swagger
+ * /v1/daily-menu/recipes/{id}:
+ *   delete:
+ *     summary: Remove a recipe from the user's current daily menu
+ *     description: "Removes one recipe assignment from today's daily menu selections."
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: "The daily_menu_recipe id (not the recipe id) to remove."
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       204:
+ *         description: "The recipe was removed from the daily menu."
+ *       400:
+ *         description: "Invalid id."
+ *       401:
+ *         description: "No user is authenticated."
+ *       404:
+ *         description: "No matching daily menu recipe found for this user."
+ */
+export async function removeRecipeFromDailyMenu(req, res) {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || id <= 0) {
+    throw new ValidationError('Invalid daily menu recipe id');
+  }
+
+  const dailyMenuRecipe = await prisma.daily_menu_recipes.findUnique({
+    where: { id },
+    include: { daily_menus: { select: { user_id: true } } },
+  });
+
+  // Same 404 whether the row doesn't exist or belongs to another user -
+  // don't leak which one it is.
+  if (!dailyMenuRecipe || dailyMenuRecipe.daily_menus.user_id !== req.user.id) {
+    throw new NotFoundError('Daily menu recipe not found');
+  }
+
+  await prisma.daily_menu_recipes.delete({ where: { id } });
+
+  return res.status(StatusCodes.NO_CONTENT).end();
 }
