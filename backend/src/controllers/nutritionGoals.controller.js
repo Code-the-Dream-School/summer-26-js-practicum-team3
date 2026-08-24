@@ -1,6 +1,8 @@
 import { StatusCodes } from 'http-status-codes';
+import { prisma } from '../db.js';
 import { nutritionGoalsSchema } from '../validations/joi.input.validations.js';
 import { ValidationError } from '../errors/index.js';
+
 
 /**
  * @swagger
@@ -35,7 +37,7 @@ import { ValidationError } from '../errors/index.js';
  *       401:
  *         description: "No user is authenticated."
  */
-export function createNutritionGoals(req, res) {
+export async function createNutritionGoals(req, res) {
   const { error, value } = nutritionGoalsSchema.validate(req.body ?? {}, {
     abortEarly: false,
   });
@@ -43,19 +45,34 @@ export function createNutritionGoals(req, res) {
     throw new ValidationError(error.message);
   }
 
-  const {
-    calories_target = null,
-    protein_target = null,
-    fat_target = null,
-    carbs_target = null,
-  } = value;
-
+  const updatedUser = await prisma.users.update({
+    where: { id: req.user.id }, // assumes jwtMiddleware sets req.user
+    data: {
+      nutrition_goals: {
+        create: {
+          calories_target: value.calories_target,
+          protein_target: value.protein_target,
+          fat_target: value.fat_target,
+          carbs_target: value.carbs_target,
+        },
+      },
+    },
+    include: {
+      nutrition_goals: {
+        orderBy: { id: 'desc' },
+        take: 1,
+      },
+    },
+  });
+ 
+  const goal = updatedUser.nutrition_goals[0];
+ 
   return res.status(StatusCodes.CREATED).json({
-    id: null,
-    calories_target,
-    protein_target,
-    fat_target,
-    carbs_target,
+    id: goal.id,
+    calories_target: goal.calories_target,
+    protein_target: goal.protein_target,
+    fat_target: goal.fat_target,
+    carbs_target: goal.carbs_target,
   });
 }
 
