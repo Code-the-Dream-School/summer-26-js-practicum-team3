@@ -1,0 +1,15 @@
+import { Router } from 'express';
+import {
+  getDailyMenu,
+  addRecipeToDailyMenu,
+} from '../controllers/dailyMenu.controller.js';
+import jwtMiddleware from '../middleware/jwt.middleware.js';
+
+const router = Router();
+
+// GET /api/v1/daily-menu
+router.get('/', jwtMiddleware, getDailyMenu);
+// POST /api/v1/daily-menu
+router.post('/', jwtMiddleware, addRecipeToDailyMenu);
+
+export default router;

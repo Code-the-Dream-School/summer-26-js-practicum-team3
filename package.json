@@ -14,6 +14,9 @@
     "format:frontend": "npm run format --workspace=frontend",
     "format:backend": "npm run format --workspace=backend",
     "format": "concurrently \"npm:format:*\"",
+    "lint:frontend": "npm run lint --workspace=frontend",
+    "lint:backend": "npm run lint --workspace=backend",
+    "lint": "concurrently \"npm:lint:*\"",
     "init-env": "cp -n backend/.env.example backend/.env && cp -n frontend/.env.example frontend/.env",
     "db:generate": "npm run --workspace=backend db:generate",
     "db:pull": "npm run --workspace=backend db:pull",
@@ -28,6 +31,7 @@
     "prettier": "3.9.6"
   },
   "allowScripts": {
-    "dompurify@3.4.13": true
+    "dompurify@3.4.13": true,
+    "husky@9.1.7": true
   }
 }
