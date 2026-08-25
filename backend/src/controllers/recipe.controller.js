@@ -60,7 +60,10 @@ export async function getRecipes(req, res) {
       .json({ message: 'Invalid page number', error: 'Improper Paging' });
     return;
   }
-
+  const macros = req.query.macros;
+  console.log('On the back end');
+  console.log(macros);
+  console.log('---------------');
   const whereClause = {};
 
   if (req.query.find) {
@@ -119,7 +122,6 @@ export async function getRecipes(req, res) {
       error: 'No recipes could be found',
       message: 'No recipes meet the search criteria',
     });
-    return;
   }
 
   res.status(StatusCodes.OK).json({ recipes, pagination });
@@ -270,7 +272,7 @@ export async function createRecipe(req, res) {
  *       400:
  *         description: "Validation error or database connection issue."
  */
-export async function updateRecipe(req, res, next) {
+export async function updateRecipe(req, res) {
   const { error, value } = patchRecipeSchema.validate(req.body ?? {}, {
     abortEarly: false,
   });

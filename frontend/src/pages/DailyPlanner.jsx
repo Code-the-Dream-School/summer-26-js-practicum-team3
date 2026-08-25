@@ -13,9 +13,11 @@ import {
   addRecipeToDailyMenu,
 } from '../features/dailyMenu/api/dailyMenuApi.js';
 import { useAuth } from '../features/auth/context/AuthContext';
-import useDebounce from '../utils/useDebounce.js';
+import useDebounce from '../utils/customHooks/useDebounce.js';
 import { isValid } from '../utils/isValid.js';
 import { sanitizeInput } from '../utils/sanitize.js';
+
+import { useNutritionalGoals } from '../utils/customHooks/useNutritionGoals.js'; //<---
 
 const MAX_DAILY_MEALS = 3;
 
@@ -57,6 +59,8 @@ export default function DailyPlanner() {
   //  const statusFilter = searchParams.get('user_id') || '1'; //<--This could be how we pick from our recipes and theirs. simple button or filter
   const debouncedFilterTerm = useDebounce(searchTerm, 500);
   const hasCompletedOnboarding = useHasCompletedOnboarding();
+  const getNutritionGoals = useNutritionalGoals(); //<-----
+
   const { csrfToken } = useAuth();
 
   useEffect(() => {
@@ -72,6 +76,19 @@ export default function DailyPlanner() {
     if (debouncedFilterTerm) {
       paramsObj.find = debouncedFilterTerm;
     }
+    if (getNutritionGoals) {
+      console.log(getNutritionGoals);
+      console.log('-------------');
+      paramsObj.macros = getNutritionGoals;
+    }
+    /**
+     * we need nutrition goal info-> custom hook
+     * assign values to paramsObj.macros={}
+     * send to backend, values stick until they change them in profile
+     * future feature, add ability to change macros in search with default
+     * values always being their goals from profile
+     */
+
     const params = new URLSearchParams(paramsObj);
 
     async function initialFetch() {
@@ -110,7 +127,13 @@ export default function DailyPlanner() {
       console.log('one render clean-up');
       isRan = true;
     };
-  }, [debouncedFilterTerm, sortBy, sortDirection, databasepageNumber]);
+  }, [
+    debouncedFilterTerm,
+    sortBy,
+    sortDirection,
+    databasepageNumber,
+    getNutritionGoals,
+  ]);
 
   useEffect(() => {
     let isRan = false;
