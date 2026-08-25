@@ -12,7 +12,7 @@ import NutritionGoalsRouter from './routes/nutritionGoals.routes.js';
 import DailyMenuRouter from './routes/dailyMenu.routes.js';
 import SwaggerRouter from './routes/swagger-docs.routes.js';
 import notFound from './middleware/not-found.middleware.js';
-import errorHandler from './middleware/error-handler.middleware.js'
+import errorHandler from './middleware/error-handler.middleware.js';
 
 const app = express();
 
@@ -46,7 +46,7 @@ if (process.env.NODE_ENV !== 'test') {
         path: req.path,
         query: req.query,
         status: res.statusCode,
-        headers: res.getHeaders(),
+        // headers: res.getHeaders(),
       });
     });
     next();
@@ -67,7 +67,7 @@ app.use('/api/v1/nutrition-goals', NutritionGoalsRouter);
 app.use('/api/v1/daily-menu', DailyMenuRouter);
 
 // swagger route
-// app.use('/swagger/v1/docs', SwaggerRouter);
+app.use('/swagger/v1/docs', SwaggerRouter);
 
 // Root route
 app.get('/', (req, res) => {
