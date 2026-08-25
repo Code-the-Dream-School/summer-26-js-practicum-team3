@@ -139,7 +139,7 @@ export default function DailyPlanner() {
   }
 
   async function handleRemoveFromPlanner(dailyMenuRecipeId) {
-    const { status } = await removeRecipeFromDailyMenu(
+    const { status, data } = await removeRecipeFromDailyMenu(
       dailyMenuRecipeId,
       csrfToken,
     );
@@ -149,7 +149,9 @@ export default function DailyPlanner() {
           (recipe) => recipe.daily_menu_recipe_id !== dailyMenuRecipeId,
         ),
       );
+      return;
     }
+    setError(data.message || 'Could not remove that meal. Please try again.');
   }
 
   async function previous() {
