@@ -59,11 +59,13 @@ export default function DailyPlanner() {
   //  const statusFilter = searchParams.get('user_id') || '1'; //<--This could be how we pick from our recipes and theirs. simple button or filter
   const debouncedFilterTerm = useDebounce(searchTerm, 500);
   const hasCompletedOnboarding = useHasCompletedOnboarding();
-  const getNutritionGoals = useNutritionalGoals(); //<-----
+  const macros = useNutritionalGoals(); //<-----
 
   const { csrfToken } = useAuth();
 
   useEffect(() => {
+    if (!macros.calories) return;
+
     let isRan = false;
 
     const paramsObj = {
@@ -71,15 +73,11 @@ export default function DailyPlanner() {
       sortDirection,
       limit: 10,
       page: databasepageNumber,
+      ...macros,
     };
 
     if (debouncedFilterTerm) {
       paramsObj.find = debouncedFilterTerm;
-    }
-    if (getNutritionGoals) {
-      console.log(getNutritionGoals);
-      console.log('-------------');
-      paramsObj.macros = getNutritionGoals;
     }
     /**
      * we need nutrition goal info-> custom hook
@@ -100,7 +98,10 @@ export default function DailyPlanner() {
 
       try {
         console.log('ParamsObj', `${BASE_URL}?${params}`);
-        resp = await baseFetch(`${BASE_URL}?${params}`);
+        resp = await baseFetch(`${BASE_URL}?${params}`, {
+          method: 'GET',
+          credentials: 'include',
+        });
 
         data = await resp;
 
@@ -122,18 +123,16 @@ export default function DailyPlanner() {
         }
       }
     }
-    initialFetch();
+
+    if (!isRan) {
+      initialFetch();
+    }
+
     return () => {
-      console.log('one render clean-up');
+      console.log(' daily planner one render clean-up');
       isRan = true;
     };
-  }, [
-    debouncedFilterTerm,
-    sortBy,
-    sortDirection,
-    databasepageNumber,
-    getNutritionGoals,
-  ]);
+  }, [debouncedFilterTerm, sortBy, sortDirection, databasepageNumber, macros]);
 
   useEffect(() => {
     let isRan = false;
