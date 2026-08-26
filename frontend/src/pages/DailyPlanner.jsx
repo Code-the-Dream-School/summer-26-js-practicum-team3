@@ -11,6 +11,7 @@ import { DailyProgressContainer } from '../features/dailyMenu/components/DailyPr
 import {
   getDailyMenu,
   addRecipeToDailyMenu,
+  removeRecipeFromDailyMenu,
 } from '../features/dailyMenu/api/dailyMenuApi.js';
 import { useAuth } from '../features/auth/context/AuthContext';
 import useDebounce from '../utils/customHooks/useDebounce.js';
@@ -31,7 +32,7 @@ const MAIN_CONTAINER = {
 };
 const RECIPE_NAV = {
   position: 'absolute',
-  bottom: '10px',
+  bottom: '3px',
   left: 0,
   right: 0,
   display: 'flex',
@@ -133,6 +134,22 @@ export default function DailyPlanner() {
     }
   }
 
+  async function handleRemoveFromPlanner(dailyMenuRecipeId) {
+    const { status, data } = await removeRecipeFromDailyMenu(
+      dailyMenuRecipeId,
+      csrfToken,
+    );
+    if (status === 204) {
+      setDailyMenuRecipes((prev) =>
+        prev.filter(
+          (recipe) => recipe.daily_menu_recipe_id !== dailyMenuRecipeId,
+        ),
+      );
+      return;
+    }
+    setError(data.message || 'Could not remove that meal. Please try again.');
+  }
+
   async function previous() {
     setCount((prev) => prev - 2);
     if (count === 0 && databasepageNumber > 1) {
@@ -170,7 +187,10 @@ export default function DailyPlanner() {
   return (
     <main style={MAIN_CONTAINER}>
       {hasCompletedOnboarding && (
-        <DailyProgressContainer recipes={dailyMenuRecipes} />
+        <DailyProgressContainer
+          recipes={dailyMenuRecipes}
+          onRemoveRecipe={handleRemoveFromPlanner}
+        />
       )}
       <SearchInput
         searchTerm={searchTerm}
