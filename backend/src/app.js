@@ -46,8 +46,6 @@ if (process.env.NODE_ENV !== 'test') {
         path: req.path,
         query: req.query,
         status: res.statusCode,
-        //commented this out. too much mud
-        // headers: res.getHeaders(),
       });
     });
     next();

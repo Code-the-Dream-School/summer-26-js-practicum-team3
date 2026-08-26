@@ -78,7 +78,7 @@ export default function AppLayout() {
         <Outlet />
       </main>
       {/* Navigation pinned to bottom */}
-      {!userName && location.pathname !== '/onboarding' && (
+      {userName && location.pathname !== '/onboarding' && (
         <AppBar
           position="fixed"
           color="primary"
