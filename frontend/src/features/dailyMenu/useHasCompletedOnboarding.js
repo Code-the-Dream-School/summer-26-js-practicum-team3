@@ -17,7 +17,7 @@ export function useHasCompletedOnboarding() {
         );
         setHasCompletedOnboarding(resp.on_boarding);
       } catch (error) {
-        throw new Error('OnboardingStatus Catch', error.message);
+        throw new Error('Unable to check onboarding status', error.message);
       }
     }
 
