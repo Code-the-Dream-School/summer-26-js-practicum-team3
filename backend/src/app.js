@@ -46,7 +46,6 @@ if (process.env.NODE_ENV !== 'test') {
         path: req.path,
         query: req.query,
         status: res.statusCode,
-        // headers: res.getHeaders(),
       });
     });
     next();
@@ -61,8 +60,8 @@ app.use('/api/v1/recipes', RecipeRouter);
 
 // onboarding routes
 app.use('/api/v1/users', UserRouter);
-app.use('/api/v1/nutrition-goals', NutritionGoalsRouter);
 
+app.use('/api/v1/nutrition-goals', NutritionGoalsRouter);
 // daily menu routes
 app.use('/api/v1/daily-menu', DailyMenuRouter);
 

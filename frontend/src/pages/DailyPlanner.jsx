@@ -3,11 +3,11 @@ import { useEffect, useState } from 'react';
 import { Button, Box } from '@mui/material';
 
 import { baseFetch } from '../utils/api-helper.js';
+import { useHasCompletedOnboarding } from '../features/dailyMenu/useHasCompletedOnboarding.js';
 
 import { SortBy } from '../components/SortBy.jsx';
 import { SearchInput } from '../components/SearchInput.jsx';
 import { DailyProgressContainer } from '../features/dailyMenu/components/DailyProgressContainer.jsx';
-import { useHasCompletedOnboarding } from '../features/dailyMenu/useHasCompletedOnboarding.js';
 import {
   getDailyMenu,
   addRecipeToDailyMenu,
@@ -46,6 +46,7 @@ export default function DailyPlanner() {
   const [count, setCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const hasCompletedOnboarding = useHasCompletedOnboarding();
 
   const [databasepageNumber, setDatabasePageNumber] = useState(1);
   const [, setPagination] = useState({});
@@ -58,7 +59,7 @@ export default function DailyPlanner() {
 
   //  const statusFilter = searchParams.get('user_id') || '1'; //<--This could be how we pick from our recipes and theirs. simple button or filter
   const debouncedFilterTerm = useDebounce(searchTerm, 500);
-  const hasCompletedOnboarding = useHasCompletedOnboarding();
+
   const macros = useNutritionalGoals(); //<-----
 
   const { csrfToken } = useAuth();
