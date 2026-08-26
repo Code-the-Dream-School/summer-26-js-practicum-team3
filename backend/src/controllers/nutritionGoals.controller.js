@@ -1,7 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import { prisma } from '../db.js';
 import { nutritionGoalsSchema } from '../validations/joi.input.validations.js';
-import { ValidationError } from '../errors/index.js';
+import { ValidationError, NotFoundError } from '../errors/index.js';
 
 
 /**
@@ -9,7 +9,7 @@ import { ValidationError } from '../errors/index.js';
  * /v1/nutrition-goals:
  *   post:
  *     summary: Create the user's daily nutrition goals
- *     description: "Stub endpoint - returns the response shape without persisting to the database yet."
+ *     description: "Creates the user's nutrition goals in the database."
  *     requestBody:
  *       required: true
  *       content:
@@ -81,19 +81,31 @@ export async function createNutritionGoals(req, res) {
  * /v1/nutrition-goals:
  *   get:
  *     summary: Get the user's daily nutrition goals
- *     description: "Stub endpoint - returns fixed placeholder goals, not read from the database yet. MEAL-131."
- *     responses:
+ *     description: "Returns the authenticated user's most recently saved nutrition goals."
+ *       responses:
  *       200:
- *         description: "Nutrition goal baselines for the authenticated user."
+ *         description: "Nutrition goals for the authenticated user."
  *       401:
  *         description: "No user is authenticated."
+ *       404:
+ *         description: "No nutrition goals have been saved for this user yet."
  */
-export function getNutritionGoals(req, res) {
+
+export async function getNutritionGoals(req, res) {
+  const goal = await prisma.nutrition_goals.findFirst({
+    where: { user_id: req.user.id },
+    orderBy: { id: 'desc' },
+  });
+
+  if (!goal) {
+    throw new NotFoundError('No nutrition goals found for this user.');
+  }
+
   return res.status(StatusCodes.OK).json({
-    id: null,
-    calories_target: 2000,
-    protein_target: 50,
-    fat_target: 70,
-    carbs_target: 275,
+    id: goal.id,
+    calories_target: goal.calories_target,
+    protein_target: goal.protein_target,
+    fat_target: goal.fat_target,
+    carbs_target: goal.carbs_target,
   });
 }
