@@ -17,14 +17,13 @@ import useDebounce from '../utils/customHooks/useDebounce.js';
 import { isValid } from '../utils/isValid.js';
 import { sanitizeInput } from '../utils/sanitize.js';
 
-import { useNutritionalGoals } from '../utils/customHooks/useNutritionGoals.js'; //<---
+import { useNutritionalGoals } from '../utils/customHooks/useNutritionGoals.js';
 
 const MAX_DAILY_MEALS = 3;
 
 const BASE_URL = 'http://localhost:8080/api/v1/recipes/';
 
 const MAIN_CONTAINER = {
-  // border: '2px solid red',
   height: '79dvh',
   padding: '8px',
   fontFamily: 'sans-serif',
@@ -60,14 +59,12 @@ export default function DailyPlanner() {
   //  const statusFilter = searchParams.get('user_id') || '1'; //<--This could be how we pick from our recipes and theirs. simple button or filter
   const debouncedFilterTerm = useDebounce(searchTerm, 500);
 
-  const macros = useNutritionalGoals(); //<-----
+  const macros = useNutritionalGoals();
 
   const { csrfToken } = useAuth();
 
   useEffect(() => {
     if (!macros.calories) return;
-
-    let isRan = false;
 
     const paramsObj = {
       sortBy,
@@ -80,13 +77,6 @@ export default function DailyPlanner() {
     if (debouncedFilterTerm) {
       paramsObj.find = debouncedFilterTerm;
     }
-    /**
-     * we need nutrition goal info-> custom hook
-     * assign values to paramsObj.macros={}
-     * send to backend, values stick until they change them in profile
-     * future feature, add ability to change macros in search with default
-     * values always being their goals from profile
-     */
 
     const params = new URLSearchParams(paramsObj);
 
@@ -98,7 +88,6 @@ export default function DailyPlanner() {
       setIsLoading(true);
 
       try {
-        console.log('ParamsObj', `${BASE_URL}?${params}`);
         resp = await baseFetch(`${BASE_URL}?${params}`, {
           method: 'GET',
           credentials: 'include',
@@ -106,11 +95,10 @@ export default function DailyPlanner() {
 
         data = await resp;
 
-        if (!isRan) {
-          setRecipes(data.recipes);
-          setPagination(data.pagination);
-          setCount(0);
-        }
+        setRecipes(data.recipes);
+        setPagination(data.pagination);
+        setCount(0);
+
         setIsLoading(false);
       } catch (error) {
         if (
@@ -124,15 +112,7 @@ export default function DailyPlanner() {
         }
       }
     }
-
-    if (!isRan) {
-      initialFetch();
-    }
-
-    return () => {
-      console.log(' daily planner one render clean-up');
-      isRan = true;
-    };
+    initialFetch();
   }, [debouncedFilterTerm, sortBy, sortDirection, databasepageNumber, macros]);
 
   useEffect(() => {

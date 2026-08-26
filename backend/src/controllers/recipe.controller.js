@@ -147,10 +147,11 @@ export async function getRecipes(req, res) {
   };
 
   if (recipes.length === 0) {
-    return res.status(StatusCodes.NOT_FOUND).json({
+    res.status(StatusCodes.NOT_FOUND).json({
       error: 'No recipes could be found',
       message: 'No recipes meet the search criteria',
     });
+    return;
   }
 
   res.status(StatusCodes.OK).json({ recipes, pagination });
