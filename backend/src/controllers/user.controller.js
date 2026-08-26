@@ -58,4 +58,12 @@ export async function updateOnboardingProfile(req, res) {
     activity_level: updatedUser.activity_level,
   });
 }
- 
+
+export async function OnboardingStatus(req, res) {
+  const resp = await prisma.users.findUnique({
+    where: { id: req.user.id },
+    select: { on_boarding: true },
+  });
+
+  return res.status(StatusCodes.OK).json(resp);
+}
