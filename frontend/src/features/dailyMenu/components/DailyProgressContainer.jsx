@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import {
   Box,
   Button,
+  Fade,
   LinearProgress,
   Popover,
   Stack,
@@ -26,8 +27,10 @@ export function DailyProgressContainer({
 }) {
   const [goals, setGoals] = useState(null);
   const [error, setError] = useState('');
+  // Keep anchorEl even after the popup closes. If we clear it, the popup's
+  // width drops to 0 while it is still fading out, and it looks broken.
   const [anchorEl, setAnchorEl] = useState(null);
-  const isExpanded = Boolean(anchorEl);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     let isRan = false;
@@ -66,9 +69,8 @@ export function DailyProgressContainer({
     );
   }
 
-  // Recipe macro fields come back from Prisma as strings (Decimal), and a
-  // recipe with no value set for a field is just missing that key entirely -
-  // Number(undefined) is NaN, so fall back to 0 for both cases.
+  // Recipe values come from the database as text, not numbers.
+  // If a value is missing, use 0 instead of NaN.
   const totals = recipes.reduce((acc, recipe) => {
     MACROS.forEach(({ recipeKey }) => {
       const value = Number(recipe[recipeKey]) || 0;
@@ -77,49 +79,75 @@ export function DailyProgressContainer({
     return acc;
   }, {});
 
+  const macroRows = MACROS.map(({ goalKey, recipeKey, label }) => {
+    const goal = Number(goals[goalKey]) || 0;
+    const total = totals[recipeKey] || 0;
+    const percent = goal > 0 ? Math.min((total / goal) * 100, 100) : 0;
+    return { key: goalKey, label, total, goal, percent };
+  });
+
   return (
     <Box sx={{ mb: 3 }}>
       <Box
         role="button"
         tabIndex={0}
         aria-expanded={isExpanded}
-        onClick={(event) =>
-          setAnchorEl((prev) => (prev ? null : event.currentTarget))
-        }
+        onClick={(event) => {
+          setAnchorEl(event.currentTarget);
+          setIsExpanded((prev) => !prev);
+        }}
         onKeyDown={(event) => {
           if (event.key === 'Enter' || event.key === ' ') {
             event.preventDefault();
-            setAnchorEl((prev) => (prev ? null : event.currentTarget));
+            setAnchorEl(event.currentTarget);
+            setIsExpanded((prev) => !prev);
           }
         }}
         sx={{ cursor: 'pointer' }}
       >
         <Stack spacing={1.5}>
-          {MACROS.map(({ goalKey, recipeKey, label }) => {
-            const goal = Number(goals[goalKey]) || 0;
-            const total = totals[recipeKey] || 0;
-            const percent = goal > 0 ? Math.min((total / goal) * 100, 100) : 0;
-
-            return (
-              <Box key={goalKey}>
-                <Typography variant="body2">
-                  {label}: {total} / {goal}
-                </Typography>
-                <LinearProgress variant="determinate" value={percent} />
-              </Box>
-            );
-          })}
+          {macroRows.map(({ key, label, total, goal, percent }) => (
+            <Box key={key}>
+              <Typography variant="body2">
+                {label}: {total} / {goal}
+              </Typography>
+              <LinearProgress variant="determinate" value={percent} />
+            </Box>
+          ))}
         </Stack>
       </Box>
 
       <Popover
         open={isExpanded}
         anchorEl={anchorEl}
-        onClose={() => setAnchorEl(null)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        onClose={() => setIsExpanded(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
         transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-        slotProps={{ paper: { sx: { width: anchorEl?.offsetWidth, p: 1.5 } } }}
+        slots={{ transition: Fade }}
+        slotProps={{
+          paper: {
+            sx: {
+              // Make the popup a little bigger than the bars behind it,
+              // so it fully covers them with no edge showing.
+              width: (anchorEl?.offsetWidth ?? 0) + 8,
+              ml: '-2px',
+              mt: '-2px',
+              p: 1.5,
+            },
+          },
+        }}
       >
+        <Stack spacing={1.5} sx={{ mb: 1 }}>
+          {macroRows.map(({ key, label, total, goal, percent }) => (
+            <Box key={key}>
+              <Typography variant="body2">
+                {label}: {total} / {goal}
+              </Typography>
+              <LinearProgress variant="determinate" value={percent} />
+            </Box>
+          ))}
+        </Stack>
+
         {recipes.length === 0 ? (
           <Typography variant="body2" color="text.secondary">
             No meals added yet.
