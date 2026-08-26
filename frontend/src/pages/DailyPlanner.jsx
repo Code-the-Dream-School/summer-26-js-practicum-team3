@@ -80,7 +80,7 @@ export default function DailyPlanner() {
 
     const params = new URLSearchParams(paramsObj);
 
-    async function initialFetch() {
+    async function tailoredFetch() {
       let data = null;
       let resp = null;
 
@@ -112,7 +112,7 @@ export default function DailyPlanner() {
         }
       }
     }
-    initialFetch();
+    tailoredFetch();
   }, [debouncedFilterTerm, sortBy, sortDirection, databasepageNumber, macros]);
 
   useEffect(() => {
