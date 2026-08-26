@@ -116,21 +116,14 @@ export default function DailyPlanner() {
   }, [debouncedFilterTerm, sortBy, sortDirection, databasepageNumber, macros]);
 
   useEffect(() => {
-    let isRan = false;
-
     async function loadDailyMenu() {
       const { status, data } = await getDailyMenu();
-      if (isRan) return;
       if (status === 200) {
         setDailyMenuRecipes(data.recipes);
       }
     }
 
     loadDailyMenu();
-
-    return () => {
-      isRan = true;
-    };
   }, []);
 
   async function handleAddToPlanner(recipeId) {
