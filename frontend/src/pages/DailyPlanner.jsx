@@ -13,16 +13,17 @@ import {
   addRecipeToDailyMenu,
 } from '../features/dailyMenu/api/dailyMenuApi.js';
 import { useAuth } from '../features/auth/context/AuthContext';
-import useDebounce from '../utils/useDebounce.js';
+import useDebounce from '../utils/customHooks/useDebounce.js';
 import { isValid } from '../utils/isValid.js';
 import { sanitizeInput } from '../utils/sanitize.js';
+
+import { useNutritionalGoals } from '../utils/customHooks/useNutritionGoals.js';
 
 const MAX_DAILY_MEALS = 3;
 
 const BASE_URL = 'http://localhost:8080/api/v1/recipes/';
 
 const MAIN_CONTAINER = {
-  // border: '2px solid red',
   height: '79dvh',
   padding: '8px',
   fontFamily: 'sans-serif',
@@ -57,24 +58,29 @@ export default function DailyPlanner() {
 
   //  const statusFilter = searchParams.get('user_id') || '1'; //<--This could be how we pick from our recipes and theirs. simple button or filter
   const debouncedFilterTerm = useDebounce(searchTerm, 500);
+
+  const macros = useNutritionalGoals();
+
   const { csrfToken } = useAuth();
 
   useEffect(() => {
-    let isRan = false;
+    if (!macros.calories) return;
 
     const paramsObj = {
       sortBy,
       sortDirection,
       limit: 10,
       page: databasepageNumber,
+      ...macros,
     };
 
     if (debouncedFilterTerm) {
       paramsObj.find = debouncedFilterTerm;
     }
+
     const params = new URLSearchParams(paramsObj);
 
-    async function initialFetch() {
+    async function getTailoredRecipes() {
       let data = null;
       let resp = null;
 
@@ -82,15 +88,17 @@ export default function DailyPlanner() {
       setIsLoading(true);
 
       try {
-        resp = await baseFetch(`${BASE_URL}?${params}`);
+        resp = await baseFetch(`${BASE_URL}?${params}`, {
+          method: 'GET',
+          credentials: 'include',
+        });
 
         data = await resp;
 
-        if (!isRan) {
-          setRecipes(data.recipes);
-          setPagination(data.pagination);
-          setCount(0);
-        }
+        setRecipes(data.recipes);
+        setPagination(data.pagination);
+        setCount(0);
+
         setIsLoading(false);
       } catch (error) {
         if (
@@ -104,29 +112,18 @@ export default function DailyPlanner() {
         }
       }
     }
-    initialFetch();
-    return () => {
-      console.log('one render clean-up');
-      isRan = true;
-    };
-  }, [debouncedFilterTerm, sortBy, sortDirection, databasepageNumber]);
+    getTailoredRecipes();
+  }, [debouncedFilterTerm, sortBy, sortDirection, databasepageNumber, macros]);
 
   useEffect(() => {
-    let isRan = false;
-
     async function loadDailyMenu() {
       const { status, data } = await getDailyMenu();
-      if (isRan) return;
       if (status === 200) {
         setDailyMenuRecipes(data.recipes);
       }
     }
 
     loadDailyMenu();
-
-    return () => {
-      isRan = true;
-    };
   }, []);
 
   async function handleAddToPlanner(recipeId) {

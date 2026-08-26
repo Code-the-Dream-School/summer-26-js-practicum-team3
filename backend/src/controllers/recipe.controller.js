@@ -10,7 +10,7 @@ import {
  * /recipes:
  *   get:
  *     summary: Get a list of recipes
- *     description: Fetch recipes with pagination. You can also search by title and sort by nutrition facts.
+ *     description: Fetch recipes with pagination. You can also search by title, sort by nutrition facts, and filter recipes based on nutritional goals. Daily nutritional targets are divided by three meals per day before filtering.
  *     parameters:
  *       - in: query
  *         name: page
@@ -22,7 +22,7 @@ import {
  *         name: limit
  *         schema:
  *           type: integer
- *           default: 9
+ *           default: 10
  *         description: The number of recipes per page.
  *       - in: query
  *         name: find
@@ -33,14 +33,36 @@ import {
  *         name: sortBy
  *         schema:
  *           type: string
+ *           default: calories
  *           enum: [protein, carbs, fat, calories]
  *         description: Pick a nutrition field to sort the results.
  *       - in: query
  *         name: sortDirection
  *         schema:
  *           type: string
+ *           default: asc
  *           enum: [asc, desc]
  *         description: Sort going up (asc) or down (desc).
+ *       - in: query
+ *         name: calories:2000
+ *         schema:
+ *           type: integer
+ *         description: Daily calorie target.
+ *       - in: query
+ *         name: protein:50
+ *         schema:
+ *           type: integer
+ *         description: Daily protein target.
+ *       - in: query
+ *         name: carbs:275
+ *         schema:
+ *           type: integer
+ *         description: Daily carbohydrate target.
+ *       - in: query
+ *         name: fat:70
+ *         schema:
+ *           type: integer
+ *         description: Daily fat target.
  *     responses:
  *       200:
  *         description: A list of recipes and pagination details.
@@ -69,6 +91,16 @@ export async function getRecipes(req, res) {
       mode: 'insensitive',
     };
   }
+  if (req.query.calories) {
+    const MEALS_PER_DAY = 3;
+    whereClause.calories = {
+      lte: parseInt(req.query.calories) / MEALS_PER_DAY,
+    };
+    whereClause.carbs = { gte: parseInt(req.query.carbs) / MEALS_PER_DAY };
+    whereClause.fat = { lte: parseInt(req.query.fat) / MEALS_PER_DAY };
+    whereClause.protein = { gte: parseInt(req.query.protein) / MEALS_PER_DAY };
+  }
+
   let recipes = null;
   let total = null;
 
@@ -115,7 +147,7 @@ export async function getRecipes(req, res) {
   };
 
   if (recipes.length === 0) {
-    return res.status(StatusCodes.NOT_FOUND).json({
+    res.status(StatusCodes.NOT_FOUND).json({
       error: 'No recipes could be found',
       message: 'No recipes meet the search criteria',
     });
@@ -270,7 +302,7 @@ export async function createRecipe(req, res) {
  *       400:
  *         description: "Validation error or database connection issue."
  */
-export async function updateRecipe(req, res, next) {
+export async function updateRecipe(req, res) {
   const { error, value } = patchRecipeSchema.validate(req.body ?? {}, {
     abortEarly: false,
   });
