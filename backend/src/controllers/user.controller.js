@@ -44,16 +44,13 @@ export async function updateOnboardingProfile(req, res) {
   if (value.sex) data.sex = value.sex;
   if (value.activity_level) data.activity_level = value.activity_level;
  
-  // NOTE: assumes async route errors are caught by centralized middleware
-  // (e.g. express-async-errors, or routes wrapped individually). Confirm
-  // this pattern exists before relying on an unhandled Prisma rejection
-  // being caught cleanly — none of the other stub controllers in this file
-  // set were async, so this is the first one that needs it.
+
   const updatedUser = await prisma.users.update({
     where: { id: req.user.id }, // assumes jwtMiddleware sets req.user
     data,
     select: { dob: true, sex: true, activity_level: true },
   });
+  
  
   return res.status(StatusCodes.OK).json({
     dob: updatedUser.dob?.toISOString().split('T')[0] ?? null,
