@@ -10,7 +10,7 @@ import {
  * /recipes:
  *   get:
  *     summary: Get a list of recipes
- *     description: Fetch recipes with pagination. You can also search by title and sort by nutrition facts.
+ *     description: Fetch recipes with pagination. You can also search by title, sort by nutrition facts, and filter recipes based on nutritional goals. Daily nutritional targets are divided by three meals per day before filtering.
  *     parameters:
  *       - in: query
  *         name: page
@@ -22,7 +22,7 @@ import {
  *         name: limit
  *         schema:
  *           type: integer
- *           default: 9
+ *           default: 10
  *         description: The number of recipes per page.
  *       - in: query
  *         name: find
@@ -33,14 +33,36 @@ import {
  *         name: sortBy
  *         schema:
  *           type: string
+ *           default: calories
  *           enum: [protein, carbs, fat, calories]
  *         description: Pick a nutrition field to sort the results.
  *       - in: query
  *         name: sortDirection
  *         schema:
  *           type: string
+ *           default: asc
  *           enum: [asc, desc]
  *         description: Sort going up (asc) or down (desc).
+ *       - in: query
+ *         name: calories:2000
+ *         schema:
+ *           type: integer
+ *         description: Daily calorie target.
+ *       - in: query
+ *         name: protein:50
+ *         schema:
+ *           type: integer
+ *         description: Daily protein target.
+ *       - in: query
+ *         name: carbs:275
+ *         schema:
+ *           type: integer
+ *         description: Daily carbohydrate target.
+ *       - in: query
+ *         name: fat:70
+ *         schema:
+ *           type: integer
+ *         description: Daily fat target.
  *     responses:
  *       200:
  *         description: A list of recipes and pagination details.
