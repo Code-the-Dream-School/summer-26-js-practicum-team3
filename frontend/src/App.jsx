@@ -5,7 +5,9 @@ import DailyPlanner from './pages/DailyPlanner';
 import AddRecipe from './pages/AddRecipe/AddRecipe';
 import Profile from './pages/Profile';
 import About from './pages/About';
-
+{
+  /* import Contact from './pages/Contact'; */
+}
 import Home from './pages/Home';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
@@ -19,14 +21,17 @@ export default function App() {
     <AuthProvider>
       <Router>
         <Routes>
-          <Route path="/" element={<Home />}>
-            <Route path="/app" element={<AppLayout />} />
-            <Route path="daily-planner" element={<DailyPlanner />} />
-            <Route path="add-recipe" element={<AddRecipe />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="*" element={<NotFound />} />
-          </Route>
-          <Route path="/*" element={<NotFound />} />
+          <Route path="/" element={<AppLayout />}></Route>
+          <Route index element={<Home />} />
+          <Route path="signup" element={<SignUp />} />
+          <Route path="about" element={<About />} />
+          {/* <Route path="/contact" element{<contact />} />  */}
+          <Route path="login" element={<Login />} />
+          <Route path="onboarding" element={<OnboardingPage />} />
+          <Route path="daily-planner" element={<DailyPlanner />} />
+          <Route path="add-recipe" element={<AddRecipe />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
     </AuthProvider>

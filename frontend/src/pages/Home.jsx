@@ -1,173 +1,279 @@
-import { Box, Stack, Typography, Link } from '@mui/material';
-import { RecipeCard } from '../components/RecipeCard.jsx';
-import { useEffect, useState } from 'react';
+import { Box, Button, Container, Stack, Typography } from '@mui/material';
+import { Link } from 'react-router';
 
-// TODO: Replace MOCK_RECIPE_DATA with data fetched from the backend API
-const MOCK_RECIPE_DATA = [
+const steps = [
   {
-    title: 'How to Cook Bacon in the Oven',
-    instructions: 'https://www.allrecipes.com/recipe/267904/oven-baked-bacon',
-    total_time_minutes: 35,
-    servings: 6,
-    calories: 134,
-    protein: 9,
-    fat: 10,
-    carbs: 0,
-    ingredients: '1 (16 ounce) package bacon',
+    number: '1',
+    title: 'Sign Up',
+    description: 'Create your free account',
   },
   {
-    title: 'Boiled Peanuts',
-    instructions: 'https://www.allrecipes.com/recipe/17551/boiled-peanuts/',
-    total_time_minutes: 185,
-    servings: 40,
-    calories: 322,
-    protein: 15,
-    fat: 28,
-    carbs: 9,
-    ingredients:
-      '5 pounds raw peanuts, in shells, 1 cup salt, or to taste, water to cover',
+    number: '2',
+    title: 'Set your goals',
+    description: 'Tell us your goals and preferences',
   },
   {
-    id: 967,
-    user_id: 1,
-    title: 'Manicotti Pancakes II',
-    instructions:
-      'https://www.allrecipes.com/recipe/20566/manicotti-pancakes-ii/',
-    total_time_minutes: 15,
-    servings: 12,
-    calories: 66,
-    protein: 3,
-    fat: 2,
-    carbs: 9,
-    ingredients: '3  eggs, 1 cup milk, 1 cup all-purpose flour',
+    number: '3',
+    title: 'Build your menu',
+    description: 'Plan meals and track your progress daily',
+  },
+];
+
+const features = [
+  {
+    title: 'Curated Recipes',
+    description: 'Start planning with a built-in recipe library',
+  },
+  {
+    title: 'Daily menu builder',
+    description: 'Build your day and see live nutrient progress',
+  },
+  {
+    title: 'Goal tracking',
+    description: 'Set targets and track calories, protein and carbs',
   },
 ];
 
 export default function Home() {
-  const [recipes, setRecipes] = useState([]);
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    let stopDoubles = false;
-
-    //basic get req
-    //we will need something that gets their macros values
-    // to create a tailored search
-    async function baseFetch() {
-      let data = null;
-      try {
-        const resp = await fetch('http://localhost:8080/api/v1/recipes/');
-        if (!resp.ok) {
-          throw new Error('Failed to fetch from backend');
-        }
-        setMessage('Fetch Success');
-        data = await resp.json();
-        console.log(data.recipes);
-        if (!stopDoubles) {
-          setRecipes((previous) => [...previous, ...data.recipes]);
-        }
-      } catch (error) {
-        setError(error.message);
-      }
-    }
-
-    baseFetch();
-
-    return () => {
-      console.log('one render clean-up');
-      stopDoubles = true;
-    };
-  }, []);
-  // TODO: dashboard
-  // return <Dashboard />;
-
   return (
     <>
-      <Box component="head">
-        <Box component="title">TodayEatz</Box>
-      </Box>
-      <Box component="body" sx={{ bgcolor: 'primary.main' }}>
-        <Box
-          component="header"
+      {/* Navigation section */}
+      <Box
+        component="nav"
+        aria-label="Main navigation"
+        sx={{
+          px: { xs: 2, md: 6 },
+          py: 2,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          bgcolor: 'common.white',
+          border: '1px solid #dcebe0',
+        }}
+      >
+        <Typography
           sx={{
-            p: { xs: 2, md: 4 },
-            textAlign: 'center',
+            color: 'primary.main',
+            fontSize: '1.4rem',
+            fontWeight: 700,
+            textDecoration: 'none',
           }}
         >
+          Today Eatz
+        </Typography>
+
+        <Stack direction="row" spacing={{ xs: 1, md: 3 }}>
+          <Button component={Link} to="/" color="inherit">
+            Home
+          </Button>
+          <Button component={Link} to="/about" color="inherit">
+            About
+          </Button>
+          <Button component={Link} to="/contact" color="inherit">
+            Contact
+          </Button>
+        </Stack>
+      </Box>
+
+      {/* Header section */}
+      <Container
+        component="header"
+        maxWidth="md"
+        sx={{ py: { xs: 10, md: 16 }, textAlign: 'center' }}
+      >
+        <Typography
+          component="h2"
+          sx={{
+            mb: 3,
+            fontSize: { xs: '2.2rem', md: '3.5rem' },
+            fontWeight: 700,
+            lineHeight: 1.15,
+          }}
+        >
+          Plan meals. Hit your nutrition goals.
+        </Typography>
+
+        <Typography
+          component="h3"
+          sx={{
+            maxWidth: 650,
+            mx: 'auto',
+            mb: 4,
+            color: '#557064',
+            fontSize: { xs: '1rem', md: '1.25rem' },
+            fontWeight: 400,
+            lineHeight: 1.6,
+          }}
+        >
+          Track your daily nutrients with a simple meal planner. Build around
+          your goals.
+        </Typography>
+
+        <Button
+          component={Link}
+          to="/signup"
+          variant="contained"
+          size="large"
+          sx={{
+            minWidth: 140,
+            px: 3,
+            py: 1.5,
+            borderRadius: 2,
+            fontWeight: 700,
+          }}
+        >
+          Sign Up
+        </Button>
+      </Container>
+
+      {/* Main section */}
+      <Box
+        component="section"
+        sx={{
+          px: { xs: 2, md: 6 },
+          py: { xs: 7, md: 10 },
+          bgcolor: 'common.white',
+        }}
+      >
+        {/* How it works area */}
+        <Container maxWidth="lg">
           <Typography
-            component="h1"
-            variant="h1"
+            component="h3"
             sx={{
-              mb: 2,
-              color: 'common.white',
+              mb: 6,
+              textAlign: 'center',
+              fontSize: { xs: '1.8rem', md: '2.3rem' },
+              fontWeight: 700,
             }}
           >
-            Welcome to TodayEatz!
+            How it works
           </Typography>
-          <Typography
-            component="p"
-            variant="subtitle1"
-            sx={{ color: 'common.white' }}
-          >
-            This is a nutritional app for anyone. From here you can be able to
-            set your own healthy goals.
-          </Typography>
-          <Stack component="nav" direction="row" spacing={2} sx={{ mt: 3 }}>
-            <Link
-              href="/login"
-              underline="none"
-              color="inherit"
-              sx={{
-                minwidth: 120,
-                px: 2,
-                py: 1.5,
-                textAlign: 'center',
-                color: 'common.white',
-                border: 2,
-                borderColor: 'common.white',
-                borderRadius: 1,
-              }}
-            >
-              Log In
-            </Link>
-            <Link
-              href="/signup"
-              underline="none"
-              color="inherit"
-              sx={{
-                minwidth: 120,
-                px: 2,
-                py: 1.5,
-                textAlign: 'center',
-                color: 'common.white',
-                border: 2,
-                borderColor: 'common.white',
-                borderRadius: 1,
-              }}
-            >
-              Register
-            </Link>
-          </Stack>
-        </Box>
-        <Box component="main" sx={{ p: { xs: 2, md: 4 } }}>
-          {error && (
-            <Typography color="error" role="alert">
-              {error}
-            </Typography>
-          )}
-          {!error && <Typography>{message}</Typography>}
-          <Stack
-            spacing={2}
+          <Box
             sx={{
-              mt: 2,
+              display: 'grid',
+              gridTemplateColumns: {
+                xs: '1fr',
+                md: 'repeat(3, 1fr)',
+              },
+              gap: 5,
+              textAlign: 'center',
             }}
           >
-            {recipes.map((recipe, index) => (
-              <RecipeCard key={index} {...recipe} />
+            {steps.map((step) => (
+              <Box key={step.number}>
+                <Box
+                  sx={{
+                    width: 56,
+                    height: 56,
+                    mx: 'auto',
+                    mb: 2,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: '2px solid',
+                    borderColor: 'primary.main',
+                    borderRadius: '50%',
+                    color: 'primary.main',
+                    fontSize: '1.3rem',
+                    fontWeight: 700,
+                  }}
+                >
+                  {step.number}
+                </Box>
+
+                <Typography
+                  component="h4"
+                  sx={{ mb: 1, fontSize: '1.2rem', fontWeight: 700 }}
+                >
+                  {step.title}
+                </Typography>
+
+                <Typography sx={{ color: '#557064' }}>
+                  {step.description}
+                </Typography>
+              </Box>
             ))}
-          </Stack>
-        </Box>
+          </Box>
+        </Container>
+
+        {/* Feature area */}
+        <Container maxWidth="lg" sx={{ mt: { xs: 9, md: 12 } }}>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' },
+              gap: 3,
+            }}
+          >
+            {features.map((feature) => (
+              <Box
+                key={feature.title}
+                sx={{
+                  minHeight: 150,
+                  p: 3,
+                  textAlign: 'center',
+                  border: '1px solid #c8ddd0',
+                  borderRadius: 2,
+                }}
+              >
+                <Typography
+                  component="h4"
+                  sx={{ mb: 1, fontSize: '1.15rem', fontWeight: 700 }}
+                >
+                  {feature.title}
+                </Typography>
+
+                <Typography
+                  sx={{
+                    color: '#557064',
+                    fontSize: '0.95rem',
+                    lineHeight: 1.6,
+                  }}
+                >
+                  {feature.description}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+        </Container>
+      </Box>
+
+      {/* Footer Section */}
+      <Box
+        component="footer"
+        sx={{
+          px: 2,
+          py: { xs: 8, md: 10 },
+          textAlign: 'center',
+          bgcolor: '#f7fbf8',
+        }}
+      >
+        <Typography
+          component="h2"
+          sx={{
+            mb: 3,
+            fontSize: { xs: '1.8rem', md: '2.3rem' },
+            fontWeight: 700,
+          }}
+        >
+          Ready to plan smarter?
+        </Typography>
+
+        <Button
+          component={Link}
+          to="/signup"
+          variant="contained"
+          size="large"
+          sx={{
+            minWidth: 140,
+            px: 3,
+            py: 1.5,
+            borderRadius: 2,
+            fontWeight: 700,
+          }}
+        >
+          Sign Up
+        </Button>
       </Box>
     </>
   );
