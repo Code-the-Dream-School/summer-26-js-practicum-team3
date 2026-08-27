@@ -1,7 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import { prisma } from '../db.js';
 import { nutritionGoalsSchema } from '../validations/joi.input.validations.js';
-import { ValidationError, NotFoundError } from '../errors/index.js';
+import { ValidationError } from '../errors/index.js';
 
 /**
  * @swagger
