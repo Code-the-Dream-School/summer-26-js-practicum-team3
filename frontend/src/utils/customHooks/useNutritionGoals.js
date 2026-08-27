@@ -14,7 +14,6 @@ export function useNutritionalGoals() {
     }
     getNutritionGoals();
   }, []);
-
   const { calories_target, protein_target, fat_target, carbs_target } =
     nutritionGoals;
   const convertedMacrosForQuery = useMemo(
