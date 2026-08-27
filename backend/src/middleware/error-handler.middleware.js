@@ -57,10 +57,7 @@ const errorHandler = (err, req, res, next) => {
     console.error(`ERROR: ${err.name} - ${err.message}`, err.stack);
   }
 
-  const message =
-    statusCode === StatusCodes.INTERNAL_SERVER_ERROR
-      ? 'Something went wrong, please try again'
-      : clientMessage;
+  const message = clientMessage || 'Something went wrong, please try again';
 
   res.status(statusCode).json({ message });
 };

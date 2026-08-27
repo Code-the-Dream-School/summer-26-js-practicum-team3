@@ -171,17 +171,16 @@ describe('GET /api/v1/recipes - Failure Cases', () => {
     });
   });
 
-  it('should return 400 with Prisma error details when a database operation fails', async () => {
+  it('should return 500 with Prisma error details when a database operation fails', async () => {
     // Simulate a Prisma throw inside the try/catch block
     const mockError = new Error('Database connection failed');
     vi.spyOn(prisma.recipes, 'findMany').mockRejectedValue(mockError);
 
     const res = await request(app).get('/api/v1/recipes');
 
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(500);
     expect(res.body).toEqual({
-      message: 'Prisma Error',
-      error: 'Database connection failed',
+      message: 'Database connection failed',
     });
   });
 
@@ -361,7 +360,7 @@ describe('PATCH /api/v1/recipes/:id - Failure Cases', () => {
     });
   });
 
-  it('should return 400 with Prisma error details when update fails or record does not exist', async () => {
+  it('should return 500 with Prisma error details when update fails or record does not exist', async () => {
     const mockPrismaError = new Error('Record to update not found.');
     vi.spyOn(prisma.recipes, 'update').mockRejectedValue(mockPrismaError);
 
@@ -370,10 +369,9 @@ describe('PATCH /api/v1/recipes/:id - Failure Cases', () => {
       instructions: 'These are required as well',
     });
 
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(500);
     expect(res.body).toEqual({
-      message: 'Prisma Error',
-      error: 'Record to update not found.',
+      message: 'Record to update not found.',
     });
   });
 });
@@ -422,16 +420,15 @@ describe('DELETE /api/v1/recipes/:id - Failure Cases', () => {
     });
   });
 
-  it('should return 400 with Prisma error details when deletion fails or record does not exist', async () => {
+  it('should return 500 with Prisma error details when deletion fails or record does not exist', async () => {
     const mockPrismaError = new Error('Record to delete does not exist.');
     vi.spyOn(prisma.recipes, 'delete').mockRejectedValue(mockPrismaError);
 
     const res = await withAuth(request(app).delete('/api/v1/recipes/999'));
 
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(500);
     expect(res.body).toEqual({
-      message: 'Prisma Error',
-      error: 'Record to delete does not exist.',
+      message: 'Record to delete does not exist.',
     });
   });
 });

@@ -24,6 +24,7 @@ const NO_OP = () => {};
  * @prop {number} carbs
  * @prop {number} calories
  * @prop {number} fat
+ * @prop {boolean} [disabled] - Disables the "Add To Planner" button.
  */
 
 /**
@@ -57,6 +58,7 @@ export function RecipeCard({
   instructions,
   ingredients,
   handleAddToPlanner = NO_OP,
+  disabled = false,
 }) {
   return (
     <Card variant="outlined" sx={CARD_CONTAINER}>
@@ -65,7 +67,11 @@ export function RecipeCard({
           <Typography variant="h5" component="h2">
             {title}
           </Typography>
-          <Button variant="contained" onClick={() => handleAddToPlanner(id)}>
+          <Button
+            variant="contained"
+            onClick={() => handleAddToPlanner(id)}
+            disabled={disabled}
+          >
             Add To Planner
           </Button>
         </Box>

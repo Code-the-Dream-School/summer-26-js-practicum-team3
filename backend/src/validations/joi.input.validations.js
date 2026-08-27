@@ -32,6 +32,25 @@ const userSchema = Joi.object({
     }),
 });
 
+/**
+ * @typedef {object} updateMeSchema
+ * PATCH /api/v1/users/me — all fields optional, but at least one required.
+ * @prop {string} [dob] - Date Of Birth, yyyy-mm-dd.
+ * @prop {string} [sex] - one of male|female|prefer_not_to_say
+ * @prop {string} [activity_level] - one of sedentary|lightly_active|moderately_active|very_active
+ */
+const updateMeSchema = Joi.object({
+  dob: Joi.date().iso(),
+  sex: Joi.string().valid('male', 'female', 'prefer_not_to_say'),
+  activity_level: Joi.string().valid(
+    'sedentary',
+    'lightly_active',
+    'moderately_active',
+    'very_active'
+  ),
+}).min(1);
+
+
 /** 
  * @typedef {object} loginSchema 
  * @prop {string} email - REQUIRED.
@@ -108,4 +127,20 @@ const nutritionGoalsSchema = Joi.object({
   carbs_target: Joi.number().precision(0).integer().min(0).allow(null),
 });
 
-export { userSchema, loginSchema, recipeSchema, patchRecipeSchema, nutritionGoalsSchema };
+/**
+ * @typedef {object} dailyMenuRecipeSchema
+ * @prop {number} recipe_id - REQUIRED. Id of the recipe to add to today's daily menu.
+ */
+const dailyMenuRecipeSchema = Joi.object({
+  recipe_id: Joi.number().integer().positive().required(),
+});
+
+export {
+  userSchema,
+  updateMeSchema,
+  loginSchema,
+  recipeSchema,
+  patchRecipeSchema,
+  nutritionGoalsSchema,
+  dailyMenuRecipeSchema,
+};

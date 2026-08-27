@@ -1,4 +1,3 @@
-import styles from './AddRecipe.module.css';
 import { useState } from 'react';
 import { Box, TextField } from '@mui/material';
 
@@ -23,12 +22,10 @@ export default function AddRecipe() {
         body: JSON.stringify(formData),
       });
       if (response.ok) {
-        const data = await response.json();
-        console.log('confirm response', data);
         alert('Recipe saved successfully');
       }
     } catch (error) {
-      console.log('Sending created recipe to back', error);
+      console.log('Sending created recipe failed', error);
     }
   }
 
@@ -49,7 +46,7 @@ export default function AddRecipe() {
   return (
     <Box sx={{ padding: '2rem', margin: '2rem' }}>
       <h2>Add Recipe</h2>
-      <form className={styles.formContainer} onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit}>
         <Box sx={{ mb: 2 }}>
           <TextField
             fullWidth
