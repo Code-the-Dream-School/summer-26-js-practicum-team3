@@ -14,6 +14,8 @@ import NotFound from './pages/NotFound';
 import { AuthProvider } from './features/auth/context/AuthContext';
 import './App.css';
 import DefaultLayout from './pages/DefaultLayout';
+import ProtectedRoute from './features/auth/components/ProtectedRoute';
+import PublicRoute from './features/auth/components/PublicRoute';
 
 export default function App() {
   return (
@@ -23,11 +25,26 @@ export default function App() {
           <Route path="signup" element={<SignUp />} />
           <Route path="login" element={<Login />} />
           <Route path="" element={<DefaultLayout />}>
-            <Route index element={<Home />} />
+            <Route
+              index
+              element={
+                <PublicRoute>
+                  <Home />
+                </PublicRoute>
+              }
+            />
+
             <Route path="about" element={<About />} />
             <Route path="contact" element={<Contact />} />
           </Route>
-          <Route path="" element={<AppLayout />}>
+          <Route
+            path=""
+            element={
+              <ProtectedRoute>
+                <AppLayout />
+              </ProtectedRoute>
+            }
+          >
             <Route path="onboarding" element={<OnboardingPage />} />
             <Route path="daily-planner" element={<DailyPlanner />} />
             <Route path="add-recipe" element={<AddRecipe />} />
