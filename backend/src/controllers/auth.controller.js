@@ -209,8 +209,8 @@ const getProfile = async (req, res) => {
         .status(StatusCodes.NOT_FOUND)
         .json({ message: 'Error: User not found' });
     }
-    // csrfToken is returned deliberately: it lives only in memory on the
-    // frontend and is lost on reload. This is how it gets recovered.
+   
+  
     return res.status(StatusCodes.OK).json(user);
   } catch (error) {
     console.error('Get profile error:', error);
