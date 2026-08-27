@@ -15,16 +15,13 @@ export function useNutritionalGoals() {
     getNutritionGoals();
   }, []);
 
-  const { calories_target, protein_target, fat_target, carbs_target } =
-    nutritionGoals;
-  const convertedMacrosForQuery = useMemo(
-    () => ({
-      calories: calories_target,
-      protein: protein_target,
-      fat: fat_target,
-      carbs: carbs_target,
-    }),
-    [calories_target, protein_target, fat_target, carbs_target],
-  );
+  const convertedMacrosForQuery = useMemo(() => {
+    return {
+      calories: nutritionGoals.calories_target,
+      protein: nutritionGoals.protein_target,
+      fat: nutritionGoals.fat_target,
+      carbs: nutritionGoals.carbs_target,
+    };
+  }, [nutritionGoals]);
   return convertedMacrosForQuery;
 }
