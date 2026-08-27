@@ -30,12 +30,11 @@ export default function App() {
               element={
                 <PublicRoute>
                   <Home />
+                  <About />
+                  <Contact />
                 </PublicRoute>
               }
             />
-
-            <Route path="about" element={<About />} />
-            <Route path="contact" element={<Contact />} />
           </Route>
           <Route
             path=""
