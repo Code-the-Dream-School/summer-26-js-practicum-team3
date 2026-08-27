@@ -81,7 +81,7 @@ export async function createNutritionGoals(req, res) {
  *   get:
  *     summary: Get the user's daily nutrition goals
  *     description: "Returns the authenticated user's most recently saved nutrition goals."
- *       responses:
+ *     responses:
  *       200:
  *         description: "Nutrition goals for the authenticated user."
  *       401:
@@ -89,7 +89,6 @@ export async function createNutritionGoals(req, res) {
  *       404:
  *         description: "No nutrition goals have been saved for this user yet."
  */
-
 export async function getNutritionGoals(req, res) {
   const goal = await prisma.nutrition_goals.findFirst({
     where: { user_id: req.user.id },
