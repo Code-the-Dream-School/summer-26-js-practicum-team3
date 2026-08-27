@@ -1,5 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
-
+import { prisma } from '../db.js';
+import { updateMeSchema } from '../validations/joi.input.validations.js';
+import { ValidationError } from '../errors/index.js';
 /**
  * @swagger
  * /v1/users/me:
@@ -29,12 +31,39 @@ import { StatusCodes } from 'http-status-codes';
  *       401:
  *         description: "No user is authenticated."
  */
-export function updateOnboardingProfile(req, res) {
-  const { dob = null, sex = null, activity_level = null } = req.body ?? {};
-
-  return res.status(StatusCodes.OK).json({
-    dob,
-    sex,
-    activity_level,
+export async function updateOnboardingProfile(req, res) {
+  const { error, value } = updateMeSchema.validate(req.body ?? {}, {
+    abortEarly: false,
   });
+  if (error) {
+    throw new ValidationError(error.message);
+  }
+ 
+  const data = {};
+  if (value.dob) data.dob = value.dob;
+  if (value.sex) data.sex = value.sex;
+  if (value.activity_level) data.activity_level = value.activity_level;
+ 
+
+  const updatedUser = await prisma.users.update({
+    where: { id: req.user.id }, // assumes jwtMiddleware sets req.user
+    data,
+    select: { dob: true, sex: true, activity_level: true },
+  });
+  
+ 
+  return res.status(StatusCodes.OK).json({
+    dob: updatedUser.dob?.toISOString().split('T')[0] ?? null,
+    sex: updatedUser.sex,
+    activity_level: updatedUser.activity_level,
+  });
+}
+
+export async function OnboardingStatus(req, res) {
+  const resp = await prisma.users.findUnique({
+    where: { id: req.user.id },
+    select: { on_boarding: true },
+  });
+
+  return res.status(StatusCodes.OK).json(resp);
 }

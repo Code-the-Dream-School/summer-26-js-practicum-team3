@@ -3,26 +3,28 @@ import { useEffect, useState } from 'react';
 import { Button, Box } from '@mui/material';
 
 import { baseFetch } from '../utils/api-helper.js';
+import { useHasCompletedOnboarding } from '../features/dailyMenu/useHasCompletedOnboarding.js';
 
 import { SortBy } from '../components/SortBy.jsx';
 import { SearchInput } from '../components/SearchInput.jsx';
 import { DailyProgressContainer } from '../features/dailyMenu/components/DailyProgressContainer.jsx';
-import { useHasCompletedOnboarding } from '../features/dailyMenu/useHasCompletedOnboarding.js';
 import {
   getDailyMenu,
   addRecipeToDailyMenu,
+  removeRecipeFromDailyMenu,
 } from '../features/dailyMenu/api/dailyMenuApi.js';
 import { useAuth } from '../features/auth/context/AuthContext';
-import useDebounce from '../utils/useDebounce.js';
+import useDebounce from '../utils/customHooks/useDebounce.js';
 import { isValid } from '../utils/isValid.js';
 import { sanitizeInput } from '../utils/sanitize.js';
+
+import { useNutritionalGoals } from '../utils/customHooks/useNutritionGoals.js';
 
 const MAX_DAILY_MEALS = 3;
 
 const BASE_URL = 'http://localhost:8080/api/v1/recipes/';
 
 const MAIN_CONTAINER = {
-  // border: '2px solid red',
   height: '79dvh',
   padding: '8px',
   fontFamily: 'sans-serif',
@@ -30,7 +32,7 @@ const MAIN_CONTAINER = {
 };
 const RECIPE_NAV = {
   position: 'absolute',
-  bottom: '10px',
+  bottom: '3px',
   left: 0,
   right: 0,
   display: 'flex',
@@ -44,6 +46,7 @@ export default function DailyPlanner() {
   const [count, setCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const hasCompletedOnboarding = useHasCompletedOnboarding();
 
   const [databasepageNumber, setDatabasePageNumber] = useState(1);
   const [, setPagination] = useState({});
@@ -56,25 +59,29 @@ export default function DailyPlanner() {
 
   //  const statusFilter = searchParams.get('user_id') || '1'; //<--This could be how we pick from our recipes and theirs. simple button or filter
   const debouncedFilterTerm = useDebounce(searchTerm, 500);
-  const hasCompletedOnboarding = useHasCompletedOnboarding();
+
+  const macros = useNutritionalGoals();
+
   const { csrfToken } = useAuth();
 
   useEffect(() => {
-    let isRan = false;
+    if (!macros.calories) return;
 
     const paramsObj = {
       sortBy,
       sortDirection,
       limit: 10,
       page: databasepageNumber,
+      ...macros,
     };
 
     if (debouncedFilterTerm) {
       paramsObj.find = debouncedFilterTerm;
     }
+
     const params = new URLSearchParams(paramsObj);
 
-    async function initialFetch() {
+    async function getTailoredRecipes() {
       let data = null;
       let resp = null;
 
@@ -82,16 +89,17 @@ export default function DailyPlanner() {
       setIsLoading(true);
 
       try {
-        console.log('ParamsObj', `${BASE_URL}?${params}`);
-        resp = await baseFetch(`${BASE_URL}?${params}`);
+        resp = await baseFetch(`${BASE_URL}?${params}`, {
+          method: 'GET',
+          credentials: 'include',
+        });
 
         data = await resp;
 
-        if (!isRan) {
-          setRecipes(data.recipes);
-          setPagination(data.pagination);
-          setCount(0);
-        }
+        setRecipes(data.recipes);
+        setPagination(data.pagination);
+        setCount(0);
+
         setIsLoading(false);
       } catch (error) {
         if (
@@ -105,29 +113,18 @@ export default function DailyPlanner() {
         }
       }
     }
-    initialFetch();
-    return () => {
-      console.log('one render clean-up');
-      isRan = true;
-    };
-  }, [debouncedFilterTerm, sortBy, sortDirection, databasepageNumber]);
+    getTailoredRecipes();
+  }, [debouncedFilterTerm, sortBy, sortDirection, databasepageNumber, macros]);
 
   useEffect(() => {
-    let isRan = false;
-
     async function loadDailyMenu() {
       const { status, data } = await getDailyMenu();
-      if (isRan) return;
       if (status === 200) {
         setDailyMenuRecipes(data.recipes);
       }
     }
 
     loadDailyMenu();
-
-    return () => {
-      isRan = true;
-    };
   }, []);
 
   async function handleAddToPlanner(recipeId) {
@@ -135,6 +132,22 @@ export default function DailyPlanner() {
     if (status === 201) {
       setDailyMenuRecipes((prev) => [...prev, data]);
     }
+  }
+
+  async function handleRemoveFromPlanner(dailyMenuRecipeId) {
+    const { status, data } = await removeRecipeFromDailyMenu(
+      dailyMenuRecipeId,
+      csrfToken,
+    );
+    if (status === 204) {
+      setDailyMenuRecipes((prev) =>
+        prev.filter(
+          (recipe) => recipe.daily_menu_recipe_id !== dailyMenuRecipeId,
+        ),
+      );
+      return;
+    }
+    setError(data.message || 'Could not remove that meal. Please try again.');
   }
 
   async function previous() {
@@ -174,7 +187,10 @@ export default function DailyPlanner() {
   return (
     <main style={MAIN_CONTAINER}>
       {hasCompletedOnboarding && (
-        <DailyProgressContainer recipes={dailyMenuRecipes} />
+        <DailyProgressContainer
+          recipes={dailyMenuRecipes}
+          onRemoveRecipe={handleRemoveFromPlanner}
+        />
       )}
       <SearchInput
         searchTerm={searchTerm}
