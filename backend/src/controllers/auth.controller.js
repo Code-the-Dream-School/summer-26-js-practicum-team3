@@ -3,8 +3,15 @@ import jwt from 'jsonwebtoken';
 import crypto from 'node:crypto';
 import util from 'util';
 import { StatusCodes } from 'http-status-codes';
-import { userSchema, loginSchema } from '../validations/joi.input.validations.js';
-import { ValidationError, ConflictError, UnauthorizedError } from '../errors/index.js';
+import {
+  userSchema,
+  loginSchema,
+} from '../validations/joi.input.validations.js';
+import {
+  ValidationError,
+  ConflictError,
+  UnauthorizedError,
+} from '../errors/index.js';
 
 const scrypt = util.promisify(crypto.scrypt);
 const SALT_BYTES = 16;
@@ -89,9 +96,9 @@ const register = async (req, res) => {
 
   const existingUser = await prisma.users.findUnique({ where: { email } });
   if (existingUser) {
-      throw new ConflictError('Email already registered');
+    throw new ConflictError('Email already registered');
   }
-  
+
   const password_hash = await hashPassword(password);
   const user = await prisma.users.create({
     data: { email, password_hash, name },
@@ -136,7 +143,7 @@ const login = async (req, res) => {
   if (error) {
     throw new ValidationError(error.message);
   }
-  
+
   const { email, password } = value;
   const user = await prisma.users.findUnique({ where: { email } });
   if (!user) {
@@ -151,7 +158,7 @@ const login = async (req, res) => {
     name: user.name,
     csrfToken,
   });
-}
+};
 
 /**
  * @swagger
@@ -202,7 +209,8 @@ const getProfile = async (req, res) => {
         .status(StatusCodes.NOT_FOUND)
         .json({ message: 'Error: User not found' });
     }
-
+   
+  
     return res.status(StatusCodes.OK).json(user);
   } catch (error) {
     console.error('Get profile error:', error);
@@ -212,4 +220,40 @@ const getProfile = async (req, res) => {
   }
 };
 
-export { register, login, logout, getProfile, hashPassword, verifyPassword };
+/**
+ * @swagger
+ * /auth/me:
+ *   get:
+ *     summary: Get the current session
+ *     description: "Verify the JWT cookie is still valid and return the user's name plus the csrfToken embedded in that cookie. The frontend calls this on load to restore auth state and recover the csrfToken, which is held in memory and lost on reload."
+ *     responses:
+ *       200:
+ *         description: "Session is valid."
+ *       401:
+ *         description: "Unauthorized - no valid session."
+ */
+const getMe = async (req, res) => {
+  const user = await prisma.users.findUnique({
+    where: { id: req.user.id },
+    select: { name: true },
+  });
+
+  if (!user) {
+    throw new UnauthorizedError('No user is authenticated.');
+  }
+
+  return res.status(StatusCodes.OK).json({
+    name: user.name,
+    csrfToken: req.user.csrfToken,
+  });
+};
+
+export {
+  register,
+  login,
+  logout,
+  getProfile,
+  hashPassword,
+  verifyPassword,
+  getMe,
+};

@@ -39,7 +39,7 @@ function SignUpForm() {
         if (response.status === 409) {
           setModalOpen(true);
         } else if (response.status === 400) {
-          setErrorMessage('Invalid input data. Please check your fields.');
+          setErrorMessage(response.data.message || 'Invalid input data. Please check your fields.', );
         } else {
           setErrorMessage(response.data.message || 'Something went wrong.');
         }
@@ -83,7 +83,9 @@ function SignUpForm() {
           onChange={(e) => setPassword(e.target.value)}
           error={passwordError}
           helperText={
-            passwordError ? 'Password must be at least 8 characters' : ' '
+            passwordError
+              ? 'Password must be at least 8 characters and include upper and lower case letters, a number, and a special character.'
+              : ' '
           }
           fullWidth
         />
