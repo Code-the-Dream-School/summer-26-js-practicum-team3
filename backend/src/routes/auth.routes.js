@@ -4,6 +4,7 @@ import {
   login,
   logout,
   getProfile,
+  getMe,
 } from '../controllers/auth.controller.js';
 import verifyJWT from '../middleware/jwt.middleware.js';
 
@@ -17,5 +18,7 @@ router.post('/login', login);
 router.post('/logout', logout);
 // GET /api/auth/profile
 router.get('/profile', verifyJWT, getProfile);
+// GET /api/v1/auth/me
+router.get('/me', verifyJWT, getMe);
 
 export default router;
