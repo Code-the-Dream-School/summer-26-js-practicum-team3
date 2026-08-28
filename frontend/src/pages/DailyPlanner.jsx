@@ -218,7 +218,7 @@ export default function DailyPlanner() {
       {error && <h3 style={{ color: 'red' }}>{error}</h3>}
       {isLoading && <h1>Loading Recipes...</h1>}
 
-      <Box sx={{ display: 'flex', gap: 1, pt: 5 }}>
+      <Box sx={{ display: 'flex', gap: 1, pt: 3 }}>
         {recipes.slice(count, count + 2).map((recipe) => (
           <RecipeCard
             key={recipe.id}
