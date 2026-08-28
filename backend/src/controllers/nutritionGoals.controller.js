@@ -37,42 +37,72 @@ import { ValidationError } from '../errors/index.js';
  *         description: "No user is authenticated."
  */
 export async function createNutritionGoals(req, res) {
-  const { error, value } = nutritionGoalsSchema.validate(req.body ?? {}, {
+  const { goals, activityLevel, dob, sex } = req.body;
+  const { error, value } = nutritionGoalsSchema.validate(goals, {
     abortEarly: false,
   });
   if (error) {
     throw new ValidationError(error.message);
   }
 
-  const updatedUser = await prisma.users.update({
-    where: { id: req.user.id }, // assumes jwtMiddleware sets req.user
-    data: {
-      nutrition_goals: {
-        create: {
-          calories_target: value.calories_target,
-          protein_target: value.protein_target,
-          fat_target: value.fat_target,
-          carbs_target: value.carbs_target,
-        },
-      },
-    },
-    include: {
-      nutrition_goals: {
-        orderBy: { id: 'desc' },
-        take: 1,
-      },
-    },
-  });
+  // if (activityLevel || dob || sex) {
+  //   let multiplier = 1;
+  //   if (activityLevel) {
+  //     switch (activityLevel) {
+  //       case 'lightly_active':
+  //         multiplier += 0.15;
+  //         break;
+  //       case 'moderately_active':
+  //         multiplier += 0.27;
+  //         break;
+  //       case 'very_active':
+  //         multiplier += 0.4;
+  //         break;
+  //       default:
+  //         break;
+  //     }
+  //   }
+  //     if (dob) {
+  //      const age = figureOutAge()
+  //       if (age >= 18 && age <= 25) {
+  //     multiplier += 0.1;
+  //   } else if (age <= 35) {
+  //     multiplier += 0.05;
+  //   } else if (age <= 45) {
+  //     // no adjustment
+  //   } else if (age <= 55) {
+  //     multiplier -= 0.05;
+  //   } else if (age <= 65) {
+  //     multiplier -= 0.1;
+  //   } else {
+  //     multiplier -= 0.15;
+  //   }
+  // }
+  //   if (sex) {
+  //     switch (sex) {
+  //       case 'male':
+  //         multiplier += 0.05;
+  //         break;
+  //       case 'female':
+  //         multiplier -= 0.05;
+  //         break;
+  //       default:
+  //         break;
+  //     }
+  //   }
+  // }
+  // after all this we multiply the macro values to get their new goals
+  // someone else can figure out the dob problem, heres the rest
+  value.user_id = req.user.id;
 
-  const goal = updatedUser.nutrition_goals[0];
-
-  return res.status(StatusCodes.CREATED).json({
-    id: goal.id,
-    calories_target: goal.calories_target,
-    protein_target: goal.protein_target,
-    fat_target: goal.fat_target,
-    carbs_target: goal.carbs_target,
+  const createNutritionGoals = await prisma.nutrition_goals.create({
+    data: value,
   });
+  if (!createNutritionGoals) {
+    throw new Error('Failed to create Nutritional Goals');
+  }
+  res.status(StatusCodes.CREATED).json(createNutritionGoals);
+  return;
 }
 
 /**
