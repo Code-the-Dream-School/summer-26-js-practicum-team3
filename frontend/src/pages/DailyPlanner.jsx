@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Button, Box } from '@mui/material';
 
 import { baseFetch } from '../utils/api-helper.js';
-import { useHasCompletedOnboarding } from '../features/dailyMenu/useHasCompletedOnboarding.js';
+// import { useHasCompletedOnboarding } from '../features/dailyMenu/useHasCompletedOnboarding.js';
 
 import { SortBy } from '../components/SortBy.jsx';
 import { SearchInput } from '../components/SearchInput.jsx';
@@ -24,14 +24,26 @@ const MAX_DAILY_MEALS = 3;
 
 const BASE_URL = 'http://localhost:8080/api/v1/recipes/';
 
+const FILTER_CONTAINER = {
+  width: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: 1,
+  mx: { xs: 'auto', md: 0 },
+  pt: 2,
+};
+
 const MAIN_CONTAINER = {
-  height: '79dvh',
-  padding: '8px',
+  height: '91dvh',
   fontFamily: 'sans-serif',
   position: 'relative',
+  p: '8px',
+  pt: 2,
 };
 const RECIPE_NAV = {
   position: 'absolute',
+  top: 'auto',
   bottom: '3px',
   left: 0,
   right: 0,
@@ -46,7 +58,6 @@ export default function DailyPlanner() {
   const [count, setCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const hasCompletedOnboarding = useHasCompletedOnboarding();
 
   const [databasepageNumber, setDatabasePageNumber] = useState(1);
   const [, setPagination] = useState({});
@@ -185,33 +196,39 @@ export default function DailyPlanner() {
   }
 
   return (
-    <main style={MAIN_CONTAINER}>
-      {hasCompletedOnboarding && (
-        <DailyProgressContainer
-          recipes={dailyMenuRecipes}
-          onRemoveRecipe={handleRemoveFromPlanner}
+    <Box sx={MAIN_CONTAINER}>
+      {/* {hasCompletedOnboarding && ( */}
+      <DailyProgressContainer
+        recipes={dailyMenuRecipes}
+        onRemoveRecipe={handleRemoveFromPlanner}
+      />
+      {/* )} */}
+      <Box sx={FILTER_CONTAINER}>
+        <SearchInput
+          searchTerm={searchTerm}
+          onFilterChange={handleSearchChange}
         />
-      )}
-      <SearchInput
-        searchTerm={searchTerm}
-        onFilterChange={handleSearchChange}
-      />
-      <SortBy
-        onSortByChange={handleChangeSortBy}
-        onSortDirectionChange={handleChangeSortDirection}
-        sortBy={sortBy}
-        sortDirection={sortDirection}
-      />
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+        <SortBy
+          onSortByChange={handleChangeSortBy}
+          onSortDirectionChange={handleChangeSortDirection}
+          sortBy={sortBy}
+          sortDirection={sortDirection}
+        />
+      </Box>
+      {error && <h3 style={{ color: 'red' }}>{error}</h3>}
       {isLoading && <h1>Loading Recipes...</h1>}
-      {recipes.slice(count, count + 2).map((recipe) => (
-        <RecipeCard
-          key={recipe.id}
-          {...recipe}
-          handleAddToPlanner={handleAddToPlanner}
-          disabled={dailyMenuRecipes.length >= MAX_DAILY_MEALS}
-        />
-      ))}
+
+      <Box sx={{ display: 'flex', gap: 1, pt: 5 }}>
+        {recipes.slice(count, count + 2).map((recipe) => (
+          <RecipeCard
+            key={recipe.id}
+            {...recipe}
+            handleAddToPlanner={handleAddToPlanner}
+            disabled={dailyMenuRecipes.length >= MAX_DAILY_MEALS}
+          />
+        ))}
+      </Box>
+
       <Box sx={RECIPE_NAV}>
         <Button
           variant="contained"
@@ -233,6 +250,6 @@ export default function DailyPlanner() {
           next
         </Button>
       </Box>
-    </main>
+    </Box>
   );
 }

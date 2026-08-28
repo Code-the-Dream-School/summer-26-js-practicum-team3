@@ -31,13 +31,21 @@ const NO_OP = () => {};
  * @param {RecipeCardProps} props
  */
 
-const CARD_CONTAINER = { width: '65%', justifySelf: 'center', mb: 3 };
+const FLEX_COLUMN = { display: 'flex', flexDirection: 'column' };
+const CARD_CONTAINER = {
+  width: { xs: '50%', md: '65%' },
+  justifySelf: 'center',
+  mb: 3,
+  // p: 'auto',
+};
 const CARD_CONTEXT = {
   textAlign: 'left',
   p: '8px',
   '&:last-child': { pb: '12px' },
+  height: '100%',
+  ...FLEX_COLUMN,
+  justifyContent: 'space-between',
 };
-const FLEX_COLUMN = { display: 'flex', flexDirection: 'column' };
 const STACKED_TEXT = { textAlign: 'center', ...FLEX_COLUMN };
 const TITLE_BUTTON_CONTAINER = {
   display: 'flex',
