@@ -1,5 +1,4 @@
-/* eslint-disable react/prop-types */
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Box,
   Button,
@@ -10,8 +9,6 @@ import {
   Typography,
 } from '@mui/material';
 
-import { getNutritionGoals } from '../api/nutritionGoalsApi';
-
 const MACROS = [
   { goalKey: 'calories_target', recipeKey: 'calories', label: 'Calories' },
   { goalKey: 'carbs_target', recipeKey: 'carbs', label: 'Carbs' },
@@ -21,44 +18,24 @@ const MACROS = [
 
 const NO_OP = () => {};
 
+// goals/goalsError come from the page's single useNutritionalGoals() call
+// (see DailyPlanner.jsx) instead of fetching here too - avoids firing a
+// second, redundant /nutrition-goals request on every page load.
 export function DailyProgressContainer({
+  goals,
+  goalsError = '',
   recipes = [],
   onRemoveRecipe = NO_OP,
 }) {
-  const [goals, setGoals] = useState(null);
-  const [error, setError] = useState('');
   // Keep anchorEl even after the popup closes. If we clear it, the popup's
   // width drops to 0 while it is still fading out, and it looks broken.
   const [anchorEl, setAnchorEl] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  useEffect(() => {
-    let isRan = false;
-
-    async function loadGoals() {
-      const { status, data } = await getNutritionGoals();
-
-      if (isRan) return;
-
-      if (status !== 200) {
-        setError(data.message || 'Could not load your nutrition goals.');
-        return;
-      }
-
-      setGoals(data);
-    }
-
-    loadGoals();
-
-    return () => {
-      isRan = true;
-    };
-  }, []);
-
-  if (error) {
+  if (goalsError) {
     return (
       <Typography color="error" sx={{ mb: 3 }}>
-        {error}
+        {goalsError}
       </Typography>
     );
   }

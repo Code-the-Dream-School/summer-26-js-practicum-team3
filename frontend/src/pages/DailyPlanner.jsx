@@ -60,7 +60,7 @@ export default function DailyPlanner() {
   //  const statusFilter = searchParams.get('user_id') || '1'; //<--This could be how we pick from our recipes and theirs. simple button or filter
   const debouncedFilterTerm = useDebounce(searchTerm, 500);
 
-  const macros = useNutritionalGoals();
+  const { goals, macros, error: goalsError } = useNutritionalGoals();
 
   const { csrfToken } = useAuth();
 
@@ -188,6 +188,8 @@ export default function DailyPlanner() {
     <main style={MAIN_CONTAINER}>
       {hasCompletedOnboarding && (
         <DailyProgressContainer
+          goals={goals}
+          goalsError={goalsError}
           recipes={dailyMenuRecipes}
           onRemoveRecipe={handleRemoveFromPlanner}
         />
