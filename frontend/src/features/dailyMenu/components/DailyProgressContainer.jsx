@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -8,6 +8,8 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+
+import { ariaNotify } from '../../../utils/aria-notify';
 
 const MACROS = [
   { goalKey: 'calories_target', recipeKey: 'calories', label: 'Calories' },
@@ -28,10 +30,23 @@ export function DailyProgressContainer({
   isExpanded = false,
   setIsExpanded = NO_OP,
 }) {
-  // A callback ref (not useRef) so this is reactive state, safe to read
-  // during render - needed since we can open the popup programmatically
-  // (no click event to grab a target from), not only via a click here.
   const [triggerEl, setTriggerEl] = useState(null);
+
+  // This popup has no title of its own, so a screen reader user wouldn't otherwise 
+  // know it opened - announce it manually instead.
+  useEffect(() => {
+    if (!isExpanded) return;
+
+    const mealText =
+      recipes.length === 1 ? '1 meal' : `${recipes.length} meals`;
+    ariaNotify(`Daily meal summary expanded. ${mealText} added today.`);
+  }, [isExpanded, recipes.length]);
+
+  useEffect(() => {
+    if (goalsError) {
+      ariaNotify(goalsError, { priority: 'high' });
+    }
+  }, [goalsError]);
 
   if (goalsError) {
     return (
@@ -100,10 +115,12 @@ export function DailyProgressContainer({
         slotProps={{
           paper: {
             sx: {
-              // Make the popup a little bigger than the bars behind it
+              // A bit wider/taller than the trigger and nudged up-left, so
+              // this paper fully covers it - no sliver of the trigger
+              // should peek out from behind the edges.
               width: (triggerEl?.offsetWidth ?? 0) + 8,
-              ml: '-2px',
-              mt: '-2px',
+              ml: '-4px',
+              mt: '-4px',
               p: 1.5,
             },
           },
@@ -127,7 +144,7 @@ export function DailyProgressContainer({
         ) : (
           <Stack spacing={0}>
             {recipes.slice(0, 3).map((recipe) => {
-              // Same convention RecipeCard uses: instructions holding a URL 
+              // Same convention RecipeCard uses: instructions holding a URL
               // means it's an external recipe link.
               const isExternalRecipe = recipe.instructions?.startsWith('http');
 
