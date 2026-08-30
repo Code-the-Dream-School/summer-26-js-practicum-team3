@@ -1,10 +1,29 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
+// // this replaces the real db.js file with a fake one for this whole test file
+// vi.mock('../../src/db.js', () => ({
+//   // prisma.users.findUnique / prisma.users.create become empty fake functions
+//   prisma: { users: { findUnique: vi.fn(), create: vi.fn() } },
+// }));
 // this replaces the real db.js file with a fake one for this whole test file
-vi.mock('../../src/db.js', () => ({
-  // prisma.users.findUnique / prisma.users.create become empty fake functions
-  prisma: { users: { findUnique: vi.fn(), create: vi.fn() } },
-}));
+vi.mock('../../src/db.js', () => {
+  // 1. Define the mock client internally so hoisting doesn't break it
+  const mockClient = {
+    users: {
+      findUnique: vi.fn(),
+      create: vi.fn(),
+    },
+    nutritional_goals: {
+      create: vi.fn(),
+    },
+    // 2. The transaction function immediately executes your controller's callback
+    $transaction: vi.fn(async (callback) => {
+      return callback(mockClient);
+    }),
+  };
+  // 3. Return it as the expected prisma object
+  return { prisma: mockClient };
+});
 
 import { prisma } from '../../src/db.js';
 import {

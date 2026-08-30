@@ -45,8 +45,22 @@ describe('POST /api/v1/auth/register - through the full Express stack', () => {
   });
 
   it('returns 201, the user, and a jwt cookie on success', async () => {
-    vi.spyOn(prisma.users, 'findUnique').mockResolvedValue(null);
-    vi.spyOn(prisma.users, 'create').mockResolvedValue({ id: 1, ...validBody });
+    // vi.spyOn(prisma.users, 'findUnique').mockResolvedValue(null);
+    // vi.spyOn(prisma.users, 'create').mockResolvedValue({ id: 1, ...validBody });
+    vi.spyOn(prisma, '$transaction').mockImplementation(async (callback) => {
+      return callback({
+        users: {
+          create: vi.fn().mockResolvedValue({
+            id: 1,
+            email: validBody.email,
+            name: validBody.name,
+          }),
+        },
+        nutritional_goals: {
+          create: vi.fn().mockResolvedValue({}),
+        },
+      });
+    });
 
     const res = await request(app)
       .post('/api/v1/auth/register')
