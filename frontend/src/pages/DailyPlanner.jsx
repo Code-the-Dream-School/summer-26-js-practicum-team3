@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { Button, Box } from '@mui/material';
 
 import { baseFetch } from '../utils/api-helper.js';
-// import { useHasCompletedOnboarding } from '../features/dailyMenu/useHasCompletedOnboarding.js';
 
 import { SortBy } from '../components/SortBy.jsx';
 import { SearchInput } from '../components/SearchInput.jsx';
@@ -68,7 +67,6 @@ export default function DailyPlanner() {
 
   const [dailyMenuRecipes, setDailyMenuRecipes] = useState([]);
 
-  //  const statusFilter = searchParams.get('user_id') || '1'; //<--This could be how we pick from our recipes and theirs. simple button or filter
   const debouncedFilterTerm = useDebounce(searchTerm, 500);
 
   const macros = useNutritionalGoals();
@@ -197,12 +195,10 @@ export default function DailyPlanner() {
 
   return (
     <Box sx={MAIN_CONTAINER}>
-      {/* {hasCompletedOnboarding && ( */}
       <DailyProgressContainer
         recipes={dailyMenuRecipes}
         onRemoveRecipe={handleRemoveFromPlanner}
       />
-      {/* )} */}
       <Box sx={FILTER_CONTAINER}>
         <SearchInput
           searchTerm={searchTerm}

@@ -36,7 +36,6 @@ const CARD_CONTAINER = {
   width: { xs: '50%', md: '65%' },
   justifySelf: 'center',
   mb: 3,
-  // p: 'auto',
 };
 const CARD_CONTEXT = {
   textAlign: 'left',

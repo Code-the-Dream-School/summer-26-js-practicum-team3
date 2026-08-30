@@ -45,54 +45,6 @@ export async function createNutritionGoals(req, res) {
     throw new ValidationError(error.message);
   }
 
-  // if (activityLevel || dob || sex) {
-  //   let multiplier = 1;
-  //   if (activityLevel) {
-  //     switch (activityLevel) {
-  //       case 'lightly_active':
-  //         multiplier += 0.15;
-  //         break;
-  //       case 'moderately_active':
-  //         multiplier += 0.27;
-  //         break;
-  //       case 'very_active':
-  //         multiplier += 0.4;
-  //         break;
-  //       default:
-  //         break;
-  //     }
-  //   }
-  //     if (dob) {
-  //      const age = figureOutAge()
-  //       if (age >= 18 && age <= 25) {
-  //     multiplier += 0.1;
-  //   } else if (age <= 35) {
-  //     multiplier += 0.05;
-  //   } else if (age <= 45) {
-  //     // no adjustment
-  //   } else if (age <= 55) {
-  //     multiplier -= 0.05;
-  //   } else if (age <= 65) {
-  //     multiplier -= 0.1;
-  //   } else {
-  //     multiplier -= 0.15;
-  //   }
-  // }
-  //   if (sex) {
-  //     switch (sex) {
-  //       case 'male':
-  //         multiplier += 0.05;
-  //         break;
-  //       case 'female':
-  //         multiplier -= 0.05;
-  //         break;
-  //       default:
-  //         break;
-  //     }
-  //   }
-  // }
-  // after all this we multiply the macro values to get their new goals
-  // someone else can figure out the dob problem, heres the rest
   value.user_id = req.user.id;
 
   const createNutritionGoals = await prisma.nutrition_goals.create({

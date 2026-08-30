@@ -13,7 +13,6 @@ const BOTTOM_NAV_CONTAINER = {
   margin: '0 auto',
 };
 const APP_CONTAINER = {
-  border: '1px red solid',
   maxWidth: 'sm',
   left: 0,
   right: '25px',
@@ -33,7 +32,6 @@ export default function AppLayout() {
   };
   return (
     <Box sx={APP_CONTAINER}>
-      {/* Main content renders above navigation */}
       <main>
         <Outlet />
       </main>
@@ -48,16 +46,12 @@ export default function AppLayout() {
             <Button color="inherit" component={Link} to="/daily-planner">
               Daily Planner
             </Button>
-            {/* <Button color="inherit" component={Link} to="/goals">
-            Goals
-          </Button> */}
             <Button color="inherit" component={Link} to="/add-recipe">
               Add Recipe
             </Button>
             <Button color="inherit" component={Link} to="/profile">
               Profile
             </Button>
-            {/* {!hasCompletedOnboarding && <OnboardingFlag />} */}
             <Button color="inherit" onClick={handleLogout}>
               Log Out
             </Button>
