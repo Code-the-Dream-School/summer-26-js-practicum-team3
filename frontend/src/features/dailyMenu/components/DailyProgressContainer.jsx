@@ -18,19 +18,20 @@ const MACROS = [
 
 const NO_OP = () => {};
 
-// goals/goalsError come from the page's single useNutritionalGoals() call
-// (see DailyPlanner.jsx) instead of fetching here too - avoids firing a
-// second, redundant /nutrition-goals request on every page load.
+// isExpanded/setIsExpanded are lifted up to DailyPlanner too, 
+// so it can open this popup itself right after a recipe is added to the planner
 export function DailyProgressContainer({
   goals,
   goalsError = '',
   recipes = [],
   onRemoveRecipe = NO_OP,
+  isExpanded = false,
+  setIsExpanded = NO_OP,
 }) {
-  // Keep anchorEl even after the popup closes. If we clear it, the popup's
-  // width drops to 0 while it is still fading out, and it looks broken.
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [isExpanded, setIsExpanded] = useState(false);
+  // A callback ref (not useRef) so this is reactive state, safe to read
+  // during render - needed since we can open the popup programmatically
+  // (no click event to grab a target from), not only via a click here.
+  const [triggerEl, setTriggerEl] = useState(null);
 
   if (goalsError) {
     return (
@@ -66,17 +67,14 @@ export function DailyProgressContainer({
   return (
     <Box sx={{ mb: 3 }}>
       <Box
+        ref={setTriggerEl}
         role="button"
         tabIndex={0}
         aria-expanded={isExpanded}
-        onClick={(event) => {
-          setAnchorEl(event.currentTarget);
-          setIsExpanded((prev) => !prev);
-        }}
+        onClick={() => setIsExpanded((prev) => !prev)}
         onKeyDown={(event) => {
           if (event.key === 'Enter' || event.key === ' ') {
             event.preventDefault();
-            setAnchorEl(event.currentTarget);
             setIsExpanded((prev) => !prev);
           }
         }}
@@ -96,7 +94,7 @@ export function DailyProgressContainer({
 
       <Popover
         open={isExpanded}
-        anchorEl={anchorEl}
+        anchorEl={triggerEl}
         onClose={() => setIsExpanded(false)}
         anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
         transformOrigin={{ vertical: 'top', horizontal: 'left' }}
@@ -106,7 +104,7 @@ export function DailyProgressContainer({
             sx: {
               // Make the popup a little bigger than the bars behind it,
               // so it fully covers them with no edge showing.
-              width: (anchorEl?.offsetWidth ?? 0) + 8,
+              width: (triggerEl?.offsetWidth ?? 0) + 8,
               ml: '-2px',
               mt: '-2px',
               p: 1.5,

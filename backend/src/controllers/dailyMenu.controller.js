@@ -162,9 +162,7 @@ export async function removeRecipeFromDailyMenu(req, res) {
     where: { id },
     include: { daily_menus: { select: { user_id: true } } },
   });
-
-  // Same 404 whether the row doesn't exist or belongs to another user -
-  // don't leak which one it is.
+  
   if (!dailyMenuRecipe || dailyMenuRecipe.daily_menus.user_id !== req.user.id) {
     throw new NotFoundError('Daily menu recipe not found');
   }

@@ -56,6 +56,7 @@ export default function DailyPlanner() {
   const [sortDirection, setSortDirection] = useState('asc');
 
   const [dailyMenuRecipes, setDailyMenuRecipes] = useState([]);
+  const [isPlannerExpanded, setIsPlannerExpanded] = useState(false);
 
   //  const statusFilter = searchParams.get('user_id') || '1'; //<--This could be how we pick from our recipes and theirs. simple button or filter
   const debouncedFilterTerm = useDebounce(searchTerm, 500);
@@ -131,6 +132,7 @@ export default function DailyPlanner() {
     const { status, data } = await addRecipeToDailyMenu(recipeId, csrfToken);
     if (status === 201) {
       setDailyMenuRecipes((prev) => [...prev, data]);
+      setIsPlannerExpanded(true);
     }
   }
 
@@ -192,6 +194,8 @@ export default function DailyPlanner() {
           goalsError={goalsError}
           recipes={dailyMenuRecipes}
           onRemoveRecipe={handleRemoveFromPlanner}
+          isExpanded={isPlannerExpanded}
+          setIsExpanded={setIsPlannerExpanded}
         />
       )}
       <SearchInput
