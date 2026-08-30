@@ -78,40 +78,7 @@ export async function getNutritionGoals(req, res) {
   });
 
   if (!goal) {
-    const DEFAULT_BASE_MACROS = {
-      calories: 2000,
-      protein: 50,
-      fat: 75,
-      carbs: 270,
-    };
-    const updatedUser = await prisma.users.update({
-      where: { id: req.user.id }, // assumes jwtMiddleware sets req.user
-      data: {
-        nutrition_goals: {
-          create: {
-            calories_target: DEFAULT_BASE_MACROS.calories,
-            protein_target: DEFAULT_BASE_MACROS.protein,
-            fat_target: DEFAULT_BASE_MACROS.fat,
-            carbs_target: DEFAULT_BASE_MACROS.carbs,
-          },
-        },
-      },
-      include: {
-        nutrition_goals: {
-          orderBy: { id: 'desc' },
-          take: 1,
-        },
-      },
-    });
-
-    const goal = updatedUser.nutrition_goals[0];
-    return res.status(StatusCodes.OK).json({
-      id: goal.id,
-      calories_target: goal.calories_target,
-      protein_target: goal.protein_target,
-      fat_target: goal.fat_target,
-      carbs_target: goal.carbs_target,
-    });
+    throw new Error('No saved goals exist');
   }
 
   return res.status(StatusCodes.OK).json({
