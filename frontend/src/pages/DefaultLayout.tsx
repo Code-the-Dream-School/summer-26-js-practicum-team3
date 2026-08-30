@@ -35,9 +35,6 @@ export default function DefaultLayout() {
           <Button component={Link} to="/about" color="inherit">
             About
           </Button>
-          <Button component={Link} to="/contact" color="inherit">
-            Contact
-          </Button>
         </Stack>
       </Box>
       <main>
