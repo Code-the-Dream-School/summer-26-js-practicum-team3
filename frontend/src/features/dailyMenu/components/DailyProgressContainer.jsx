@@ -32,7 +32,7 @@ export function DailyProgressContainer({
 }) {
   const [triggerEl, setTriggerEl] = useState(null);
 
-  // This popup has no title of its own, so a screen reader user wouldn't otherwise 
+  // This popup has no title of its own, so a screen reader user wouldn't otherwise
   // know it opened - announce it manually instead.
   useEffect(() => {
     if (!isExpanded) return;
@@ -112,6 +112,7 @@ export function DailyProgressContainer({
         anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
         transformOrigin={{ vertical: 'top', horizontal: 'left' }}
         slots={{ transition: Fade }}
+        transitionDuration={0}
         slotProps={{
           paper: {
             sx: {
