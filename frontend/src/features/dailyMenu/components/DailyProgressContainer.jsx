@@ -18,7 +18,7 @@ const MACROS = [
 
 const NO_OP = () => {};
 
-// isExpanded/setIsExpanded are lifted up to DailyPlanner too, 
+// isExpanded/setIsExpanded are lifted up to DailyPlanner too,
 // so it can open this popup itself right after a recipe is added to the planner
 export function DailyProgressContainer({
   goals,
@@ -47,8 +47,6 @@ export function DailyProgressContainer({
     );
   }
 
-  // Recipe values come from the database as text, not numbers.
-  // If a value is missing, use 0 instead of NaN.
   const totals = recipes.reduce((acc, recipe) => {
     MACROS.forEach(({ recipeKey }) => {
       const value = Number(recipe[recipeKey]) || 0;
@@ -102,8 +100,7 @@ export function DailyProgressContainer({
         slotProps={{
           paper: {
             sx: {
-              // Make the popup a little bigger than the bars behind it,
-              // so it fully covers them with no edge showing.
+              // Make the popup a little bigger than the bars behind it
               width: (triggerEl?.offsetWidth ?? 0) + 8,
               ml: '-2px',
               mt: '-2px',
@@ -129,38 +126,56 @@ export function DailyProgressContainer({
           </Typography>
         ) : (
           <Stack spacing={0}>
-            {recipes.slice(0, 3).map((recipe) => (
-              <Box
-                key={recipe.daily_menu_recipe_id}
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  gap: 1,
-                  py: 0.75,
-                  '&:not(:last-of-type)': {
-                    borderBottom: '1px solid',
-                    borderColor: 'divider',
-                  },
-                }}
-              >
-                <Box>
-                  <Typography variant="body2" fontWeight={600}>
-                    {recipe.title}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {recipe.calories} cal · {recipe.carbs}g carbs · {recipe.fat}
-                    g fat · {recipe.protein}g protein
-                  </Typography>
-                </Box>
-                <Button
-                  size="small"
-                  onClick={() => onRemoveRecipe(recipe.daily_menu_recipe_id)}
+            {recipes.slice(0, 3).map((recipe) => {
+              // Same convention RecipeCard uses: instructions holding a URL 
+              // means it's an external recipe link.
+              const isExternalRecipe = recipe.instructions?.startsWith('http');
+
+              return (
+                <Box
+                  key={recipe.daily_menu_recipe_id}
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: 1,
+                    py: 0.75,
+                    '&:not(:last-of-type)': {
+                      borderBottom: '1px solid',
+                      borderColor: 'divider',
+                    },
+                  }}
                 >
-                  Remove
-                </Button>
-              </Box>
-            ))}
+                  <Box>
+                    <Typography
+                      variant="body2"
+                      fontWeight={600}
+                      // Typography defaults to <p> (block) here, but an <a>
+                      // is inline - force block so the layout stays the same either way.
+                      sx={{ display: 'block' }}
+                      {...(isExternalRecipe && {
+                        component: 'a',
+                        href: recipe.instructions,
+                        target: '_blank',
+                        rel: 'noopener noreferrer',
+                      })}
+                    >
+                      {recipe.title}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {recipe.calories} cal · {recipe.carbs}g carbs ·{' '}
+                      {recipe.fat}g fat · {recipe.protein}g protein
+                    </Typography>
+                  </Box>
+                  <Button
+                    size="small"
+                    onClick={() => onRemoveRecipe(recipe.daily_menu_recipe_id)}
+                  >
+                    Remove
+                  </Button>
+                </Box>
+              );
+            })}
           </Stack>
         )}
       </Popover>
