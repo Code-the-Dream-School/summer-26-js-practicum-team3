@@ -107,9 +107,9 @@ const register = async (req, res) => {
       select: { email: true, name: true, id: true },
     });
 
-    await tx.nutritional_goals.create({
+    await tx.nutrition_goals.create({
       data: {
-        userId: user.id,
+        user_id: user.id,
         calories_target: 2000,
         protein_target: 50,
         fat_target: 75,
