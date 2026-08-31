@@ -100,8 +100,24 @@ const register = async (req, res) => {
   }
 
   const password_hash = await hashPassword(password);
-  const user = await prisma.users.create({
-    data: { email, password_hash, name },
+
+  const user = await prisma.$transaction(async (tx) => {
+    const user = await tx.users.create({
+      data: { email, password_hash, name },
+      select: { email: true, name: true, id: true },
+    });
+
+    await tx.nutrition_goals.create({
+      data: {
+        user_id: user.id,
+        calories_target: 2000,
+        protein_target: 50,
+        fat_target: 75,
+        carbs_target: 275,
+      },
+    });
+
+    return user;
   });
   const csrfToken = setJwtCookie(req, res, user);
   return res.status(StatusCodes.CREATED).json({ name: user.name, csrfToken });
@@ -209,8 +225,7 @@ const getProfile = async (req, res) => {
         .status(StatusCodes.NOT_FOUND)
         .json({ message: 'Error: User not found' });
     }
-   
-  
+
     return res.status(StatusCodes.OK).json(user);
   } catch (error) {
     console.error('Get profile error:', error);

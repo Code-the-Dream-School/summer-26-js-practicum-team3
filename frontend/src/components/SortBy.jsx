@@ -8,14 +8,18 @@ import {
 } from '@mui/material';
 const CONTAINER = {
   mx: 0,
-  maxWidth: '100%',
+  maxWidth: { xs: '50%' },
   display: 'flex',
   flexDirection: 'row',
-  justifyContent: 'space-around',
+  justifyContent: { xs: 'flex-end', md: 'space-between' },
   alignItems: 'center',
   mb: 2,
 };
-const DISPLAY_SIZE = { width: '40%', p: 0 };
+const DISPLAY_SIZE = {
+  width: { xs: '45%', md: '40%' },
+  mx: { xs: '4px', md: 0 },
+};
+
 export function SortBy({
   sortBy,
   sortDirection,

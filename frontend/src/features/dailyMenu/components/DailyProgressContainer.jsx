@@ -78,7 +78,7 @@ export function DailyProgressContainer({
   });
 
   return (
-    <Box sx={{ mb: 3 }}>
+    <Box sx={{ mb: 3, maxWidth: '75%', mx: 'auto' }}>
       <Box
         ref={setTriggerEl}
         role="button"
