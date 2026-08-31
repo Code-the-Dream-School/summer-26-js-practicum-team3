@@ -66,10 +66,11 @@ export default function DailyPlanner() {
   const [sortDirection, setSortDirection] = useState('asc');
 
   const [dailyMenuRecipes, setDailyMenuRecipes] = useState([]);
+  const [isPlannerExpanded, setIsPlannerExpanded] = useState(false);
 
   const debouncedFilterTerm = useDebounce(searchTerm, 500);
 
-  const macros = useNutritionalGoals();
+  const { goals, macros, error: goalsError } = useNutritionalGoals();
 
   const { csrfToken } = useAuth();
 
@@ -140,6 +141,7 @@ export default function DailyPlanner() {
     const { status, data } = await addRecipeToDailyMenu(recipeId, csrfToken);
     if (status === 201) {
       setDailyMenuRecipes((prev) => [...prev, data]);
+      setIsPlannerExpanded(true);
     }
   }
 
@@ -196,9 +198,14 @@ export default function DailyPlanner() {
   return (
     <Box sx={MAIN_CONTAINER}>
       <DailyProgressContainer
+        goals={goals}
+        goalsError={goalsError}
         recipes={dailyMenuRecipes}
         onRemoveRecipe={handleRemoveFromPlanner}
+        isExpanded={isPlannerExpanded}
+        setIsExpanded={setIsPlannerExpanded}
       />
+
       <Box sx={FILTER_CONTAINER}>
         <SearchInput
           searchTerm={searchTerm}
@@ -214,7 +221,7 @@ export default function DailyPlanner() {
       {error && <h3 style={{ color: 'red' }}>{error}</h3>}
       {isLoading && <h1>Loading Recipes...</h1>}
 
-      <Box sx={{ display: 'flex', gap: 1, pt: 3 }}>
+      <Box sx={{ gap: 1, pt: 3 }}>
         {recipes.slice(count, count + 2).map((recipe) => (
           <RecipeCard
             key={recipe.id}
