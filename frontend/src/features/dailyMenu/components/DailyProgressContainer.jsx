@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { useEffect, useState } from 'react';
 import {
   Box,
@@ -10,7 +9,7 @@ import {
   Typography,
 } from '@mui/material';
 
-import { getNutritionGoals } from '../api/nutritionGoalsApi';
+import { ariaNotify } from '../../../utils/aria-notify';
 
 const MACROS = [
   { goalKey: 'calories_target', recipeKey: 'calories', label: 'Calories' },
@@ -21,44 +20,38 @@ const MACROS = [
 
 const NO_OP = () => {};
 
+// isExpanded/setIsExpanded are lifted up to DailyPlanner too,
+// so it can open this popup itself right after a recipe is added to the planner
 export function DailyProgressContainer({
+  goals,
+  goalsError = '',
   recipes = [],
   onRemoveRecipe = NO_OP,
+  isExpanded = false,
+  setIsExpanded = NO_OP,
 }) {
-  const [goals, setGoals] = useState(null);
-  const [error, setError] = useState('');
-  // Keep anchorEl even after the popup closes. If we clear it, the popup's
-  // width drops to 0 while it is still fading out, and it looks broken.
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [triggerEl, setTriggerEl] = useState(null);
+
+  // This popup has no title of its own, so a screen reader user wouldn't otherwise
+  // know it opened - announce it manually instead.
+  useEffect(() => {
+    if (!isExpanded) return;
+
+    const mealText =
+      recipes.length === 1 ? '1 meal' : `${recipes.length} meals`;
+    ariaNotify(`Daily meal summary expanded. ${mealText} added today.`);
+  }, [isExpanded, recipes.length]);
 
   useEffect(() => {
-    let isRan = false;
-
-    async function loadGoals() {
-      const { status, data } = await getNutritionGoals();
-
-      if (isRan) return;
-
-      if (status !== 200) {
-        setError(data.message || 'Could not load your nutrition goals.');
-        return;
-      }
-
-      setGoals(data);
+    if (goalsError) {
+      ariaNotify(goalsError, { priority: 'high' });
     }
+  }, [goalsError]);
 
-    loadGoals();
-
-    return () => {
-      isRan = true;
-    };
-  }, []);
-
-  if (error) {
+  if (goalsError) {
     return (
       <Typography color="error" sx={{ mb: 3 }}>
-        {error}
+        {goalsError}
       </Typography>
     );
   }
@@ -69,8 +62,6 @@ export function DailyProgressContainer({
     );
   }
 
-  // Recipe values come from the database as text, not numbers.
-  // If a value is missing, use 0 instead of NaN.
   const totals = recipes.reduce((acc, recipe) => {
     MACROS.forEach(({ recipeKey }) => {
       const value = Number(recipe[recipeKey]) || 0;
@@ -89,17 +80,14 @@ export function DailyProgressContainer({
   return (
     <Box sx={{ mb: 3 }}>
       <Box
+        ref={setTriggerEl}
         role="button"
         tabIndex={0}
         aria-expanded={isExpanded}
-        onClick={(event) => {
-          setAnchorEl(event.currentTarget);
-          setIsExpanded((prev) => !prev);
-        }}
+        onClick={() => setIsExpanded((prev) => !prev)}
         onKeyDown={(event) => {
           if (event.key === 'Enter' || event.key === ' ') {
             event.preventDefault();
-            setAnchorEl(event.currentTarget);
             setIsExpanded((prev) => !prev);
           }
         }}
@@ -119,19 +107,21 @@ export function DailyProgressContainer({
 
       <Popover
         open={isExpanded}
-        anchorEl={anchorEl}
+        anchorEl={triggerEl}
         onClose={() => setIsExpanded(false)}
         anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
         transformOrigin={{ vertical: 'top', horizontal: 'left' }}
         slots={{ transition: Fade }}
+        transitionDuration={0}
         slotProps={{
           paper: {
             sx: {
-              // Make the popup a little bigger than the bars behind it,
-              // so it fully covers them with no edge showing.
-              width: (anchorEl?.offsetWidth ?? 0) + 8,
-              ml: '-2px',
-              mt: '-2px',
+              // A bit wider/taller than the trigger and nudged up-left, so
+              // this paper fully covers it - no sliver of the trigger
+              // should peek out from behind the edges.
+              width: (triggerEl?.offsetWidth ?? 0) + 8,
+              ml: '-4px',
+              mt: '-4px',
               p: 1.5,
             },
           },
@@ -154,38 +144,56 @@ export function DailyProgressContainer({
           </Typography>
         ) : (
           <Stack spacing={0}>
-            {recipes.slice(0, 3).map((recipe) => (
-              <Box
-                key={recipe.daily_menu_recipe_id}
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  gap: 1,
-                  py: 0.75,
-                  '&:not(:last-of-type)': {
-                    borderBottom: '1px solid',
-                    borderColor: 'divider',
-                  },
-                }}
-              >
-                <Box>
-                  <Typography variant="body2" fontWeight={600}>
-                    {recipe.title}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {recipe.calories} cal · {recipe.carbs}g carbs · {recipe.fat}
-                    g fat · {recipe.protein}g protein
-                  </Typography>
-                </Box>
-                <Button
-                  size="small"
-                  onClick={() => onRemoveRecipe(recipe.daily_menu_recipe_id)}
+            {recipes.slice(0, 3).map((recipe) => {
+              // Same convention RecipeCard uses: instructions holding a URL
+              // means it's an external recipe link.
+              const isExternalRecipe = recipe.instructions?.startsWith('http');
+
+              return (
+                <Box
+                  key={recipe.daily_menu_recipe_id}
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: 1,
+                    py: 0.75,
+                    '&:not(:last-of-type)': {
+                      borderBottom: '1px solid',
+                      borderColor: 'divider',
+                    },
+                  }}
                 >
-                  Remove
-                </Button>
-              </Box>
-            ))}
+                  <Box>
+                    <Typography
+                      variant="body2"
+                      fontWeight={600}
+                      // Typography defaults to <p> (block) here, but an <a>
+                      // is inline - force block so the layout stays the same either way.
+                      sx={{ display: 'block' }}
+                      {...(isExternalRecipe && {
+                        component: 'a',
+                        href: recipe.instructions,
+                        target: '_blank',
+                        rel: 'noopener noreferrer',
+                      })}
+                    >
+                      {recipe.title}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {recipe.calories} cal · {recipe.carbs}g carbs ·{' '}
+                      {recipe.fat}g fat · {recipe.protein}g protein
+                    </Typography>
+                  </Box>
+                  <Button
+                    size="small"
+                    onClick={() => onRemoveRecipe(recipe.daily_menu_recipe_id)}
+                  >
+                    Remove
+                  </Button>
+                </Box>
+              );
+            })}
           </Stack>
         )}
       </Popover>

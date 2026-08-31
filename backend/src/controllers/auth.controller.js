@@ -47,8 +47,8 @@ const setJwtCookie = (req, res, user) => {
     id: user.id,
     csrfToken: crypto.randomUUID(),
   };
-  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
-  res.cookie('jwt', token, { ...cookieFlags(), maxAge: 3600000 }); // 1 hour expiration
+  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' });
+  res.cookie('jwt', token, { ...cookieFlags(), maxAge: 86400000 }); // 1 day expiration
   return payload.csrfToken;
 };
 

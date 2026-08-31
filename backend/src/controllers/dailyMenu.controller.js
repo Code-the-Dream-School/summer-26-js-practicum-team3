@@ -158,18 +158,16 @@ export async function removeRecipeFromDailyMenu(req, res) {
     throw new ValidationError('Invalid daily menu recipe id');
   }
 
-  const dailyMenuRecipe = await prisma.daily_menu_recipes.findUnique({
-    where: { id },
-    include: { daily_menus: { select: { user_id: true } } },
+  // One round trip instead of find-then-delete: deleteMany can filter
+  // through the relation, and count === 0 covers "not found" and "not
+  // yours" the same way - same 404 either way, don't leak which one it is.
+  const { count } = await prisma.daily_menu_recipes.deleteMany({
+    where: { id, daily_menus: { user_id: req.user.id } },
   });
 
-  // Same 404 whether the row doesn't exist or belongs to another user -
-  // don't leak which one it is.
-  if (!dailyMenuRecipe || dailyMenuRecipe.daily_menus.user_id !== req.user.id) {
+  if (count === 0) {
     throw new NotFoundError('Daily menu recipe not found');
   }
-
-  await prisma.daily_menu_recipes.delete({ where: { id } });
 
   return res.status(StatusCodes.NO_CONTENT).end();
 }
