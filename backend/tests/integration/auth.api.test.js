@@ -56,7 +56,7 @@ describe('POST /api/v1/auth/register - through the full Express stack', () => {
             name: validBody.name,
           }),
         },
-        nutritional_goals: {
+        nutrition_goals: {
           create: vi.fn().mockResolvedValue({}),
         },
       });

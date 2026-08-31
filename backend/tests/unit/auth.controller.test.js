@@ -13,7 +13,7 @@ vi.mock('../../src/db.js', () => {
       findUnique: vi.fn(),
       create: vi.fn(),
     },
-    nutritional_goals: {
+    nutrition_goals: {
       create: vi.fn(),
     },
     // 2. The transaction function immediately executes your controller's callback
