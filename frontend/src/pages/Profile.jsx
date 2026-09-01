@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getProfile } from '../features/auth/api/authApi';
+// import { useEditableState } from '../utils/customHooks/useEditibleState';
 import {
   Card,
   Box,
@@ -8,16 +9,20 @@ import {
   Grid,
   Divider,
   Button,
+  TextField,
+  MenuItem,
 } from '@mui/material';
 
 export default function Profile() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
       const { status, data } = await getProfile();
       if (status === 200) {
+        console.log('said data: ', data);
         setProfile(data);
       }
       setLoading(false);
@@ -25,12 +30,13 @@ export default function Profile() {
 
     fetchProfile();
   }, []);
-
-  if (loading) return <Typography>Loading...</Typography>;
-  if (!profile) return <Typography>Error loading profile.</Typography>;
-
+  async function handleUpdate() {
+    setIsEditing(false);
+  }
   return (
     <Box sx={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
+      {loading && <Typography>Loading...</Typography>}
+      {!profile && <Typography>Error loading profile.</Typography>}
       <Typography variant="h4" sx={{ mb: 3, fontWeight: 'bold' }}>
         My Profile
       </Typography>
@@ -47,41 +53,104 @@ export default function Profile() {
               <Typography variant="subtitle2" color="textSecondary">
                 Name:
               </Typography>
-              <Typography variant="body1">{profile?.name || 'N/A'}</Typography>
+              {isEditing ? (
+                <TextField
+                  variant="standard"
+                  label="name"
+                  value={profile.name}
+                />
+              ) : (
+                <Typography variant="body1">
+                  {profile?.name || 'N/A'}
+                </Typography>
+              )}
             </Grid>
             <Grid item xs={12} sm={6}>
               <Typography variant="subtitle2" color="textSecondary">
                 Email:
               </Typography>
-              <Typography variant="body1">{profile?.email || 'N/A'}</Typography>
+              {isEditing ? (
+                <TextField
+                  sx={{ width: '250px' }}
+                  variant="standard"
+                  label="email"
+                  value={profile.email}
+                />
+              ) : (
+                <Typography variant="body1">
+                  {profile?.email || 'N/A'}
+                </Typography>
+              )}
             </Grid>
             <Grid item xs={12} sm={6}>
               <Typography variant="subtitle2" color="textSecondary">
-                Sex:
+                Date of Birth:
               </Typography>
-              <Typography variant="body1">
-                {profile?.sex || 'Not provided'}
-              </Typography>
+              {isEditing ? (
+                <TextField variant="standard" label="dob" value={profile.dob} />
+              ) : (
+                <Typography variant="body1">
+                  {profile?.dob || 'Not provided'}
+                </Typography>
+              )}
             </Grid>
             <Grid item xs={12} sm={6}>
               <Typography variant="subtitle2" color="textSecondary">
                 Activity Level:
               </Typography>
-              <Typography variant="body1">
-                {profile?.activity_level || 'Not provided'}
-              </Typography>
+              {isEditing ? (
+                <ActivityLevelOptions value={profile.activity_level} />
+              ) : (
+                <Typography variant="body1">
+                  {profile?.activity_level || 'Not provided'}
+                </Typography>
+              )}
             </Grid>
           </Grid>
         </CardContent>
       </Card>
       <Box sx={{ display: 'flex', gap: 2 }}>
-        <Button variant="contained" color="primary">
-          Edit Profile
-        </Button>
+        {isEditing ? (
+          <Button
+            type="submit"
+            onClick={handleUpdate}
+            variant="contained"
+            color="primary"
+          >
+            Update
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            onClick={() => setIsEditing((p) => !p)}
+            variant="contained"
+            color="primary"
+          >
+            Edit
+          </Button>
+        )}
         <Button variant="outlined" color="secondary">
           Change Password
         </Button>
       </Box>
     </Box>
+  );
+}
+
+function ActivityLevelOptions({ value, handleOnChange }) {
+  return (
+    <TextField
+      sx={{ width: '200px' }}
+      select
+      onChange={(e) => handleOnChange(e.target.value)}
+      label="Activity Level"
+      value={value}
+      variant="standard"
+    >
+      <MenuItem value="sedentary">Sedentary</MenuItem>
+      <MenuItem value="light">Light</MenuItem>
+      <MenuItem value="medium">Medium</MenuItem>
+      <MenuItem value="very-active">Very Active</MenuItem>
+    </TextField>
   );
 }
