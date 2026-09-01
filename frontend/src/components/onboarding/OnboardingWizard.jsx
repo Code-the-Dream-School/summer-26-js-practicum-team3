@@ -6,6 +6,7 @@ import ActivityStep from './steps/ActivityStep';
 import DobStep from './steps/DobStep';
 import SexStep from './steps/SexStep';
 import { saveOnboarding } from '../../services/onboardingService';
+import { useAuth } from '../../features/auth/context/AuthContext';
 
 // Order matches the wireframe. To reorder (e.g. collect DOB/Sex/Activity
 // before Goals so recommended values can be pre-filled), just reorder this array.
@@ -25,6 +26,7 @@ const DEFAULT_GOALS = {
 };
 
 export default function OnboardingWizard({ onComplete = () => {} }) {
+  const { csrfToken } = useAuth();
   const [stepIndex, setStepIndex] = useState(0);
   const [formData, setFormData] = useState({
     goals: DEFAULT_GOALS,
@@ -49,7 +51,7 @@ export default function OnboardingWizard({ onComplete = () => {} }) {
     setSubmitting(true);
     setError(null);
     try {
-      await saveOnboarding(formData);
+      await saveOnboarding(formData, csrfToken);
       onComplete();
     } catch (err) {
       setError(err.message || 'Something went wrong saving your info.');

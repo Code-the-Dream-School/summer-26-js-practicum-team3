@@ -1,22 +1,49 @@
-export async function saveOnboarding(formData) {
-  const res = await fetch('/api/onboarding', {
-    method: 'POST',
+import { baseFetch } from '../utils/api-helper';
+
+const BASE_URL = 'http://localhost:8080/api/v1';
+
+async function patchUserProfile(formData, csrfToken) {
+  const body = {};
+  if (formData.dob) body.dob = formData.dob;
+  if (formData.sex) body.sex = formData.sex;
+  if (formData.activityLevel) body.activity_level = formData.activityLevel;
+
+  return baseFetch(`${BASE_URL}/users/me`, {
+    method: 'PATCH',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${localStorage.getItem('token')}`,
+      'X-CSRF-TOKEN': csrfToken,
+    },
+    body: JSON.stringify(body),
+  });
+}
+
+async function postNutritionGoals(formData, csrfToken) {
+  return baseFetch(`${BASE_URL}/nutrition-goals`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-TOKEN': csrfToken,
     },
     body: JSON.stringify({
-      goals: formData.goals, // calories, protein, fat, carbs
-      activityLevel: formData.activityLevel, // nullable, skippable
-      dob: formData.dob, // nullable, skippable
-      sex: formData.sex, // nullable, skippable
+      calories_target: formData.goals.calories,
+      protein_target: formData.goals.protein,
+      fat_target: formData.goals.fat,
+      carbs_target: formData.goals.carbs,
     }),
   });
+}
 
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new Error(body.error || 'Could not save onboarding data.');
+export async function saveOnboarding(formData, csrfToken) {
+  const hasProfileFields = formData.dob || formData.sex || formData.activityLevel;
+
+  const calls = [postNutritionGoals(formData, csrfToken)];
+  if (hasProfileFields) {
+    calls.push(patchUserProfile(formData, csrfToken));
   }
 
-  return res.json();
+  const [goalsResult] = await Promise.all(calls);
+  return goalsResult;
 }

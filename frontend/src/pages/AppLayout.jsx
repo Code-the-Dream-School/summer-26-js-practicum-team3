@@ -3,6 +3,7 @@ import { AppBar, Toolbar, Box, Button } from '@mui/material';
 import { useAuth } from '../features/auth/context/AuthContext';
 import { logoutUser } from '../features/auth/api/authApi';
 import { OnboardingFlag } from '../components/OnboardingFlag.jsx';
+import OnboardingReminder from '../components/onboarding/OnboardingReminder.jsx';
 import { useHasCompletedOnboarding } from '../features/dailyMenu/useHasCompletedOnboarding.js';
 
 //pull all matching in
@@ -97,6 +98,7 @@ export default function AppLayout() {
               Profile
             </Button>
             {!hasCompletedOnboarding && <OnboardingFlag />}
+            {!hasCompletedOnboarding && <OnboardingReminder />}
           </Toolbar>
         </AppBar>
       )}
