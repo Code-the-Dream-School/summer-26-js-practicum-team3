@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { baseFetch } from '../api-helper';
 
-const BASE_URL = 'http://localhost:8080/api/v1';
+const API_ORIGIN = import.meta.env.VITE_API_ORIGIN ?? '';
+const BASE_PATH = `${API_ORIGIN}/api/v1/nutrition-goals`;
 
 // Single source of truth for nutrition goals on the page - both
 // DailyProgressContainer (needs the raw *_target fields) and the tailored
@@ -16,7 +17,7 @@ export function useNutritionalGoals() {
 
     async function getNutritionGoals() {
       try {
-        const data = await baseFetch(`${BASE_URL}/nutrition-goals/`, {
+        const data = await baseFetch(BASE_PATH, {
           method: 'GET',
           credentials: 'include',
         });
