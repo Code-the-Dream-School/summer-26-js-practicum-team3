@@ -22,7 +22,7 @@ import { useNutritionalGoals } from '../utils/customHooks/useNutritionGoals.js';
 const MAX_DAILY_MEALS = 3;
 
 const API_ORIGIN = import.meta.env.VITE_API_ORIGIN ?? '';
-const BASE_PATH = `${API_ORIGIN}/api/v1/recipes/`;
+const BASE_PATH = `${API_ORIGIN}/api/v1/recipes`;
 
 const FILTER_CONTAINER = {
   width: '100%',

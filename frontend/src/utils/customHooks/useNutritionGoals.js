@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { baseFetch } from '../api-helper';
 
 const API_ORIGIN = import.meta.env.VITE_API_ORIGIN ?? '';
-const BASE_PATH = `${API_ORIGIN}/api/v1/nutrition-goals/`;
+const BASE_PATH = `${API_ORIGIN}/api/v1/nutrition-goals`;
 
 // Single source of truth for nutrition goals on the page - both
 // DailyProgressContainer (needs the raw *_target fields) and the tailored
