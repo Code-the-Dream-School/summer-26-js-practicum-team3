@@ -117,12 +117,25 @@ npm run db:generate
 
 ### Environment Variables
 
-- `DATABASE_URL` - Connection string for the PostgreSQL database 
-- `JWT_SECRET` - Secret key used to sign JWTs. Use a long, random string - do not commit a real value 
-Generate a secure value for `JWT_SECRET` with:
-```bash
-node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
-```
+`npm run init-env` copies `backend/.env.example` → `backend/.env` and
+`frontend/.env.example` → `frontend/.env`. Fill in the real values afterwards.
+
+**Backend (`backend/.env`)**
+
+- `DATABASE_URL` - Connection string for the PostgreSQL database.
+- `JWT_SECRET` - Secret key used to sign JWTs. Use a long, random string - do not commit a real value.
+  Generate one with:
+  ```bash
+  node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+  ```
+
+**Frontend (`frontend/.env`)** - the defaults work out of the box.
+
+- `VITE_PORT` - Port the frontend dev server runs on (default `8081`).
+- `VITE_TARGET` - Address of the backend (default `http://localhost:8080`). In dev, the frontend sends every request starting with `/api` to itself, and Vite forwards it to this address (set up in `frontend/vite.config.js`).
+- `VITE_API_ORIGIN` - Origin prefix prepended to API paths.
+  - Default empty (`""`), means same-origin: the frontend calls its own origin and the proxy (dev) forwards to the backend.
+  - Set a fullorigin only to call a backend directly, bypassing the proxy.
 
 ## 🧪 Available Scripts
 
