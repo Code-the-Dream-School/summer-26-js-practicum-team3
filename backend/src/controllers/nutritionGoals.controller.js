@@ -37,42 +37,24 @@ import { ValidationError } from '../errors/index.js';
  *         description: "No user is authenticated."
  */
 export async function createNutritionGoals(req, res) {
-  const { error, value } = nutritionGoalsSchema.validate(req.body ?? {}, {
+  const { goals, activityLevel, dob, sex } = req.body;
+  const { error, value } = nutritionGoalsSchema.validate(goals, {
     abortEarly: false,
   });
   if (error) {
     throw new ValidationError(error.message);
   }
 
-  const updatedUser = await prisma.users.update({
-    where: { id: req.user.id }, // assumes jwtMiddleware sets req.user
-    data: {
-      nutrition_goals: {
-        create: {
-          calories_target: value.calories_target,
-          protein_target: value.protein_target,
-          fat_target: value.fat_target,
-          carbs_target: value.carbs_target,
-        },
-      },
-    },
-    include: {
-      nutrition_goals: {
-        orderBy: { id: 'desc' },
-        take: 1,
-      },
-    },
-  });
+  value.user_id = req.user.id;
 
-  const goal = updatedUser.nutrition_goals[0];
-
-  return res.status(StatusCodes.CREATED).json({
-    id: goal.id,
-    calories_target: goal.calories_target,
-    protein_target: goal.protein_target,
-    fat_target: goal.fat_target,
-    carbs_target: goal.carbs_target,
+  const createNutritionGoals = await prisma.nutrition_goals.create({
+    data: value,
   });
+  if (!createNutritionGoals) {
+    throw new Error('Failed to create Nutritional Goals');
+  }
+  res.status(StatusCodes.CREATED).json(createNutritionGoals);
+  return;
 }
 
 /**
@@ -89,7 +71,6 @@ export async function createNutritionGoals(req, res) {
  *       404:
  *         description: "No nutrition goals have been saved for this user yet."
  */
-
 export async function getNutritionGoals(req, res) {
   const goal = await prisma.nutrition_goals.findFirst({
     where: { user_id: req.user.id },
@@ -97,40 +78,7 @@ export async function getNutritionGoals(req, res) {
   });
 
   if (!goal) {
-    const DEFAULT_BASE_MACROS = {
-      calories: 2000,
-      protein: 50,
-      fat: 75,
-      carbs: 270,
-    };
-    const updatedUser = await prisma.users.update({
-      where: { id: req.user.id }, // assumes jwtMiddleware sets req.user
-      data: {
-        nutrition_goals: {
-          create: {
-            calories_target: DEFAULT_BASE_MACROS.calories,
-            protein_target: DEFAULT_BASE_MACROS.protein,
-            fat_target: DEFAULT_BASE_MACROS.fat,
-            carbs_target: DEFAULT_BASE_MACROS.carbs,
-          },
-        },
-      },
-      include: {
-        nutrition_goals: {
-          orderBy: { id: 'desc' },
-          take: 1,
-        },
-      },
-    });
-
-    const goal = updatedUser.nutrition_goals[0];
-    return res.status(StatusCodes.OK).json({
-      id: goal.id,
-      calories_target: goal.calories_target,
-      protein_target: goal.protein_target,
-      fat_target: goal.fat_target,
-      carbs_target: goal.carbs_target,
-    });
+    throw new Error('No saved goals exist');
   }
 
   return res.status(StatusCodes.OK).json({
