@@ -2,7 +2,12 @@
 // npm install --save-dev prisma dotenv
 import { defineConfig, env } from 'prisma/config';
 import { loadEnvFile } from 'node:process';
-loadEnvFile();
+
+try {
+  loadEnvFile('.env');
+} catch {
+  /* no .env present — rely on the real environment */
+}
 
 const useLocal = process.env.DB_TARGET === 'local';
 
