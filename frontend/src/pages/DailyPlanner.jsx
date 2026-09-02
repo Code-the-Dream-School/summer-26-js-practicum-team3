@@ -110,8 +110,6 @@ export default function DailyPlanner() {
         setRecipes(data.recipes);
         setPagination(data.pagination);
         setCount(0);
-
-        setIsLoading(false);
       } catch (error) {
         if (
           debouncedFilterTerm ||
@@ -122,6 +120,8 @@ export default function DailyPlanner() {
         } else {
           setError(`Fetch Error\n${error.message}`);
         }
+      } finally {
+        setIsLoading(false);
       }
     }
     getTailoredRecipes();

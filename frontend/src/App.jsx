@@ -4,8 +4,8 @@ import AppLayout from './pages/AppLayout';
 import DailyPlanner from './pages/DailyPlanner';
 import AddRecipe from './pages/AddRecipe';
 import Profile from './pages/Profile';
-import About from './pages/About';
 import Home from './pages/Home';
+import About from './pages/About';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import OnboardingPage from './pages/OnboardingPage';
@@ -21,14 +21,35 @@ export default function App() {
     <AuthProvider>
       <Router>
         <Routes>
-          <Route path="signup" element={<SignUp />} />
-          <Route path="login" element={<Login />} />
           <Route path="" element={<DefaultLayout />}>
             <Route
               index
               element={
                 <PublicRoute>
                   <Home />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="login"
+              element={
+                <PublicRoute>
+                  <Login />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="signup"
+              element={
+                <PublicRoute>
+                  <SignUp />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="about"
+              element={
+                <PublicRoute>
                   <About />
                 </PublicRoute>
               }
