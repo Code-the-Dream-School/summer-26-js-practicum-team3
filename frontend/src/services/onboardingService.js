@@ -35,15 +35,18 @@ async function postNutritionGoals(formData, csrfToken) {
     }),
   });
 }
-
 export async function saveOnboarding(formData, csrfToken) {
   const hasProfileFields = formData.dob || formData.sex || formData.activityLevel;
+  const hasGoalsFields = formData.goals && (
+    formData.goals.calories || formData.goals.protein ||
+    formData.goals.fat || formData.goals.carbs
+  );
 
-  const calls = [postNutritionGoals(formData, csrfToken)];
-  if (hasProfileFields) {
-    calls.push(patchUserProfile(formData, csrfToken));
-  }
+  const calls = [];
+  if (hasProfileFields) calls.push(patchUserProfile(formData, csrfToken));
+  if (hasGoalsFields) calls.push(postNutritionGoals(formData, csrfToken));
 
-  const [goalsResult] = await Promise.all(calls);
-  return goalsResult;
+  if (calls.length === 0) return null;
+  const results = await Promise.all(calls);
+  return results[results.length - 1];
 }

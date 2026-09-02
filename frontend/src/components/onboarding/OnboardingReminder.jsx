@@ -22,8 +22,9 @@ export default function OnboardingReminder() {
         if (data.on_boarding === false) {
           setOpen(true);
         }
-      } catch {
-        // network error — don't block the app over a reminder banner
+      } catch (error) {
+        console.error('Failed to check onboarding status:', error);
+        // don't block the app over a reminder banner
       }
     }
 
