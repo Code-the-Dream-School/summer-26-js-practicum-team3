@@ -1,8 +1,9 @@
-const BASE_URL = 'http://localhost:8080/api/v1/daily-menu';
+const API_ORIGIN = import.meta.env.VITE_API_ORIGIN ?? '';
+const BASE_PATH = `${API_ORIGIN}/api/v1/daily-menu`;
 
 async function getDailyMenu() {
   try {
-    const response = await fetch(BASE_URL, {
+    const response = await fetch(BASE_PATH, {
       method: 'GET',
       credentials: 'include',
     });
@@ -18,7 +19,7 @@ async function getDailyMenu() {
 
 async function addRecipeToDailyMenu(recipeId, csrfToken) {
   try {
-    const response = await fetch(BASE_URL, {
+    const response = await fetch(BASE_PATH, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -39,7 +40,7 @@ async function addRecipeToDailyMenu(recipeId, csrfToken) {
 
 async function removeRecipeFromDailyMenu(dailyMenuRecipeId, csrfToken) {
   try {
-    const response = await fetch(`${BASE_URL}/recipes/${dailyMenuRecipeId}`, {
+    const response = await fetch(`${BASE_PATH}/recipes/${dailyMenuRecipeId}`, {
       method: 'DELETE',
       headers: {
         'X-CSRF-TOKEN': csrfToken,

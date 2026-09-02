@@ -2,7 +2,9 @@ import { baseFetch } from '../../utils/api-helper';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../auth/context/AuthContext';
 
-const BASE_URL = 'http://localhost:8080';
+const API_ORIGIN = import.meta.env.VITE_API_ORIGIN ?? '';
+const BASE_PATH = `${API_ORIGIN}/api/v1/users`;
+
 export function useHasCompletedOnboarding() {
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
   const { userName } = useAuth();
@@ -15,7 +17,7 @@ export function useHasCompletedOnboarding() {
     async function checkOnboardingStatus() {
       try {
         const resp = await baseFetch(
-          `${BASE_URL}/api/v1/users/me/onboarding-status`,
+          `${BASE_PATH}/me/onboarding-status`,
           {
             method: 'GET',
             credentials: 'include',
