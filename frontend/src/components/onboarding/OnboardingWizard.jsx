@@ -25,10 +25,10 @@ const STEPS = [
 ];
 
 const DEFAULT_GOALS = {
-  calories: 2000,
-  protein: 50,
-  fat: 70,
-  carbs: 275,
+  calories_target: 2000,
+  protein_target: 50,
+  fat_target: 70,
+  carbs_target: 275,
 };
 
 export default function OnboardingWizard({ onComplete = () => {} }) {
