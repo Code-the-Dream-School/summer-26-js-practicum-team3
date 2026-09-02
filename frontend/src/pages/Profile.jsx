@@ -29,7 +29,7 @@ export default function Profile() {
       setLoading(false);
     };
 
-    fetchProfile();
+    // fetchProfile();
   }, []);
 
   function handleSubmit(e) {
@@ -149,10 +149,10 @@ export default function Profile() {
         {isEditing ? (
           <Button
             type="submit"
-            onClick={handleSubmit}
             variant="contained"
             color="primary"
             disabled={!isEditing}
+            key="update-button"
           >
             Update
           </Button>
@@ -162,6 +162,7 @@ export default function Profile() {
             onClick={() => setIsEditing(true)}
             variant="contained"
             color="primary"
+            key="edit-button"
           >
             Edit
           </Button>
