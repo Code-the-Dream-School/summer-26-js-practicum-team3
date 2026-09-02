@@ -38,6 +38,15 @@ const teamMembers = [
     initials: 'SM',
     bio: 'I came into Code the Dream with a decade of experience in product marketing and tech — launching AI and SaaS products, working alongside engineering teams, and creating technical documentation for developers. Learning to build the products I have spent years marketing felt like the natural next step. Through this program I am growing my full-stack development skills and deepening my understanding of how technology is actually made — which makes me a sharper strategist and a more credible voice in every technical conversation I am part of.',
   },
+  {
+    name: 'Terri-Ann Walker',
+    role: 'Software Engineer',
+    email: 'terriann.walker@gmail.com',
+    github: 'https://github.com/terriberri82',
+    linkedin: 'https://www.linkedin.com/in/terri-annwalker/',
+    initials: 'TW',
+    bio: 'I spent ten years in technical operations and platform support, troubleshooting live systems, working alongside engineering teams, and helping instructors and users solve problems in real time. Somewhere in there I realized I wanted to build the tools instead of supporting them, so I joined Code the Dream to move into full-stack development..',
+  },
 ];
 
 export default function About() {
