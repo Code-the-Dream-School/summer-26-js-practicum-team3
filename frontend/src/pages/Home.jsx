@@ -70,22 +70,6 @@ export default function Home() {
           Track your daily nutrients with a simple meal planner. Build around
           your goals.
         </Typography>
-
-        <Button
-          component={Link}
-          to="/signup"
-          variant="contained"
-          size="large"
-          sx={{
-            minWidth: 140,
-            px: 3,
-            py: 1.5,
-            borderRadius: 2,
-            fontWeight: 700,
-          }}
-        >
-          Sign Up
-        </Button>
       </Container>
 
       {/* Main section */}

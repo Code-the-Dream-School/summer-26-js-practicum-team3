@@ -6,7 +6,6 @@ import {
   AppBar,
   Toolbar,
   Typography,
-  Stack,
 } from '@mui/material';
 import WelcomeStep from './steps/WelcomeStep';
 import GoalsStep from './steps/GoalsStep';
@@ -86,17 +85,6 @@ export default function OnboardingWizard({ onComplete = () => {} }) {
           <Typography variant="subtitle1" fontWeight={600}>
             Today Eatz
           </Typography>
-          <Stack direction="row" spacing={2}>
-            <Typography variant="body2" color="text.secondary">
-              Home
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              About
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Contact
-            </Typography>
-          </Stack>
         </Toolbar>
       </AppBar>
 

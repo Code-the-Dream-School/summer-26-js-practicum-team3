@@ -67,8 +67,8 @@ async function getProfile() {
   }
 }
 
-async function getMe (){
-try {
+async function getMe() {
+  try {
     const response = await fetch(`${BASE_PATH}/me`, {
       method: 'GET',
       credentials: 'include',
