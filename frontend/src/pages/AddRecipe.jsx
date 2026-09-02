@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import { Box, TextField } from '@mui/material';
+import { useAuth } from '../features/auth/context/AuthContext';
+
+const API_ORIGIN = import.meta.env.VITE_API_ORIGIN ?? '';
+const BASE_PATH = `${API_ORIGIN}/api/v1/recipes`;
 
 export default function AddRecipe() {
+  const { csrfToken } = useAuth();
   const [formData, setFormData] = useState({
     title: '',
     instructions: '',
@@ -13,13 +18,18 @@ export default function AddRecipe() {
     carbs: '',
     fat: '',
   });
+
   async function handleSubmit(e) {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:8080/api/v1/recipes/', {
+      const response = await fetch(BASE_PATH, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken,
+        },
         body: JSON.stringify(formData),
+        credentials: 'include',
       });
       if (response.ok) {
         alert('Recipe saved successfully');

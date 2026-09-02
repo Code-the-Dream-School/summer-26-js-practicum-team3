@@ -1,3 +1,5 @@
+import { join, resolve } from 'node:path';
+
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -68,11 +70,16 @@ app.use('/api/v1/daily-menu', DailyMenuRouter);
 // swagger route
 app.use('/swagger/v1/docs', SwaggerRouter);
 
-// Root route
-app.get('/', (req, res) => {
-  res.send('Backend API is running');
-});
+// Serve frontend in production (before error/notFound middlewares)
+if (process.env.NODE_ENV === 'production') {
+  const clientDist = resolve(import.meta.dirname, '../../frontend/dist');
+  app.use(express.static(clientDist));
+  app.use((_req, res) => {
+    res.sendFile(join(clientDist, 'index.html'));
+  });
+}
 
 app.use(notFound);
 app.use(errorHandler);
+
 export default app;

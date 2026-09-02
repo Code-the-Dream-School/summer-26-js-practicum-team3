@@ -1,4 +1,4 @@
-import { loadEnvFile } from 'node:process';
+import { loadEnvFile } from '../../env.js';
 import { Pool } from 'pg';
 
 loadEnvFile();

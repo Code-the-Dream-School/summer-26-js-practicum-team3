@@ -1,4 +1,4 @@
-import { loadEnvFile } from 'node:process';
+import { loadEnvFile } from '../env.js';
 
 import { PrismaNeon } from '@prisma/adapter-neon';
 import { PrismaPg } from '@prisma/adapter-pg';

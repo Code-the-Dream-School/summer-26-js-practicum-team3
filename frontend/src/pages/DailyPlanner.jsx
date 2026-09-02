@@ -21,7 +21,8 @@ import { useNutritionalGoals } from '../utils/customHooks/useNutritionGoals.js';
 
 const MAX_DAILY_MEALS = 3;
 
-const BASE_URL = 'http://localhost:8080/api/v1/recipes/';
+const API_ORIGIN = import.meta.env.VITE_API_ORIGIN ?? '';
+const BASE_PATH = `${API_ORIGIN}/api/v1/recipes`;
 
 const FILTER_CONTAINER = {
   width: '100%',
@@ -99,7 +100,7 @@ export default function DailyPlanner() {
       setIsLoading(true);
 
       try {
-        resp = await baseFetch(`${BASE_URL}?${params}`, {
+        resp = await baseFetch(`${BASE_PATH}?${params}`, {
           method: 'GET',
           credentials: 'include',
         });

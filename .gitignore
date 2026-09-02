@@ -13,7 +13,9 @@ node_modules/
 # =========================
 # Build output
 # =========================
-dist/
+**/dist/
+backend/public/assets/*
+backend/public/index.html
 build/
 
 # =========================
