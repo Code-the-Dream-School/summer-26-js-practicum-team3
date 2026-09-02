@@ -16,12 +16,12 @@ import {
 export default function Profile() {
   const [profile, setProfile] = useState({
     activity_level: 'sedentary',
-    created_at: null,
-    dob: null,
-    email: null,
-    id: null,
-    name: null,
-    sex: null,
+    created_at: '',
+    dob: '',
+    email: '',
+    id: '',
+    name: '',
+    sex: '',
   });
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -48,16 +48,19 @@ export default function Profile() {
       activity_level: currentValue,
     }));
   }
+  function handleSubmit(e) {
+    console.log('handle submit');
+    e.preventDefault();
+  }
   async function handleUpdate(e) {
     e.preventDefault();
+    console.log('handling update');
     setIsEditing(false);
   }
   return (
     <Box
       component="form"
-      onSubmit={(e) => {
-        e.preventDefault();
-      }}
+      onSubmit={handleSubmit}
       sx={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}
     >
       {loading && <Typography>Loading...</Typography>}
@@ -139,6 +142,7 @@ export default function Profile() {
             onClick={handleUpdate}
             variant="contained"
             color="primary"
+            disabled={!isEditing}
           >
             Update
           </Button>
@@ -152,9 +156,9 @@ export default function Profile() {
             Edit
           </Button>
         )}
-        <Button variant="outlined" color="secondary">
+        {/* <Button variant="outlined" color="secondary">
           Change Password
-        </Button>
+        </Button> */}
       </Box>
     </Box>
   );
