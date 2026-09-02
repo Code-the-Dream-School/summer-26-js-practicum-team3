@@ -1,15 +1,11 @@
-import { loadEnvFile } from 'node:process';
+import { loadEnvFile } from '../env.js';
 
 import { PrismaNeon } from '@prisma/adapter-neon';
 import { PrismaPg } from '@prisma/adapter-pg';
 
 import { PrismaClient } from './generated/prisma/client.ts';
 
-try {
-  loadEnvFile();
-} catch {
-  // Allow a silent failure
-}
+loadEnvFile();
 
 // Flip DB_TARGET=local in .env to point the app at LOCAL_DATABASE_URL instead
 // of Neon. DATABASE_URL (Neon) is never touched, so switching back just means
