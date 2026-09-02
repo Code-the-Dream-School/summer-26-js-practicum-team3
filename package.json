@@ -8,8 +8,8 @@
     "frontend"
   ],
   "scripts": {
-		"build": "npm run build --workspace=frontend && cp -r frontend/dist backend/public",
-		"start": "cd backend && npm run start",
+		"build": "npm run build --workspace=frontend && npm run build --workspace=backend",
+		"start": "npm run start --workspace=backend",
     "dev": "concurrently \"npm:dev:*\"",
     "dev:frontend": "npm run dev --workspace=frontend",
     "dev:backend": "npm run dev --workspace=backend",
@@ -25,7 +25,7 @@
     "test": "npm run --workspace=backend test",
     "test:joi": "npm run --workspace=backend test:joi",
     "test:recipe-api": "npm run --workspace=backend test:recipe-api",
-    "prepare": "husky"
+    "prepare": "husky || true"
   },
   "devDependencies": {
     "concurrently": "10.0.4",
