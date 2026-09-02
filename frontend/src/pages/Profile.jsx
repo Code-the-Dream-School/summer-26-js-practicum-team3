@@ -14,49 +14,30 @@ import {
 } from '@mui/material';
 
 export default function Profile() {
-  const [profile, setProfile] = useState({
-    activity_level: 'sedentary',
-    created_at: '',
-    dob: '',
-    email: '',
-    id: '',
-    name: '',
-    sex: '',
-  });
+  const [profile, setProfile] = useState({});
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
+  // const [saveUpdates, setSaveUpdates] = useState({});
 
   useEffect(() => {
     const fetchProfile = async () => {
       const { status, data } = await getProfile();
       if (status === 200) {
         console.log('said data: ', data);
-        setProfile((prev) => ({
-          ...data,
-          activity_level:
-            data.activity_level === null ? prev.activity_level : 'sedentary',
-        }));
+        setProfile(data);
       }
       setLoading(false);
     };
 
     fetchProfile();
   }, []);
-  function handleChange(currentValue) {
-    setProfile((previous) => ({
-      ...previous,
-      activity_level: currentValue,
-    }));
-  }
+
   function handleSubmit(e) {
+    e.preventDefault();
     console.log('handle submit');
-    e.preventDefault();
+    console.log(profile);
   }
-  async function handleUpdate(e) {
-    e.preventDefault();
-    console.log('handling update');
-    setIsEditing(false);
-  }
+
   return (
     <Box
       component="form"
@@ -82,7 +63,16 @@ export default function Profile() {
                 Name:
               </Typography>
               {isEditing ? (
-                <TextField variant="standard" value={profile.name} />
+                <TextField
+                  onChange={(e) =>
+                    setProfile((previous) => ({
+                      ...previous,
+                      name: e.target.value,
+                    }))
+                  }
+                  variant="standard"
+                  value={profile.name}
+                />
               ) : (
                 <Typography variant="body1">
                   {profile?.name || 'N/A'}
@@ -95,6 +85,12 @@ export default function Profile() {
               </Typography>
               {isEditing ? (
                 <TextField
+                  onChange={(e) =>
+                    setProfile((previous) => ({
+                      ...previous,
+                      email: e.target.value,
+                    }))
+                  }
                   sx={{ width: '250px' }}
                   variant="standard"
                   value={profile.email}
@@ -110,7 +106,16 @@ export default function Profile() {
                 Date of Birth:
               </Typography>
               {isEditing ? (
-                <TextField variant="standard" placeholder="MM/DD/YYYY" />
+                <TextField
+                  onChange={(e) =>
+                    setProfile((previous) => ({
+                      ...previous,
+                      dob: e.target.value,
+                    }))
+                  }
+                  variant="standard"
+                  placeholder="MM/DD/YYYY"
+                />
               ) : (
                 <Typography variant="body1">
                   {profile?.dob || 'Not provided'}
@@ -123,8 +128,13 @@ export default function Profile() {
               </Typography>
               {isEditing ? (
                 <ActivityLevelOptions
-                  onChange={handleChange}
-                  value={profile.activity_level}
+                  onChange={(value) => {
+                    setProfile((previous) => ({
+                      ...previous,
+                      activity_level: value,
+                    }));
+                  }}
+                  value={profile.activity_level || ''}
                 />
               ) : (
                 <Typography variant="body1">
@@ -139,7 +149,7 @@ export default function Profile() {
         {isEditing ? (
           <Button
             type="submit"
-            onClick={handleUpdate}
+            onClick={handleSubmit}
             variant="contained"
             color="primary"
             disabled={!isEditing}
@@ -149,7 +159,7 @@ export default function Profile() {
         ) : (
           <Button
             type="button"
-            onClick={() => setIsEditing((p) => !p)}
+            onClick={() => setIsEditing(true)}
             variant="contained"
             color="primary"
           >
