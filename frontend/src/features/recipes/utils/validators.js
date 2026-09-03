@@ -94,5 +94,5 @@ export {
   validateCalories,
   validateProtein,
   validateCarbs,
-  validateFats,
-};
+  validateFat, 
+}; 
