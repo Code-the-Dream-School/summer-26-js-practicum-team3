@@ -3,8 +3,15 @@ import jwt from 'jsonwebtoken';
 import crypto from 'node:crypto';
 import util from 'util';
 import { StatusCodes } from 'http-status-codes';
-import { userSchema, loginSchema } from '../validations/joi.input.validations.js';
-import { ValidationError, ConflictError, UnauthorizedError } from '../errors/index.js';
+import {
+  userSchema,
+  loginSchema,
+} from '../validations/joi.input.validations.js';
+import {
+  ValidationError,
+  ConflictError,
+  UnauthorizedError,
+} from '../errors/index.js';
 
 const scrypt = util.promisify(crypto.scrypt);
 const SALT_BYTES = 16;
@@ -40,8 +47,8 @@ const setJwtCookie = (req, res, user) => {
     id: user.id,
     csrfToken: crypto.randomUUID(),
   };
-  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
-  res.cookie('jwt', token, { ...cookieFlags(), maxAge: 3600000 }); // 1 hour expiration
+  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' });
+  res.cookie('jwt', token, { ...cookieFlags(), maxAge: 86400000 }); // 1 day expiration
   return payload.csrfToken;
 };
 
@@ -89,12 +96,28 @@ const register = async (req, res) => {
 
   const existingUser = await prisma.users.findUnique({ where: { email } });
   if (existingUser) {
-      throw new ConflictError('Email already registered');
+    throw new ConflictError('Email already registered');
   }
-  
+
   const password_hash = await hashPassword(password);
-  const user = await prisma.users.create({
-    data: { email, password_hash, name },
+
+  const user = await prisma.$transaction(async (tx) => {
+    const user = await tx.users.create({
+      data: { email, password_hash, name },
+      select: { email: true, name: true, id: true },
+    });
+
+    await tx.nutrition_goals.create({
+      data: {
+        user_id: user.id,
+        calories_target: 2000,
+        protein_target: 50,
+        fat_target: 75,
+        carbs_target: 275,
+      },
+    });
+
+    return user;
   });
   const csrfToken = setJwtCookie(req, res, user);
   return res.status(StatusCodes.CREATED).json({ name: user.name, csrfToken });
@@ -136,7 +159,7 @@ const login = async (req, res) => {
   if (error) {
     throw new ValidationError(error.message);
   }
-  
+
   const { email, password } = value;
   const user = await prisma.users.findUnique({ where: { email } });
   if (!user) {
@@ -151,7 +174,7 @@ const login = async (req, res) => {
     name: user.name,
     csrfToken,
   });
-}
+};
 
 /**
  * @swagger
@@ -212,4 +235,40 @@ const getProfile = async (req, res) => {
   }
 };
 
-export { register, login, logout, getProfile, hashPassword, verifyPassword };
+/**
+ * @swagger
+ * /auth/me:
+ *   get:
+ *     summary: Get the current session
+ *     description: "Verify the JWT cookie is still valid and return the user's name plus the csrfToken embedded in that cookie. The frontend calls this on load to restore auth state and recover the csrfToken, which is held in memory and lost on reload."
+ *     responses:
+ *       200:
+ *         description: "Session is valid."
+ *       401:
+ *         description: "Unauthorized - no valid session."
+ */
+const getMe = async (req, res) => {
+  const user = await prisma.users.findUnique({
+    where: { id: req.user.id },
+    select: { name: true },
+  });
+
+  if (!user) {
+    throw new UnauthorizedError('No user is authenticated.');
+  }
+
+  return res.status(StatusCodes.OK).json({
+    name: user.name,
+    csrfToken: req.user.csrfToken,
+  });
+};
+
+export {
+  register,
+  login,
+  logout,
+  getProfile,
+  hashPassword,
+  verifyPassword,
+  getMe,
+};

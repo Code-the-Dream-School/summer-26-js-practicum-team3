@@ -1,13 +1,14 @@
-const BASE_URL = 'http://localhost:8080/api/v1'; 
+import { baseFetch } from '../utils/api-helper';
+
+const BASE_URL = 'http://localhost:8080/api/v1';
 
 async function patchUserProfile(formData, csrfToken) {
- 
   const body = {};
   if (formData.dob) body.dob = formData.dob;
   if (formData.sex) body.sex = formData.sex;
   if (formData.activityLevel) body.activity_level = formData.activityLevel;
 
-    const res = await fetch(`${BASE_URL}/users/me`,{
+  return baseFetch(`${BASE_URL}/users/me`, {
     method: 'PATCH',
     credentials: 'include',
     headers: {
@@ -16,17 +17,10 @@ async function patchUserProfile(formData, csrfToken) {
     },
     body: JSON.stringify(body),
   });
-
-  if (!res.ok) {
-    const errorBody = await res.json().catch(() => ({}));
-    throw new Error(errorBody.error || errorBody.message || 'Could not save profile details.');
-  }
-
-  return res.json();
 }
 
 async function postNutritionGoals(formData, csrfToken) {
-  const res = await fetch(`${BASE_URL}/nutrition-goals`, {
+  return baseFetch(`${BASE_URL}/nutrition-goals`, {
     method: 'POST',
     credentials: 'include',
     headers: {
@@ -40,13 +34,21 @@ async function postNutritionGoals(formData, csrfToken) {
       carbs_target: formData.goals.carbs,
     }),
   });
+}
+export async function saveOnboarding(formData, csrfToken) {
+  const hasProfileFields = formData.dob || formData.sex || formData.activityLevel;
+  const hasGoalsFields = formData.goals && (
+    formData.goals.calories || formData.goals.protein ||
+    formData.goals.fat || formData.goals.carbs
+  );
 
-  if (!res.ok) {
-    const errorBody = await res.json().catch(() => ({}));
-    throw new Error(errorBody.error || errorBody.message || 'Could not save nutrition goals.');
-  }
+  const calls = [];
+  if (hasProfileFields) calls.push(patchUserProfile(formData, csrfToken));
+  if (hasGoalsFields) calls.push(postNutritionGoals(formData, csrfToken));
 
-  return res.json();
+  if (calls.length === 0) return null;
+  const results = await Promise.all(calls);
+  return results[results.length - 1];
 }
 
 export async function saveOnboarding(formData, csrfToken) {

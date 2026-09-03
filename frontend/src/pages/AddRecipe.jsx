@@ -1,8 +1,24 @@
-import styles from './AddRecipe.module.css';
 import { useState } from 'react';
 import { Box, TextField } from '@mui/material';
+import { useAuth } from '../features/auth/context/AuthContext';
+import {
+  validateTitle,
+  validateInstructions,
+  validateIngredients,
+  validateServings,
+  validateTotalTime,
+  validateCalories,
+  validateProtein,
+  validateCarbs,
+  validateFat,
+} from '../features/recipes/utils/validators';
+
+
+const API_ORIGIN = import.meta.env.VITE_API_ORIGIN ?? '';
+const BASE_PATH = `${API_ORIGIN}/api/v1/recipes`;
 
 export default function AddRecipe() {
+  const { csrfToken } = useAuth();
   const [formData, setFormData] = useState({
     title: '',
     instructions: '',
@@ -14,21 +30,24 @@ export default function AddRecipe() {
     carbs: '',
     fat: '',
   });
+
   async function handleSubmit(e) {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:8080/api/v1/recipes/', {
+      const response = await fetch(BASE_PATH, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken,
+        },
         body: JSON.stringify(formData),
+        credentials: 'include',
       });
       if (response.ok) {
-        const data = await response.json();
-        console.log('confirm response', data);
         alert('Recipe saved successfully');
       }
     } catch (error) {
-      console.log('Sending created recipe to back', error);
+      console.log('Sending created recipe failed', error);
     }
   }
 
@@ -49,7 +68,7 @@ export default function AddRecipe() {
   return (
     <Box sx={{ padding: '2rem', margin: '2rem' }}>
       <h2>Add Recipe</h2>
-      <form className={styles.formContainer} onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit}>
         <Box sx={{ mb: 2 }}>
           <TextField
             fullWidth

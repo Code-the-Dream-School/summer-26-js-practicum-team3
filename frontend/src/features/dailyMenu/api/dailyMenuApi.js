@@ -1,8 +1,9 @@
-const BASE_URL = 'http://localhost:8080/api/v1/daily-menu';
+const API_ORIGIN = import.meta.env.VITE_API_ORIGIN ?? '';
+const BASE_PATH = `${API_ORIGIN}/api/v1/daily-menu`;
 
 async function getDailyMenu() {
   try {
-    const response = await fetch(BASE_URL, {
+    const response = await fetch(BASE_PATH, {
       method: 'GET',
       credentials: 'include',
     });
@@ -18,7 +19,7 @@ async function getDailyMenu() {
 
 async function addRecipeToDailyMenu(recipeId, csrfToken) {
   try {
-    const response = await fetch(BASE_URL, {
+    const response = await fetch(BASE_PATH, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -37,4 +38,27 @@ async function addRecipeToDailyMenu(recipeId, csrfToken) {
   }
 }
 
-export { getDailyMenu, addRecipeToDailyMenu };
+async function removeRecipeFromDailyMenu(dailyMenuRecipeId, csrfToken) {
+  try {
+    const response = await fetch(`${BASE_PATH}/recipes/${dailyMenuRecipeId}`, {
+      method: 'DELETE',
+      headers: {
+        'X-CSRF-TOKEN': csrfToken,
+      },
+      credentials: 'include',
+    });
+
+    if (response.status === 204) {
+      return { status: response.status, data: null };
+    }
+
+    const data = await response.json();
+
+    return { status: response.status, data };
+  } catch (err) {
+    console.error('removeRecipeFromDailyMenu failed:', err);
+    return { status: 0, data: { message: 'Unable to reach the server.' } };
+  }
+}
+
+export { getDailyMenu, addRecipeToDailyMenu, removeRecipeFromDailyMenu };
