@@ -1,17 +1,37 @@
 import { Link, Outlet, useNavigate, useLocation } from 'react-router';
-import { AppBar, Toolbar, Box, Button } from '@mui/material';
+import { AppBar, Toolbar, Box, Button, Typography } from '@mui/material';
 import { useAuth } from '../features/auth/context/AuthContext';
 import { logoutUser } from '../features/auth/api/authApi';
 
+const THEME_STUFF = {
+  // px: { xs: 2, md: 6 },
+  // py: 2,
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  bgcolor: 'common.white',
+  border: '1px solid #dcebe0',
+};
 const BOTTOM_NAV_CONTAINER = {
   position: 'fixed',
   bottom: 0,
   top: 'auto',
-  maxHeight: '50px',
+  maxHeight: '300px',
   left: 0,
   right: 0,
   margin: '0 auto',
+  ...THEME_STUFF,
 };
+// const APP_CONTAINER = {
+//   px: { xs: 2, md: 6 },
+//   py: 2,
+//   display: 'flex',
+//   alignItems: 'center',
+//   justifyContent: 'space-between',
+//   bgcolor: 'common.white',
+//   border: '1px solid #dcebe0',
+// };
 const APP_CONTAINER = {
   maxWidth: 'sm',
   left: 0,
@@ -19,7 +39,14 @@ const APP_CONTAINER = {
   margin: '0 auto',
   minHeight: '92dvh',
 };
-const JUSTIFY_AROUND = { justifyContent: 'space-around' };
+// const JUSTIFY_AROUND = { justifyContent: 'space-around' };
+const NAV_LINK_LAYOUT = {
+  width: { xs: '60%', md: '40%' },
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-around',
+  padding: '8px',
+};
 export default function AppLayout() {
   const { logout } = useAuth();
   const location = useLocation();
@@ -37,22 +64,50 @@ export default function AppLayout() {
       </main>
       {location.pathname !== '/onboarding' && (
         <AppBar
-          color="primary"
+          // color="primary"
           sx={BOTTOM_NAV_CONTAINER}
           component="nav"
           aria-label="Bottom navigation"
         >
-          <Toolbar sx={JUSTIFY_AROUND}>
-            <Button color="inherit" component={Link} to="/daily-planner">
+          {/* BANNER */}
+          <Typography
+            component={Link}
+            color="primary"
+            to="/"
+            sx={{
+              fontSize: '1.4rem',
+              fontWeight: 700,
+              textDecoration: 'none',
+            }}
+          >
+            Today Eatz
+          </Typography>
+          <Toolbar sx={NAV_LINK_LAYOUT}>
+            <Button
+              component={Link}
+              variant="outlined"
+              size="small"
+              to="/daily-planner"
+            >
               Daily Planner
             </Button>
-            <Button color="inherit" component={Link} to="/add-recipe">
+            <Button
+              component={Link}
+              variant="outlined"
+              size="small"
+              to="/add-recipe"
+            >
               Add Recipe
             </Button>
-            <Button color="inherit" component={Link} to="/profile">
+            <Button
+              component={Link}
+              variant="outlined"
+              size="small"
+              to="/profile"
+            >
               Profile
             </Button>
-            <Button color="inherit" onClick={handleLogout}>
+            <Button variant="outlined" size="small" onClick={handleLogout}>
               Log Out
             </Button>
           </Toolbar>
