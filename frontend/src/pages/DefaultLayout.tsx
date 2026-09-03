@@ -18,6 +18,8 @@ export default function DefaultLayout() {
         }}
       >
         <Typography
+          component={Link}
+          to="/"
           sx={{
             color: 'primary.main',
             fontSize: '1.4rem',
@@ -28,15 +30,25 @@ export default function DefaultLayout() {
           Today Eatz
         </Typography>
 
-        <Stack direction="row" spacing={{ xs: 1, md: 3 }}>
-          <Button component={Link} to="/" color="inherit">
-            Home
-          </Button>
-          <Button component={Link} to="/about" color="inherit">
+        <Stack direction="row" spacing={1.5}>
+          <Button component={Link} to="/about" variant="outlined" size="small">
             About
+          </Button>
+
+          <Button component={Link} to="/login" variant="outlined" size="small">
+            Login
+          </Button>
+          <Button
+            component={Link}
+            to="/signup"
+            variant="contained"
+            size="small"
+          >
+            Sign Up
           </Button>
         </Stack>
       </Box>
+
       <main>
         <Outlet />
       </main>

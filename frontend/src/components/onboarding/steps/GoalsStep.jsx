@@ -2,10 +2,10 @@ import { Typography, TextField, Button, Grid, Alert, MobileStepper, Link } from 
 import StepCard from '../StepCard';
 
 const FIELDS = [
-  { key: 'calories', label: 'Calories', unit: 'kcal' },
-  { key: 'protein', label: 'Protein', unit: 'g' },
-  { key: 'fat', label: 'Fat', unit: 'g' },
-  { key: 'carbs', label: 'Carb', unit: 'g' },
+  { key: 'calories_target', label: 'Calories', unit: 'kcal' },
+  { key: 'protein_target', label: 'Protein', unit: 'g' },
+  { key: 'fat_target', label: 'Fat', unit: 'g' },
+  { key: 'carbs_target', label: 'Carb', unit: 'g' },
 ];
 
 const FDA_GUIDELINES_URL =

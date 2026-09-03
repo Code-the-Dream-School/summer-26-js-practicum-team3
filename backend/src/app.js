@@ -70,7 +70,7 @@ app.use('/api/v1/daily-menu', DailyMenuRouter);
 // swagger route
 app.use('/swagger/v1/docs', SwaggerRouter);
 
-// Serve frontend in production (before error/notFound middlewares)
+// Serve frontend in production (after API routes, before error middleware)
 if (process.env.NODE_ENV === 'production') {
   const clientDist = resolve(import.meta.dirname, '../../frontend/dist');
   app.use(express.static(clientDist));
