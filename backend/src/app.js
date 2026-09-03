@@ -35,14 +35,6 @@ app.use(express.json());
 app.use(morgan('dev'));
 app.use(cookieParser());
 
-if (process.env.NODE_ENV === 'production') {
-  const clientDist = resolve(import.meta.dirname, '../../frontend/dist');
-  app.use(express.static(clientDist));
-  app.get('*path', (_req, res) => {
-    res.sendFile(join(clientDist, 'index.html'));
-  });
-}
-
 if (process.env.NODE_ENV !== 'test') {
   app.use((req, res, next) => {
     console.log(req.method, req.path, req.query);
@@ -77,6 +69,15 @@ app.use('/api/v1/daily-menu', DailyMenuRouter);
 
 // swagger route
 app.use('/swagger/v1/docs', SwaggerRouter);
+
+// Serve frontend in production (after API routes, before error middleware)
+if (process.env.NODE_ENV === 'production') {
+  const clientDist = resolve(import.meta.dirname, '../../frontend/dist');
+  app.use(express.static(clientDist));
+  app.use((_req, res) => {
+    res.sendFile(join(clientDist, 'index.html'));
+  });
+}
 
 app.use(notFound);
 app.use(errorHandler);

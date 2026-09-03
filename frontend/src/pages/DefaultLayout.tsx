@@ -18,6 +18,8 @@ export default function DefaultLayout() {
         }}
       >
         <Typography
+          component={Link}
+          to="/"
           sx={{
             color: 'primary.main',
             fontSize: '1.4rem',
