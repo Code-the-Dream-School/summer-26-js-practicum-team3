@@ -59,8 +59,8 @@ export default function DailyPlanner() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const [databasepageNumber, setDatabasePageNumber] = useState(1);
-  const [, setPagination] = useState({});
+  const [databasePageNumber, setDatabasePageNumber] = useState(1);
+  const [pagination, setPagination] = useState({});
 
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('calories');
@@ -82,7 +82,7 @@ export default function DailyPlanner() {
       sortBy,
       sortDirection,
       limit: 10,
-      page: databasepageNumber,
+      page: databasePageNumber,
       ...macros,
     };
 
@@ -125,7 +125,7 @@ export default function DailyPlanner() {
       }
     }
     getTailoredRecipes();
-  }, [debouncedFilterTerm, sortBy, sortDirection, databasepageNumber, macros]);
+  }, [debouncedFilterTerm, sortBy, sortDirection, databasePageNumber, macros]);
 
   useEffect(() => {
     async function loadDailyMenu() {
@@ -164,8 +164,8 @@ export default function DailyPlanner() {
 
   async function previous() {
     setCount((prev) => prev - 2);
-    if (count === 0 && databasepageNumber > 1) {
-      const previousPageNumber = databasepageNumber - 1;
+    if (count === 0 && databasePageNumber > 1) {
+      const previousPageNumber = databasePageNumber - 1;
       setDatabasePageNumber(previousPageNumber);
       setCount(0);
       setRecipes([]);
@@ -173,6 +173,10 @@ export default function DailyPlanner() {
   }
 
   function next() {
+    console.log('****************');
+    console.log('database number\n', databasePageNumber);
+    console.log('pagination object\n', pagination);
+    console.log('------------------');
     setCount((prev) => prev + 2);
     if (count + 2 === 10) {
       setDatabasePageNumber((p) => p + 1);
@@ -235,20 +239,22 @@ export default function DailyPlanner() {
 
       <Box sx={RECIPE_NAV}>
         <Button
+          key="previous-button"
           variant="contained"
           size="large"
           type="button"
-          disabled={count === 0 && databasepageNumber === 1}
+          disabled={count === 0 || pagination.hasPrev === false}
           onClick={previous}
         >
           prev
         </Button>
 
         <Button
+          key="next-button"
           variant="contained"
           size="large"
           type="button"
-          disabled={count === 10}
+          disabled={count === 10 || pagination.hasNext === false}
           onClick={next}
         >
           next
