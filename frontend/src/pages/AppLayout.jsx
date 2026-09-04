@@ -24,6 +24,7 @@ const APP_CONTAINER = {
 };
 const JUSTIFY_AROUND = { justifyContent: 'space-around' };
 export default function AppLayout() {
+  const hasCompletedOnboarding = useHasCompletedOnboarding();
   const { logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
