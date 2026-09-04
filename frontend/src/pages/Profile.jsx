@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { getProfile } from '../features/auth/api/authApi';
-// import { useEditableState } from '../utils/customHooks/useEditibleState';
+import { baseFetch } from '../utils/api-helper';
+import { useAuth } from '../features/auth/context/AuthContext';
+
 import {
   Card,
   Box,
@@ -13,29 +15,56 @@ import {
   MenuItem,
 } from '@mui/material';
 
+const API_ORIGIN = import.meta.env.VITE_API_ORIGIN ?? '';
+const BASE_PATH = `${API_ORIGIN}/api/v1/users/me`;
+
 export default function Profile() {
   const [profile, setProfile] = useState({});
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
-  // const [saveUpdates, setSaveUpdates] = useState({});
+  const { csrfToken } = useAuth();
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const { status, data } = await getProfile();
+      let { status, data } = await getProfile();
       if (status === 200) {
-        console.log('said data: ', data);
+        data.dob = data.dob.split('T')[0];
+        console.log('said data: ', data.dob);
+
         setProfile(data);
       }
       setLoading(false);
     };
 
-    // fetchProfile();
+    fetchProfile();
   }, []);
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    console.log('handle submit');
-    console.log(profile);
+
+    const payload = {
+      name: profile.name,
+      email: profile.email,
+      dob: profile.dob,
+      activity_level: profile.activity_level,
+    };
+    try {
+      let data = await baseFetch(BASE_PATH, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken,
+        },
+        body: JSON.stringify(payload),
+        credentials: 'include',
+      });
+
+      data.dob = data.dob.split('T')[0];
+      setProfile(() => ({ ...data }));
+      setIsEditing(false);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   return (
@@ -107,6 +136,7 @@ export default function Profile() {
               </Typography>
               {isEditing ? (
                 <TextField
+                  type="date"
                   onChange={(e) =>
                     setProfile((previous) => ({
                       ...previous,
@@ -114,7 +144,7 @@ export default function Profile() {
                     }))
                   }
                   variant="standard"
-                  placeholder="MM/DD/YYYY"
+                  placeholder="YYYY/MM/DD"
                 />
               ) : (
                 <Typography variant="body1">

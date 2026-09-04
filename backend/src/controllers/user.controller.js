@@ -1,6 +1,9 @@
 import { StatusCodes } from 'http-status-codes';
 import { prisma } from '../db.js';
-import { updateMeSchema } from '../validations/joi.input.validations.js';
+import {
+  // updateMeSchema,
+  updateUserProfile,
+} from '../validations/joi.input.validations.js';
 import { ValidationError } from '../errors/index.js';
 /**
  * @swagger
@@ -32,20 +35,22 @@ import { ValidationError } from '../errors/index.js';
  *         description: "No user is authenticated."
  */
 export async function updateProfile(req, res) {
-  const { error, value } = updateMeSchema.validate(req.body ?? {}, {
+  const { error, value } = updateUserProfile.validate(req.body ?? {}, {
     abortEarly: false,
   });
   if (error) {
     throw new ValidationError(error.message);
   }
 
-  const updatedUser = await prisma.users.update({
+  let updatedUser = await prisma.users.update({
     where: { id: req.user.id },
     data: value,
   });
+
   if (!updatedUser) {
     throw new Error('User Updates failed');
   }
+
   return res.status(StatusCodes.OK).json(updatedUser);
 }
 
