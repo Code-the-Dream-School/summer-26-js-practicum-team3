@@ -1,3 +1,5 @@
+import { join, resolve } from 'node:path';
+
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -12,7 +14,7 @@ import NutritionGoalsRouter from './routes/nutritionGoals.routes.js';
 import DailyMenuRouter from './routes/dailyMenu.routes.js';
 import SwaggerRouter from './routes/swagger-docs.routes.js';
 import notFound from './middleware/not-found.middleware.js';
-import errorHandler from './middleware/error-handler.middleware.js'
+import errorHandler from './middleware/error-handler.middleware.js';
 
 const app = express();
 
@@ -46,7 +48,6 @@ if (process.env.NODE_ENV !== 'test') {
         path: req.path,
         query: req.query,
         status: res.statusCode,
-        headers: res.getHeaders(),
       });
     });
     next();
@@ -61,19 +62,24 @@ app.use('/api/v1/recipes', RecipeRouter);
 
 // onboarding routes
 app.use('/api/v1/users', UserRouter);
-app.use('/api/v1/nutrition-goals', NutritionGoalsRouter);
 
+app.use('/api/v1/nutrition-goals', NutritionGoalsRouter);
 // daily menu routes
 app.use('/api/v1/daily-menu', DailyMenuRouter);
 
 // swagger route
-// app.use('/swagger/v1/docs', SwaggerRouter);
+app.use('/swagger/v1/docs', SwaggerRouter);
 
-// Root route
-app.get('/', (req, res) => {
-  res.send('Backend API is running');
-});
+// Serve frontend in production (after API routes, before error middleware)
+if (process.env.NODE_ENV === 'production') {
+  const clientDist = resolve(import.meta.dirname, '../../frontend/dist');
+  app.use(express.static(clientDist));
+  app.use((_req, res) => {
+    res.sendFile(join(clientDist, 'index.html'));
+  });
+}
 
 app.use(notFound);
 app.use(errorHandler);
+
 export default app;

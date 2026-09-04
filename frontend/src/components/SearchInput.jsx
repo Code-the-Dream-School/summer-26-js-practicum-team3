@@ -1,13 +1,14 @@
 /* eslint-disable react/prop-types */
 import { FormControl, TextField } from '@mui/material';
 const SEARCH_CONTAINER = {
-  width: '95%',
+  width: { xs: '45%', md: '95%' },
+  mb: { xs: '16px', md: 0 },
   display: 'flex',
   justifyContent: 'space-around',
   alignItems: 'center',
 };
 const SEARCH_BAR = {
-  width: '50%',
+  width: { xs: '100%', md: '50%' },
   alignText: 'center',
 };
 export function SearchInput({ searchTerm, onFilterChange }) {

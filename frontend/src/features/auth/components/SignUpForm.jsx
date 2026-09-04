@@ -9,6 +9,7 @@ import {
 import { TextField, Button, Stack, Alert } from '@mui/material';
 import DuplicateEmail from './DuplicateEmail';
 import Modal from '../../../components/shared/Modal';
+import { useAuth } from '../context/AuthContext';
 
 function SignUpForm() {
   const [name, setName] = useState('');
@@ -24,6 +25,7 @@ function SignUpForm() {
   const nameError = name.length > 0 && !isValidName(name);
   const emailError = email.length > 0 && !isValidEmail(email);
   const passwordError = password.length > 0 && !isValidPassword(password);
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
@@ -39,12 +41,13 @@ function SignUpForm() {
         if (response.status === 409) {
           setModalOpen(true);
         } else if (response.status === 400) {
-          setErrorMessage('Invalid input data. Please check your fields.');
+          setErrorMessage(response.data.message || 'Invalid input data. Please check your fields.', );
         } else {
           setErrorMessage(response.data.message || 'Something went wrong.');
         }
         return;
       }
+      login(response.data);
       navigate('/onboarding');
     } catch (error) {
       setErrorMessage('Submission failed: A critical error occurred');
@@ -83,7 +86,9 @@ function SignUpForm() {
           onChange={(e) => setPassword(e.target.value)}
           error={passwordError}
           helperText={
-            passwordError ? 'Password must be at least 8 characters' : ' '
+            passwordError
+              ? 'Password must be at least 8 characters and include upper and lower case letters, a number, and a special character.'
+              : ' '
           }
           fullWidth
         />

@@ -10,7 +10,7 @@ import {
  * /recipes:
  *   get:
  *     summary: Get a list of recipes
- *     description: Fetch recipes with pagination. You can also search by title and sort by nutrition facts.
+ *     description: Fetch recipes with pagination. You can also search by title, sort by nutrition facts, and filter recipes based on nutritional goals. Daily nutritional targets are divided by three meals per day before filtering.
  *     parameters:
  *       - in: query
  *         name: page
@@ -22,7 +22,7 @@ import {
  *         name: limit
  *         schema:
  *           type: integer
- *           default: 9
+ *           default: 10
  *         description: The number of recipes per page.
  *       - in: query
  *         name: find
@@ -33,14 +33,36 @@ import {
  *         name: sortBy
  *         schema:
  *           type: string
+ *           default: calories
  *           enum: [protein, carbs, fat, calories]
  *         description: Pick a nutrition field to sort the results.
  *       - in: query
  *         name: sortDirection
  *         schema:
  *           type: string
+ *           default: asc
  *           enum: [asc, desc]
  *         description: Sort going up (asc) or down (desc).
+ *       - in: query
+ *         name: calories:2000
+ *         schema:
+ *           type: integer
+ *         description: Daily calorie target.
+ *       - in: query
+ *         name: protein:50
+ *         schema:
+ *           type: integer
+ *         description: Daily protein target.
+ *       - in: query
+ *         name: carbs:275
+ *         schema:
+ *           type: integer
+ *         description: Daily carbohydrate target.
+ *       - in: query
+ *         name: fat:70
+ *         schema:
+ *           type: integer
+ *         description: Daily fat target.
  *     responses:
  *       200:
  *         description: A list of recipes and pagination details.
@@ -69,6 +91,16 @@ export async function getRecipes(req, res) {
       mode: 'insensitive',
     };
   }
+  if (req.query.calories) {
+    const MEALS_PER_DAY = 3;
+    whereClause.calories = {
+      lte: parseInt(req.query.calories) / MEALS_PER_DAY,
+    };
+    whereClause.carbs = { gte: parseInt(req.query.carbs) / MEALS_PER_DAY };
+    whereClause.fat = { lte: parseInt(req.query.fat) / MEALS_PER_DAY };
+    whereClause.protein = { gte: parseInt(req.query.protein) / MEALS_PER_DAY };
+  }
+
   let recipes = null;
   let total = null;
 
@@ -84,33 +116,26 @@ export async function getRecipes(req, res) {
     return { created_at: sortDirection };
   }
 
-  try {
-    recipes = await prisma.recipes.findMany({
-      where: whereClause,
-      select: {
-        id: true,
-        instructions: true,
-        ingredients: true,
-        total_time_minutes: true,
-        servings: true,
-        title: true,
-        calories: true,
-        fat: true,
-        protein: true,
-        carbs: true,
-      },
-      skip: skip,
-      take: limit,
-      orderBy: getOrderBy(req.query),
-    });
+  recipes = await prisma.recipes.findMany({
+    where: whereClause,
+    select: {
+      id: true,
+      instructions: true,
+      ingredients: true,
+      total_time_minutes: true,
+      servings: true,
+      title: true,
+      calories: true,
+      fat: true,
+      protein: true,
+      carbs: true,
+    },
+    skip: skip,
+    take: limit,
+    orderBy: getOrderBy(req.query),
+  });
 
-    total = await prisma.recipes.count({ where: whereClause });
-  } catch (error) {
-    res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: 'Prisma Error', error: error.message });
-    return;
-  }
+  total = await prisma.recipes.count({ where: whereClause });
 
   const pagination = {
     page,
@@ -122,7 +147,7 @@ export async function getRecipes(req, res) {
   };
 
   if (recipes.length === 0) {
-    return res.status(StatusCodes.NOT_FOUND).json({
+    res.status(StatusCodes.NOT_FOUND).json({
       error: 'No recipes could be found',
       message: 'No recipes meet the search criteria',
     });
@@ -197,30 +222,22 @@ export async function createRecipe(req, res) {
   value.user_id = req.user.id;
 
   let newRecipeCreated = null;
-  try {
-    newRecipeCreated = await prisma.recipes.create({
-      data: value,
-      select: {
-        id: true,
-        instructions: true,
-        ingredients: true,
-        total_time_minutes: true,
-        servings: true,
-        title: true,
-        calories: true,
-        fat: true,
-        protein: true,
-        carbs: true,
-      },
-    });
-  } catch (error) {
-    console.log('Create Recipe catch', error);
-    res.status(StatusCodes.BAD_REQUEST).json({
-      error: error.message,
-      message: 'Prisma Error',
-    });
-    return;
-  }
+
+  newRecipeCreated = await prisma.recipes.create({
+    data: value,
+    select: {
+      id: true,
+      instructions: true,
+      ingredients: true,
+      total_time_minutes: true,
+      servings: true,
+      title: true,
+      calories: true,
+      fat: true,
+      protein: true,
+      carbs: true,
+    },
+  });
 
   res.status(StatusCodes.CREATED).json(newRecipeCreated);
   return;
@@ -285,7 +302,7 @@ export async function createRecipe(req, res) {
  *       400:
  *         description: "Validation error or database connection issue."
  */
-export async function updateRecipe(req, res, next) {
+export async function updateRecipe(req, res) {
   const { error, value } = patchRecipeSchema.validate(req.body ?? {}, {
     abortEarly: false,
   });
@@ -295,7 +312,6 @@ export async function updateRecipe(req, res, next) {
 
   const recipeIndex = parseInt(req.params?.id);
   const user_id = req.user.id;
-  // const user_id = 1;
 
   if ((recipeIndex < 0) | (user_id < 0)) {
     res
@@ -307,33 +323,26 @@ export async function updateRecipe(req, res, next) {
   value.user_id = user_id;
 
   let updatedRecipe = null;
-  try {
-    updatedRecipe = await prisma.recipes.update({
-      where: {
-        id: recipeIndex,
-        user_id: user_id,
-      },
-      data: value,
-      select: {
-        id: true,
-        instructions: true,
-        ingredients: true,
-        total_time_minutes: true,
-        servings: true,
-        title: true,
-        calories: true,
-        fat: true,
-        protein: true,
-        carbs: true,
-      },
-    });
-  } catch (error) {
-    console.log('Update Recipe Catch', error);
-    res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: 'Prisma Error', error: error.message });
-    return;
-  }
+
+  updatedRecipe = await prisma.recipes.update({
+    where: {
+      id: recipeIndex,
+      user_id: user_id,
+    },
+    data: value,
+    select: {
+      id: true,
+      instructions: true,
+      ingredients: true,
+      total_time_minutes: true,
+      servings: true,
+      title: true,
+      calories: true,
+      fat: true,
+      protein: true,
+      carbs: true,
+    },
+  });
 
   res.status(StatusCodes.OK).json(updatedRecipe);
   return;
@@ -367,7 +376,6 @@ export async function updateRecipe(req, res, next) {
 export async function deleteRecipe(req, res) {
   const recipeIndex = parseInt(req.params?.id);
   const user_id = req.user.id;
-  // const user_id = 1;
 
   if ((recipeIndex < 0) | (user_id < 0)) {
     res
@@ -376,33 +384,12 @@ export async function deleteRecipe(req, res) {
     return;
   }
 
-  try {
-    await prisma.recipes.delete({
-      where: {
-        id: recipeIndex,
-        user_id: user_id,
-      },
-    });
-  } catch (error) {
-    console.log('Update Recipe Catch', error);
-    res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: 'Prisma Error', error: error.message });
-    return;
-  }
+  await prisma.recipes.delete({
+    where: {
+      id: recipeIndex,
+      user_id: user_id,
+    },
+  });
 
   res.status(StatusCodes.NO_CONTENT).end();
 }
-
-const normalizeData = (reqBody) => {
-  const holder = {};
-  for (let propName in reqBody) {
-    const value = reqBody[propName];
-    if (isNaN(value)) {
-      holder[propName] = value.trim();
-    } else {
-      holder[propName] = Math.trunc(value);
-    }
-  }
-  return holder;
-};

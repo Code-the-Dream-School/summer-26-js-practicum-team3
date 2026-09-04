@@ -1,11 +1,19 @@
 import { useState } from 'react';
-import { Box, LinearProgress, Alert, AppBar, Toolbar, Typography, Stack } from '@mui/material';
+import {
+  Box,
+  LinearProgress,
+  Alert,
+  AppBar,
+  Toolbar,
+  Typography,
+} from '@mui/material';
 import WelcomeStep from './steps/WelcomeStep';
 import GoalsStep from './steps/GoalsStep';
 import ActivityStep from './steps/ActivityStep';
 import DobStep from './steps/DobStep';
 import SexStep from './steps/SexStep';
 import { saveOnboarding } from '../../services/onboardingService';
+import { useAuth } from '../../features/auth/context/AuthContext';
 import { useAuth } from '../../features/auth/context/AuthContext';
 
 
@@ -20,13 +28,14 @@ const STEPS = [
 ];
 
 const DEFAULT_GOALS = {
-  calories: 2000,
-  protein: 50,
-  fat: 70,
-  carbs: 275,
+  calories_target: 2000,
+  protein_target: 50,
+  fat_target: 70,
+  carbs_target: 275,
 };
 
 export default function OnboardingWizard({ onComplete = () => {} }) {
+  const { csrfToken } = useAuth();
   const [stepIndex, setStepIndex] = useState(0);
   const { csrfToken } = useAuth();
   const [formData, setFormData] = useState({
@@ -53,6 +62,7 @@ export default function OnboardingWizard({ onComplete = () => {} }) {
     setError(null);
     try {
       await saveOnboarding(formData, csrfToken);
+      await saveOnboarding(formData, csrfToken);
       onComplete();
     } catch (err) {
       setError(err.message || 'Something went wrong saving your info.');
@@ -71,16 +81,16 @@ export default function OnboardingWizard({ onComplete = () => {} }) {
 
   return (
     <Box sx={{ maxWidth: 480, mx: 'auto', p: 3 }}>
-      <AppBar position="static" color="transparent" elevation={0} sx={{ mb: 2 }}>
+      <AppBar
+        position="static"
+        color="transparent"
+        elevation={0}
+        sx={{ mb: 2 }}
+      >
         <Toolbar disableGutters sx={{ justifyContent: 'space-between' }}>
           <Typography variant="subtitle1" fontWeight={600}>
             Today Eatz
           </Typography>
-          <Stack direction="row" spacing={2}>
-            <Typography variant="body2" color="text.secondary">Home</Typography>
-            <Typography variant="body2" color="text.secondary">About</Typography>
-            <Typography variant="body2" color="text.secondary">Contact</Typography>
-          </Stack>
         </Toolbar>
       </AppBar>
 

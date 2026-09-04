@@ -16,6 +16,16 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     server: {
       port: env.VITE_PORT || 8081,
+      // Fail loudly if the port is taken instead of silently moving to 8082+.
+      // The backend's dev CORS allow-list is pinned to this port, so a fallback
+      // port would just get its requests rejected.
+      strictPort: true,
+      proxy: {
+        '/api': {
+          target: env.VITE_TARGET,
+          changeOrigin: true,
+        },
+      },
     },
   };
 });
