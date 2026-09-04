@@ -2,6 +2,9 @@ import { Link, Outlet, useNavigate, useLocation } from 'react-router';
 import { AppBar, Toolbar, Box, Button, Typography } from '@mui/material';
 import { useAuth } from '../features/auth/context/AuthContext';
 import { logoutUser } from '../features/auth/api/authApi';
+// import { OnboardingFlag } from '../components/OnboardingFlag.jsx';
+// import OnboardingReminder from '../components/onboarding/OnboardingReminder.jsx';
+// import { useHasCompletedOnboarding } from '../features/dailyMenu/useHasCompletedOnboarding.js';
 
 const THEME_STUFF = {
   // px: { xs: 2, md: 6 },
@@ -107,7 +110,9 @@ export default function AppLayout() {
             >
               Profile
             </Button>
-            <Button variant="outlined" size="small" onClick={handleLogout}>
+            {/* {!hasCompletedOnboarding && <OnboardingFlag />}
+            {!hasCompletedOnboarding && <OnboardingReminder />} */}
+            <Button color="inherit" onClick={handleLogout}>
               Log Out
             </Button>
           </Toolbar>
