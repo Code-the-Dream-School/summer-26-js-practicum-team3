@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Snackbar, Alert, Button } from '@mui/material';
 
-const BASE_URL = 'http://localhost:8080/api/v1';
+const API_ORIGIN = import.meta.env.VITE_API_ORIGIN ?? '';
+const BASE_URL = `${API_ORIGIN}/api/v1`;
 const DISMISS_KEY = 'onboardingReminderDismissed';
 
 export default function OnboardingReminder() {
