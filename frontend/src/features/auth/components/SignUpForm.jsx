@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { registerUser } from '../api/authApi';
 import {
@@ -41,7 +41,10 @@ function SignUpForm() {
         if (response.status === 409) {
           setModalOpen(true);
         } else if (response.status === 400) {
-          setErrorMessage(response.data.message || 'Invalid input data. Please check your fields.', );
+          setErrorMessage(
+            response.data.message ||
+              'Invalid input data. Please check your fields.',
+          );
         } else {
           setErrorMessage(response.data.message || 'Something went wrong.');
         }
@@ -114,11 +117,7 @@ function SignUpForm() {
           onTryAgain={() => setModalOpen(false)}
         />
       </Modal>
-      {successMessage && (
-        <Alert severity="success" aria-live="polite" sx={{ mt: 2 }}>
-          {successMessage}
-        </Alert>
-      )}
+      {successMessage && navigate('/onboarding')}
     </form>
   );
 }
