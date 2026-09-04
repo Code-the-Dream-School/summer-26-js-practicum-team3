@@ -47,6 +47,15 @@ const teamMembers = [
     initials: 'TW',
     bio: 'I spent ten years in technical operations and platform support, troubleshooting live systems, working alongside engineering teams, and helping instructors and users solve problems in real time. Somewhere in there I realized I wanted to build the tools instead of supporting them, so I joined Code the Dream to move into full-stack development..',
   },
+  {
+    name: 'Xavier Mcallister',
+    role: 'Software Engineer',
+    email: 'macfamlove01@gmail.com',
+    github: 'https://github.com/XavierCTD',
+    linkedin: 'https://www.linkedin.com/in/xavier-mcallister-b2a117351/',
+    initials: 'XM',
+    bio: 'I have have been coding for three years and enjoy frontend development. I am 25 years old and live in the state of N.C. I like going to parks to enjoy the view with family and friends. My favorite show to watch is batman.'
+  },
 ];
 
 export default function About() {
