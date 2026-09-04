@@ -54,7 +54,7 @@ export async function createNutritionGoals(req, res) {
     });
     await tx.users.update({
       where: { id: value.user_id },
-      data: { dob, sex, activity_level: activityLevel },
+      data: { dob, sex, activity_level: activityLevel, on_boarding: true },
     });
     return nutrition_goals_saved;
   });
