@@ -1,34 +1,29 @@
 import { Link } from 'react-router';
 import SignUpForm from '../features/auth/components/SignUpForm';
 import { Card, Box, CardContent, Typography } from '@mui/material';
+import hero1x1 from '../assets/hero-1x1.webp';
+import hero4x3 from '../assets/hero-4x3.webp';
+import hero16x9 from '../assets/hero-16x9.webp';
+import hero21x9 from '../assets/hero-21x9.webp';
 
 // Nav in DefaultLayout is ~71px tall (py: 2 + small button + 1px border).
 // Update this if the nav's padding or button size changes.
 const NAV_HEIGHT = 71;
-
-const HERO_1X1 =
-  'https://res.cloudinary.com/doiwe9d5a/image/upload/v1788534790/hero-1x1_hnf1bf.webp';
-const HERO_4X3 =
-  'https://res.cloudinary.com/doiwe9d5a/image/upload/v1788534790/hero-4x3_ryhozy.webp';
-const HERO_16X9 =
-  'https://res.cloudinary.com/doiwe9d5a/image/upload/v1788534790/hero-16x9_tcskoe.webp';
-const HERO_21X9 =
-  'https://res.cloudinary.com/doiwe9d5a/image/upload/v1788534790/hero-21x9_pgorlr.webp';
 
 function SignUp() {
   return (
     <Box
       sx={{
         minHeight: `calc(100dvh - ${NAV_HEIGHT}px)`,
-        backgroundImage: `url(${HERO_1X1})`,
+        backgroundImage: `url(${hero1x1})`,
         '@media (min-aspect-ratio: 8/7)': {
-          backgroundImage: `url(${HERO_4X3})`,
+          backgroundImage: `url(${hero4x3})`,
         },
         '@media (min-aspect-ratio: 32/21)': {
-          backgroundImage: `url(${HERO_16X9})`,
+          backgroundImage: `url(${hero16x9})`,
         },
         '@media (min-aspect-ratio: 37/18)': {
-          backgroundImage: `url(${HERO_21X9})`,
+          backgroundImage: `url(${hero21x9})`,
         },
         backgroundSize: 'cover',
         backgroundPosition: 'center',
