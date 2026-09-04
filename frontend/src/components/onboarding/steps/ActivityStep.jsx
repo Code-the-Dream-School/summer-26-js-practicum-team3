@@ -11,12 +11,30 @@ import StepCard from '../StepCard';
 
 const ACTIVITY_OPTIONS = [
   { value: 'sedentary', label: 'Sedentary', helper: 'little or no exercise' },
-  { value: 'moderately_active', label: 'Moderately active', helper: 'exercise 3-5 days/week' },
-  { value: 'lightly_active', label: 'Lightly Active', helper: 'exercise 1-3 days/week' },
-  { value: 'very_active', label: 'Very active', helper: 'exercise 6-7 days/week' },
+  {
+    value: 'lightly_active',
+    label: 'Lightly Active',
+    helper: 'exercise 1-3 days/week',
+  },
+  {
+    value: 'moderate_active',
+    label: 'Moderately active',
+    helper: 'exercise 3-5 days/week',
+  },
+  {
+    value: 'very_active',
+    label: 'Very active',
+    helper: 'exercise 6-7 days/week',
+  },
 ];
 
-export default function ActivityStep({ formData, updateField, onNext, onBack, onSkip }) {
+export default function ActivityStep({
+  formData,
+  updateField,
+  onNext,
+  onBack,
+  onSkip,
+}) {
   return (
     <StepCard>
       <MobileStepper
@@ -31,7 +49,12 @@ export default function ActivityStep({ formData, updateField, onNext, onBack, on
       <Typography variant="h6" fontWeight={600} sx={{ mb: 1 }}>
         How active are you?
       </Typography>
-      <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 3 }}>
+      <Typography
+        variant="caption"
+        color="text.secondary"
+        display="block"
+        sx={{ mb: 3 }}
+      >
         This helps us calculate your daily calorie needs.
       </Typography>
 
@@ -39,7 +62,15 @@ export default function ActivityStep({ formData, updateField, onNext, onBack, on
         {ACTIVITY_OPTIONS.map((opt) => (
           <Grid item xs={6} key={opt.value}>
             <FormControlLabel
-              sx={{ alignItems: 'flex-start', border: '1px solid', borderColor: 'divider', borderRadius: 2, m: 0, p: 1, width: '100%' }}
+              sx={{
+                alignItems: 'flex-start',
+                border: '1px solid',
+                borderColor: 'divider',
+                borderRadius: 2,
+                m: 0,
+                p: 1,
+                width: '100%',
+              }}
               control={
                 <Checkbox
                   checked={formData.activityLevel === opt.value}
@@ -73,7 +104,13 @@ export default function ActivityStep({ formData, updateField, onNext, onBack, on
           </Button>
         </Grid>
       </Grid>
-      <Link component="button" variant="caption" color="text.disabled" onClick={onSkip} sx={{ mt: 1 }}>
+      <Link
+        component="button"
+        variant="caption"
+        color="text.disabled"
+        onClick={onSkip}
+        sx={{ mt: 1 }}
+      >
         Skip for now
       </Link>
     </StepCard>

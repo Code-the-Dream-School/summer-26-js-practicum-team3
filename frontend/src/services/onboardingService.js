@@ -41,8 +41,7 @@ const API_ORIGIN = import.meta.env.VITE_API_ORIGIN ?? '';
 const BASE_PATH = `${API_ORIGIN}/api/v1/nutrition-goals`;
 
 export async function saveOnboarding(formData, csrfToken) {
-  const dateOFBirth =
-    formData.length > 0 ? new Date(formData.dob).toISOString() : '';
+  const dateOFBirth = formData.dob ? new Date(formData.dob).toISOString() : '';
 
   const updateUser = {
     dob: dateOFBirth,
@@ -56,9 +55,12 @@ export async function saveOnboarding(formData, csrfToken) {
     fat_target: formData.goals.fat_target,
     carbs_target: formData.goals.carbs_target,
   };
+
   const body = { ...updateUser, goals: usersGoals };
+
   console.log('*******BODY*******');
   console.log(body);
+
   return baseFetch(`${BASE_PATH}`, {
     method: 'POST',
     credentials: 'include',

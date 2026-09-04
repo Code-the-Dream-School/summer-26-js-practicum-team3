@@ -37,17 +37,19 @@ import { ValidationError } from '../errors/index.js';
  *         description: "No user is authenticated."
  */
 export async function createNutritionGoals(req, res) {
-  const { goals, activityLevel, dob, sex } = req.body;
+  const { goals, activity_level, dob, sex } = req.body;
   const { error, value } = nutritionGoalsSchema.validate(goals, {
     abortEarly: false,
   });
   if (error) {
     throw new ValidationError(error.message);
   }
+
   const NUTRITION_GOAL_ID = await prisma.nutrition_goals.findFirst({
     where: { user_id: req.user.id },
     select: { id: true },
   });
+
   value.user_id = req.user.id;
 
   const createNutritionGoals = await prisma.$transaction(async (tx) => {
@@ -57,7 +59,7 @@ export async function createNutritionGoals(req, res) {
     });
     await tx.users.update({
       where: { id: value.user_id },
-      data: { dob, sex, activity_level: activityLevel, on_boarding: true },
+      data: { dob, sex, activity_level, on_boarding: true },
     });
     return nutrition_goals_saved;
   });
