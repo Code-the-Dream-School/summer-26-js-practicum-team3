@@ -41,9 +41,11 @@ const API_ORIGIN = import.meta.env.VITE_API_ORIGIN ?? '';
 const BASE_PATH = `${API_ORIGIN}/api/v1/nutrition-goals`;
 
 export async function saveOnboarding(formData, csrfToken) {
-  console.log(formData);
+  const dateOFBirth =
+    formData.length > 0 ? new Date(formData.dob).toISOString() : '';
+
   const updateUser = {
-    dob: new Date(formData.dob).toISOString(),
+    dob: dateOFBirth,
     sex: formData.sex,
     activity_level: formData.activityLevel,
   };
