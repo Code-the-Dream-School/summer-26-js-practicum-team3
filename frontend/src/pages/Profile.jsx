@@ -213,8 +213,8 @@ function ActivityLevelOptions({ value, onChange = NO_OP }) {
       variant="standard"
     >
       <MenuItem value="sedentary">Sedentary</MenuItem>
-      <MenuItem value="light">Light</MenuItem>
-      <MenuItem value="medium">Medium</MenuItem>
+      <MenuItem value="light_activity">Light</MenuItem>
+      <MenuItem value="medium_activity">Medium</MenuItem>
       <MenuItem value="very-active">Very Active</MenuItem>
     </TextField>
   );
