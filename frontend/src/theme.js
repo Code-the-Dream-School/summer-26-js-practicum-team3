@@ -2,7 +2,7 @@ import { createTheme } from '@mui/material';
 
 const theme = createTheme({
   palette: {
-    primary: { main: '#059669' },
+    primary: { main: '#117b12' },
   },
   shape: { borderRadius: 8 },
   components: {
