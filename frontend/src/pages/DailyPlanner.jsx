@@ -173,10 +173,6 @@ export default function DailyPlanner() {
   }
 
   function next() {
-    console.log('****************');
-    console.log('database number\n', databasePageNumber);
-    console.log('pagination object\n', pagination);
-    console.log('------------------');
     setCount((prev) => prev + 2);
     if (count + 2 === 10) {
       setDatabasePageNumber((p) => p + 1);
