@@ -14,10 +14,6 @@ import DobStep from './steps/DobStep';
 import SexStep from './steps/SexStep';
 import { saveOnboarding } from '../../services/onboardingService';
 import { useAuth } from '../../features/auth/context/AuthContext';
-import { useAuth } from '../../features/auth/context/AuthContext';
-
-
-
 
 const STEPS = [
   { key: 'welcome', Component: WelcomeStep },
@@ -37,7 +33,6 @@ const DEFAULT_GOALS = {
 export default function OnboardingWizard({ onComplete = () => {} }) {
   const { csrfToken } = useAuth();
   const [stepIndex, setStepIndex] = useState(0);
-  const { csrfToken } = useAuth();
   const [formData, setFormData] = useState({
     goals: DEFAULT_GOALS,
     activityLevel: null,
@@ -58,6 +53,8 @@ export default function OnboardingWizard({ onComplete = () => {} }) {
   const goBack = () => setStepIndex((i) => Math.max(i - 1, 0));
 
   const handleFinish = async () => {
+    console.trace('%c[OnboardingWizard] handleFinish called', 'color: red; font-weight: bold'); // <-- ADD THIS LINE
+
     setSubmitting(true);
     setError(null);
     try {

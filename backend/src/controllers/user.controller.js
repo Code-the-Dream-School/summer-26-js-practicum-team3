@@ -1,8 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import { prisma } from '../db.js';
 import { updateMeSchema } from '../validations/joi.input.validations.js';
-import { ValidationError } from '../errors/index.js';import { prisma } from '../db.js';
-import { updateMeSchema } from '../validations/joi.input.validations.js';
 import { ValidationError, NotFoundError } from '../errors/index.js';
 
 /**
@@ -36,26 +34,6 @@ import { ValidationError, NotFoundError } from '../errors/index.js';
  *       401:
  *         description: "No user is authenticated."
  */
-export async function updateOnboardingProfile(req, res) {
-  const { error, value } = updateMeSchema.validate(req.body ?? {}, {
-    abortEarly: false,
-  });
-  if (error) {
-    throw new ValidationError(error.message);
-  }
- 
-  const data = {};
-  if (value.dob) data.dob = value.dob;
-  if (value.sex) data.sex = value.sex;
-  if (value.activity_level) data.activity_level = value.activity_level;
- 
-
-  const updatedUser = await prisma.users.update({
-    where: { id: req.user.id }, // assumes jwtMiddleware sets req.user
-    data,
-    select: { dob: true, sex: true, activity_level: true },
-  });
-  
  
 export async function updateOnboardingProfile(req, res) {
   const { error, value } = updateMeSchema.validate(req.body ?? {}, {
@@ -80,37 +58,7 @@ export async function updateOnboardingProfile(req, res) {
     dob: updatedUser.dob?.toISOString().split('T')[0] ?? null,
     sex: updatedUser.sex,
     activity_level: updatedUser.activity_level,
-    dob: updatedUser.dob?.toISOString().split('T')[0] ?? null,
-    sex: updatedUser.sex,
-    activity_level: updatedUser.activity_level,
   });
-}
-
-/**
- * @swagger
- * /v1/users/me/onboarding-status:
- *   get:
- *     summary: Get the user's onboarding completion status
- *     description: "Returns whether the authenticated user has completed onboarding."
- *     responses:
- *       200:
- *         description: "Onboarding status for the authenticated user."
- *       401:
- *         description: "No user is authenticated."
- *       404:
- *         description: "User not found."
- */
-export async function OnboardingStatus(req, res) {
-  const resp = await prisma.users.findUnique({
-    where: { id: req.user.id },
-    select: { on_boarding: true },
-  });
-
-  if (!resp) {
-    throw new NotFoundError('User not found.');
-  }
-
-  return res.status(StatusCodes.OK).json(resp);
 }
 
 /**

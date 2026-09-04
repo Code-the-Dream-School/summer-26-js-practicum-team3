@@ -85,11 +85,8 @@ export async function createNutritionGoals(req, res) {
  *       responses:
  *       200:
  *         description: "Nutrition goals for the authenticated user."
- *         description: "Nutrition goals for the authenticated user."
  *       401:
  *         description: "No user is authenticated."
- *       404:
- *         description: "No nutrition goals have been saved for this user yet."
  *       404:
  *         description: "No nutrition goals have been saved for this user yet."
  */
@@ -105,11 +102,6 @@ export async function getNutritionGoals(req, res) {
   }
 
   return res.status(StatusCodes.OK).json({
-    id: goal.id,
-    calories_target: goal.calories_target,
-    protein_target: goal.protein_target,
-    fat_target: goal.fat_target,
-    carbs_target: goal.carbs_target,
     id: goal.id,
     calories_target: goal.calories_target,
     protein_target: goal.protein_target,

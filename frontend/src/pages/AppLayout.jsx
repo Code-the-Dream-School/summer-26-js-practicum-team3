@@ -27,7 +27,7 @@ export default function AppLayout() {
   const { logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-
+  const { hasCompletedOnboarding } = useHasCompletedOnboarding();
   const handleLogout = () => {
     logout();
     navigate('/login');

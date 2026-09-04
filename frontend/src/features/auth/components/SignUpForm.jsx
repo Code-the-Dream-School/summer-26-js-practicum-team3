@@ -48,7 +48,8 @@ function SignUpForm() {
         return;
       }
       login(response.data);
-      navigate('/onboarding');
+    
+      console.log('navigated to onboarding, current path:', window.location.pathname);
     } catch (error) {
       setErrorMessage('Submission failed: A critical error occurred');
       console.error(error);

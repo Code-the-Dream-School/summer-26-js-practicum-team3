@@ -34,10 +34,10 @@ async function postNutritionGoals(formData, csrfToken) {
       'X-CSRF-TOKEN': csrfToken,
     },
     body: JSON.stringify({
-      calories_target: formData.goals.calories,
-      protein_target: formData.goals.protein,
-      fat_target: formData.goals.fat,
-      carbs_target: formData.goals.carbs,
+      calories_target: formData.goals.calories_target,
+      protein_target: formData.goals.protein_target,
+      fat_target: formData.goals.fat_target,
+      carbs_target: formData.goals.carbs_target,
     }),
   });
 
