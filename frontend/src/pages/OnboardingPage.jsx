@@ -6,7 +6,7 @@ export default function OnboardingPage() {
   return (
     <OnboardingWizard
       onComplete={() => {
-             navigate('/daily-planner');
+        navigate('/daily-planner');
       }}
     />
   );

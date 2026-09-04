@@ -53,12 +53,10 @@ export default function OnboardingWizard({ onComplete = () => {} }) {
   const goBack = () => setStepIndex((i) => Math.max(i - 1, 0));
 
   const handleFinish = async () => {
-    console.trace('%c[OnboardingWizard] handleFinish called', 'color: red; font-weight: bold'); // <-- ADD THIS LINE
 
     setSubmitting(true);
     setError(null);
     try {
-      await saveOnboarding(formData, csrfToken);
       await saveOnboarding(formData, csrfToken);
       onComplete();
     } catch (err) {
