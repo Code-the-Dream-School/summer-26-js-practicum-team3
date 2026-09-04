@@ -2,6 +2,9 @@ import { Link, Outlet, useNavigate, useLocation } from 'react-router';
 import { AppBar, Toolbar, Box, Button } from '@mui/material';
 import { useAuth } from '../features/auth/context/AuthContext';
 import { logoutUser } from '../features/auth/api/authApi';
+import { OnboardingFlag } from '../components/OnboardingFlag.jsx';
+import OnboardingReminder from '../components/onboarding/OnboardingReminder.jsx';
+import { useHasCompletedOnboarding } from '../features/dailyMenu/useHasCompletedOnboarding.js';
 
 const BOTTOM_NAV_CONTAINER = {
   position: 'fixed',
@@ -21,6 +24,7 @@ const APP_CONTAINER = {
 };
 const JUSTIFY_AROUND = { justifyContent: 'space-around' };
 export default function AppLayout() {
+  const hasCompletedOnboarding = useHasCompletedOnboarding();
   const { logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -52,6 +56,8 @@ export default function AppLayout() {
             <Button color="inherit" component={Link} to="/profile">
               Profile
             </Button>
+            {!hasCompletedOnboarding && <OnboardingFlag />}
+            {!hasCompletedOnboarding && <OnboardingReminder />}
             <Button color="inherit" onClick={handleLogout}>
               Log Out
             </Button>
