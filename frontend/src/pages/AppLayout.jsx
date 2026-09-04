@@ -28,7 +28,6 @@ export default function AppLayout() {
   const { logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-
   const handleLogout = () => {
     logout();
     navigate('/login');

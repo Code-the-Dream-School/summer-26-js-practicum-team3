@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { registerUser } from '../api/authApi';
 import {
@@ -48,7 +48,6 @@ function SignUpForm() {
         return;
       }
       login(response.data);
-      navigate('/onboarding');
     } catch (error) {
       setErrorMessage('Submission failed: A critical error occurred');
       console.error(error);

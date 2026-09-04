@@ -15,8 +15,6 @@ import SexStep from './steps/SexStep';
 import { saveOnboarding } from '../../services/onboardingService';
 import { useAuth } from '../../features/auth/context/AuthContext';
 
-// Order matches the wireframe. To reorder (e.g. collect DOB/Sex/Activity
-// before Goals so recommended values can be pre-filled), just reorder this array.
 const STEPS = [
   { key: 'welcome', Component: WelcomeStep },
   { key: 'goals', Component: GoalsStep },
@@ -55,6 +53,7 @@ export default function OnboardingWizard({ onComplete = () => {} }) {
   const goBack = () => setStepIndex((i) => Math.max(i - 1, 0));
 
   const handleFinish = async () => {
+
     setSubmitting(true);
     setError(null);
     try {
