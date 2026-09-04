@@ -45,7 +45,7 @@ export async function createNutritionGoals(req, res) {
     throw new ValidationError(error.message);
   }
 
-  const updatedUser = await prisma.users.update({
+const updatedUser = await prisma.users.update({
     where: { id: req.user.id }, // assumes jwtMiddleware sets req.user
     data: {
       nutrition_goals: {
