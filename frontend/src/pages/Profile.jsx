@@ -29,8 +29,6 @@ export default function Profile() {
       let { status, data } = await getProfile();
       if (status === 200) {
         data.dob = data.dob.split('T')[0];
-        console.log('said data: ', data.dob);
-
         setProfile(data);
       }
       setLoading(false);

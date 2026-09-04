@@ -1,9 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import { prisma } from '../db.js';
-import {
-  // updateMeSchema,
-  updateUserProfile,
-} from '../validations/joi.input.validations.js';
+import { updateUserProfile } from '../validations/joi.input.validations.js';
 import { ValidationError } from '../errors/index.js';
 /**
  * @swagger
