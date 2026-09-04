@@ -6,18 +6,29 @@ import { Card, Box, CardContent, Typography } from '@mui/material';
 // Update this if the nav's padding or button size changes.
 const NAV_HEIGHT = 71;
 
+const HERO_1X1 =
+  'https://res.cloudinary.com/doiwe9d5a/image/upload/v1788534790/hero-1x1_hnf1bf.webp';
+const HERO_4X3 =
+  'https://res.cloudinary.com/doiwe9d5a/image/upload/v1788534790/hero-4x3_ryhozy.webp';
+const HERO_16X9 =
+  'https://res.cloudinary.com/doiwe9d5a/image/upload/v1788534790/hero-16x9_tcskoe.webp';
+const HERO_21X9 =
+  'https://res.cloudinary.com/doiwe9d5a/image/upload/v1788534790/hero-21x9_pgorlr.webp';
+
 function SignUp() {
-  const IMAGE_SQUARE =
-    'https://res.cloudinary.com/doiwe9d5a/image/upload/v1788529293/TodayEatz_background-image_2_1_tbveo7.png';
-  const IMAGE_WIDE =
-    'https://res.cloudinary.com/doiwe9d5a/image/upload/v1788531472/hero-fresh-food-wide_r1eqyy.webp';
   return (
     <Box
       sx={{
         minHeight: `calc(100dvh - ${NAV_HEIGHT}px)`,
-        backgroundImage: {
-          xs: `url(${IMAGE_SQUARE})`,
-          lg: `url(${IMAGE_WIDE})`,
+        backgroundImage: `url(${HERO_1X1})`,
+        '@media (min-aspect-ratio: 8/7)': {
+          backgroundImage: `url(${HERO_4X3})`,
+        },
+        '@media (min-aspect-ratio: 32/21)': {
+          backgroundImage: `url(${HERO_16X9})`,
+        },
+        '@media (min-aspect-ratio: 37/18)': {
+          backgroundImage: `url(${HERO_21X9})`,
         },
         backgroundSize: 'cover',
         backgroundPosition: 'center',
