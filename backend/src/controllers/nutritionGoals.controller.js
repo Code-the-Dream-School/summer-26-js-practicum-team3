@@ -47,18 +47,9 @@ export async function createNutritionGoals(req, res) {
 
   value.user_id = req.user.id;
 
-  const createNutritionGoals = await prisma.$transaction(async (tx) => {
-    const nutrition_goals_saved = await tx.nutrition_goals.update({
-      where: { user_id: value.user_id },
-      data: goals,
-    });
-    await tx.users.update({
-      where: { id: value.user_id },
-      data: { dob, sex, activity_level: activityLevel },
-    });
-    return nutrition_goals_saved;
+  const createNutritionGoals = await prisma.nutrition_goals.create({
+    data: value,
   });
-
   if (!createNutritionGoals) {
     throw new Error('Failed to create Nutritional Goals');
   }

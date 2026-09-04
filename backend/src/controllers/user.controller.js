@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import { prisma } from '../db.js';
-import { updateUserProfile } from '../validations/joi.input.validations.js';
+import { updateMeSchema } from '../validations/joi.input.validations.js';
 import { ValidationError, NotFoundError } from '../errors/index.js';
 
 /**
@@ -34,24 +34,30 @@ import { ValidationError, NotFoundError } from '../errors/index.js';
  *       401:
  *         description: "No user is authenticated."
  */
-export async function updateProfile(req, res) {
-  const { error, value } = updateUserProfile.validate(req.body ?? {}, {
+export async function updateOnboardingProfile(req, res) {
+  const { error, value } = updateMeSchema.validate(req.body ?? {}, {
     abortEarly: false,
   });
   if (error) {
     throw new ValidationError(error.message);
   }
 
-  let updatedUser = await prisma.users.update({
+  const data = {};
+  if (value.dob) data.dob = value.dob;
+  if (value.sex) data.sex = value.sex;
+  if (value.activity_level) data.activity_level = value.activity_level;
+
+  const updatedUser = await prisma.users.update({
     where: { id: req.user.id },
-    data: value,
+    data,
+    select: { dob: true, sex: true, activity_level: true },
   });
 
-  if (!updatedUser) {
-    throw new Error('User Updates failed');
-  }
-
-  return res.status(StatusCodes.OK).json(updatedUser);
+  return res.status(StatusCodes.OK).json({
+    dob: updatedUser.dob?.toISOString().split('T')[0] ?? null,
+    sex: updatedUser.sex,
+    activity_level: updatedUser.activity_level,
+  });
 }
 
 /**
