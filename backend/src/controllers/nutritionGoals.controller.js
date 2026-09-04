@@ -44,12 +44,15 @@ export async function createNutritionGoals(req, res) {
   if (error) {
     throw new ValidationError(error.message);
   }
-
+  const NUTRITION_GOAL_ID = await prisma.nutrition_goals.findFirst({
+    where: { user_id: req.user.id },
+    select: { id: true },
+  });
   value.user_id = req.user.id;
 
   const createNutritionGoals = await prisma.$transaction(async (tx) => {
     const nutrition_goals_saved = await tx.nutrition_goals.update({
-      where: { user_id: value.user_id },
+      where: { user_id: value.user_id, id: NUTRITION_GOAL_ID.id },
       data: goals,
     });
     await tx.users.update({
@@ -62,6 +65,7 @@ export async function createNutritionGoals(req, res) {
   if (!createNutritionGoals) {
     throw new Error('Failed to create Nutritional Goals');
   }
+
   res.status(StatusCodes.CREATED).json(createNutritionGoals);
   return;
 }
