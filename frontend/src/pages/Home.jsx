@@ -1,5 +1,9 @@
 import { Box, Button, Container, Typography } from '@mui/material';
 import { Link } from 'react-router';
+import banner2x1 from '../assets/home-banner-2x1.webp';
+import banner3x2 from '../assets/home-banner-3x2.webp';
+import banner3x1 from '../assets/home-banner-3x1.webp';
+import banner4x1 from '../assets/home-banner-4x1.webp';
 
 const steps = [
   {
@@ -37,6 +41,23 @@ const features = [
 export default function Home() {
   return (
     <>
+      <Box
+        sx={{
+          height: { xs: 220, sm: 280, md: 320 },
+          backgroundImage: `url(${banner3x2})`,
+          '@media (min-width: 700px)': { backgroundImage: `url(${banner2x1})` },
+          '@media (min-width: 900px)': { backgroundImage: `url(${banner3x1})` },
+          '@media (min-width: 1250px)': {
+            backgroundImage: `url(${banner4x1})`,
+          },
+          backgroundPosition: 'center bottom',
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat',
+          display: 'flex',
+          alignItems: 'center',
+          px: { xs: 3, md: 8 },
+        }}
+      ></Box>
       {/* Header section */}
       <Container
         component="header"
