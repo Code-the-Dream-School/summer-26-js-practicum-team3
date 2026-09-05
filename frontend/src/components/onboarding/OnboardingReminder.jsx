@@ -19,12 +19,11 @@ export default function OnboardingReminder() {
     handleDismiss();
     navigate('/profile');
   };
-  const HIDE_TIME = 5000;
+
   return (
     <Snackbar
       open={open}
       onClose={handleDismiss}
-      autoHideDuration={HIDE_TIME}
       anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
     >
       <Alert
