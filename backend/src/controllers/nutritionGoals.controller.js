@@ -3,7 +3,6 @@ import { prisma } from '../db.js';
 import { nutritionGoalsSchema } from '../validations/joi.input.validations.js';
 import { ValidationError, NotFoundError } from '../errors/index.js';
 
-
 /**
  * @swagger
  * /v1/nutrition-goals:
@@ -79,7 +78,7 @@ export async function createNutritionGoals(req, res) {
  *   get:
  *     summary: Get the user's daily nutrition goals
  *     description: "Returns the authenticated user's most recently saved nutrition goals."
- *       responses:
+ *     responses:
  *       200:
  *         description: "Nutrition goals for the authenticated user."
  *       401:
