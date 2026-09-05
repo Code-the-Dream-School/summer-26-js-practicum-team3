@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 import { getProfile } from '../features/auth/api/authApi';
+import { OnboardingFlag } from '../components/OnboardingFlag.jsx';
+import { useHasCompletedOnboarding } from '../features/dailyMenu/useHasCompletedOnboarding.js';
+
 import {
   Card,
   Box,
@@ -13,6 +16,7 @@ import {
 export default function Profile() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const hasCompletedOnboarding = useHasCompletedOnboarding();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -78,9 +82,7 @@ export default function Profile() {
         <Button variant="contained" color="primary">
           Edit Profile
         </Button>
-        <Button variant="outlined" color="secondary">
-          Change Password
-        </Button>
+        {!hasCompletedOnboarding && <OnboardingFlag />}
       </Box>
     </Box>
   );
