@@ -4,7 +4,9 @@ const API_ORIGIN = import.meta.env.VITE_API_ORIGIN ?? '';
 const BASE_PATH = `${API_ORIGIN}/api/v1/nutrition-goals`;
 
 export async function saveOnboarding(formData, csrfToken) {
-  const dateOFBirth = formData.dob ? new Date(formData.dob).toISOString() : '';
+  const dateOFBirth = formData.dob
+    ? new Date(formData.dob).toISOString()
+    : null;
 
   const updateUser = {
     dob: dateOFBirth,
