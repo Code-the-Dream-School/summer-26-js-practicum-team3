@@ -54,6 +54,7 @@ export default function OnboardingWizard() {
   const goBack = () => setStepIndex((i) => Math.max(i - 1, 0));
 
   const handleFinish = async () => {
+
     setSubmitting(true);
     setError(null);
     try {

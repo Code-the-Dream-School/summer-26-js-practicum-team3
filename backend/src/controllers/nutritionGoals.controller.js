@@ -1,7 +1,8 @@
 import { StatusCodes } from 'http-status-codes';
 import { prisma } from '../db.js';
 import { nutritionGoalsSchema } from '../validations/joi.input.validations.js';
-import { ValidationError } from '../errors/index.js';
+import { ValidationError, NotFoundError } from '../errors/index.js';
+
 
 /**
  * @swagger
@@ -78,7 +79,7 @@ export async function createNutritionGoals(req, res) {
  *   get:
  *     summary: Get the user's daily nutrition goals
  *     description: "Returns the authenticated user's most recently saved nutrition goals."
- *     responses:
+ *       responses:
  *       200:
  *         description: "Nutrition goals for the authenticated user."
  *       401:
@@ -86,6 +87,7 @@ export async function createNutritionGoals(req, res) {
  *       404:
  *         description: "No nutrition goals have been saved for this user yet."
  */
+
 export async function getNutritionGoals(req, res) {
   const goal = await prisma.nutrition_goals.findFirst({
     where: { user_id: req.user.id },
@@ -93,7 +95,7 @@ export async function getNutritionGoals(req, res) {
   });
 
   if (!goal) {
-    throw new Error('No saved goals exist');
+    throw new NotFoundError('No nutrition goals found for this user.');
   }
 
   return res.status(StatusCodes.OK).json({

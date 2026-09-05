@@ -1,38 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Snackbar, Alert, Button } from '@mui/material';
+import { useHasCompletedOnboarding } from '../../features/dailyMenu/useHasCompletedOnboarding';
 
-const BASE_URL = 'http://localhost:8080/api/v1';
-const DISMISS_KEY = 'onboardingReminderDismissed';
+const API_ORIGIN = import.meta.env.VITE_API_ORIGIN ?? '';
+const BASE_URL = `${API_ORIGIN}/api/v1`;
 
 export default function OnboardingReminder() {
   const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    if (sessionStorage.getItem(DISMISS_KEY) === 'true') return;
-
-    async function checkOnboardingStatus() {
-      try {
-        const res = await fetch(`${BASE_URL}/users/me/onboarding-status`, {
-          credentials: 'include',
-        });
-        if (!res.ok) return;
-        const data = await res.json();
-        if (data.on_boarding === false) {
-          setOpen(true);
-        }
-      } catch (error) {
-        console.error('Failed to check onboarding status:', error);
-        // don't block the app over a reminder banner
-      }
-    }
-
-    checkOnboardingStatus();
-  }, []);
+  const hasCompletedOnboarding = useHasCompletedOnboarding();
+  const [open, setOpen] = useState(!hasCompletedOnboarding);
 
   const handleDismiss = () => {
-    sessionStorage.setItem(DISMISS_KEY, 'true');
     setOpen(false);
   };
 
@@ -40,23 +19,30 @@ export default function OnboardingReminder() {
     handleDismiss();
     navigate('/profile');
   };
-
+  const HIDE_TIME = 5000;
   return (
     <Snackbar
       open={open}
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      onClose={handleDismiss}
+      autoHideDuration={HIDE_TIME}
+      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
     >
       <Alert
         severity="info"
         onClose={handleDismiss}
         action={
-          <Button color="inherit" size="small" onClick={handleGoToProfile}>
-            Go to Profile
+          <Button color="inherit" size="small" onClick={handleDismiss}>
+            x
           </Button>
         }
         sx={{ width: '100%' }}
       >
-        Complete your onboarding to get tailored recipes.
+        <span>
+          Complete your onboarding to get a better tailored experience.
+        </span>
+        <Button sx={{ mx: 1 }} size="small" onClick={handleGoToProfile}>
+          Go to Profile
+        </Button>
       </Alert>
     </Snackbar>
   );
