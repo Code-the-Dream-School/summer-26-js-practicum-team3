@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import {
   Box,
   LinearProgress,
@@ -30,14 +31,14 @@ const DEFAULT_GOALS = {
   carbs_target: 275,
 };
 
-export default function OnboardingWizard({ onComplete = () => {} }) {
+export default function OnboardingWizard() {
   const { csrfToken } = useAuth();
   const [stepIndex, setStepIndex] = useState(0);
   const [formData, setFormData] = useState({
     goals: DEFAULT_GOALS,
-    activityLevel: null,
+    activityLevel: '',
     dob: '',
-    sex: null,
+    sex: '',
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
@@ -45,7 +46,7 @@ export default function OnboardingWizard({ onComplete = () => {} }) {
   const { key, Component } = STEPS[stepIndex];
   const isLastStep = stepIndex === STEPS.length - 1;
   const progress = ((stepIndex + 1) / STEPS.length) * 100;
-
+  const navigate = useNavigate();
   const updateField = (field, value) =>
     setFormData((prev) => ({ ...prev, [field]: value }));
 
@@ -58,7 +59,7 @@ export default function OnboardingWizard({ onComplete = () => {} }) {
     setError(null);
     try {
       await saveOnboarding(formData, csrfToken);
-      onComplete();
+      navigate('/daily-planner');
     } catch (err) {
       setError(err.message || 'Something went wrong saving your info.');
     } finally {
@@ -66,8 +67,6 @@ export default function OnboardingWizard({ onComplete = () => {} }) {
     }
   };
 
-  // Skippable steps: Activity, DOB, Sex. Sex is the last step, so skipping
-  // it finishes onboarding (with sex left unset) instead of just advancing.
   const skipHandlers = {
     activity: goNext,
     dob: goNext,

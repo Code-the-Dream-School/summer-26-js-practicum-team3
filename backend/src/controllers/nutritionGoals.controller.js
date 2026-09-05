@@ -3,7 +3,6 @@ import { prisma } from '../db.js';
 import { nutritionGoalsSchema } from '../validations/joi.input.validations.js';
 import { ValidationError, NotFoundError } from '../errors/index.js';
 
-
 /**
  * @swagger
  * /v1/nutrition-goals:
@@ -38,42 +37,39 @@ import { ValidationError, NotFoundError } from '../errors/index.js';
  *         description: "No user is authenticated."
  */
 export async function createNutritionGoals(req, res) {
-  const { error, value } = nutritionGoalsSchema.validate(req.body ?? {}, {
+  const { goals, activity_level, dob, sex } = req.body;
+  const { error, value } = nutritionGoalsSchema.validate(goals, {
     abortEarly: false,
   });
   if (error) {
     throw new ValidationError(error.message);
   }
 
-const updatedUser = await prisma.users.update({
-    where: { id: req.user.id }, // assumes jwtMiddleware sets req.user
-    data: {
-      nutrition_goals: {
-        create: {
-          calories_target: value.calories_target,
-          protein_target: value.protein_target,
-          fat_target: value.fat_target,
-          carbs_target: value.carbs_target,
-        },
-      },
-    },
-    include: {
-      nutrition_goals: {
-        orderBy: { id: 'desc' },
-        take: 1,
-      },
-    },
+  const NUTRITION_GOAL_ID = await prisma.nutrition_goals.findFirst({
+    where: { user_id: req.user.id },
+    select: { id: true },
   });
- 
-  const goal = updatedUser.nutrition_goals[0];
- 
-  return res.status(StatusCodes.CREATED).json({
-    id: goal.id,
-    calories_target: goal.calories_target,
-    protein_target: goal.protein_target,
-    fat_target: goal.fat_target,
-    carbs_target: goal.carbs_target,
+
+  value.user_id = req.user.id;
+
+  const createNutritionGoals = await prisma.$transaction(async (tx) => {
+    const nutrition_goals_saved = await tx.nutrition_goals.update({
+      where: { user_id: value.user_id, id: NUTRITION_GOAL_ID.id },
+      data: goals,
+    });
+    await tx.users.update({
+      where: { id: value.user_id },
+      data: { dob, sex, activity_level, on_boarding: true },
+    });
+    return nutrition_goals_saved;
   });
+
+  if (!createNutritionGoals) {
+    throw new Error('Failed to create Nutritional Goals');
+  }
+
+  res.status(StatusCodes.CREATED).json(createNutritionGoals);
+  return;
 }
 
 /**
@@ -82,7 +78,7 @@ const updatedUser = await prisma.users.update({
  *   get:
  *     summary: Get the user's daily nutrition goals
  *     description: "Returns the authenticated user's most recently saved nutrition goals."
- *       responses:
+ *     responses:
  *       200:
  *         description: "Nutrition goals for the authenticated user."
  *       401:
