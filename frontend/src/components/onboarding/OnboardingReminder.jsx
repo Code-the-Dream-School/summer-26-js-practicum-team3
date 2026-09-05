@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router';
 import { Snackbar, Alert, Button } from '@mui/material';
 import { useHasCompletedOnboarding } from '../../features/dailyMenu/useHasCompletedOnboarding';
 
+const API_ORIGIN = import.meta.env.VITE_API_ORIGIN ?? '';
+const BASE_URL = `${API_ORIGIN}/api/v1`;
+
 export default function OnboardingReminder() {
   const navigate = useNavigate();
   const hasCompletedOnboarding = useHasCompletedOnboarding();

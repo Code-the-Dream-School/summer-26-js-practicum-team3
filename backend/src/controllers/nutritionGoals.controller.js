@@ -1,7 +1,8 @@
 import { StatusCodes } from 'http-status-codes';
 import { prisma } from '../db.js';
 import { nutritionGoalsSchema } from '../validations/joi.input.validations.js';
-import { ValidationError } from '../errors/index.js';
+import { ValidationError, NotFoundError } from '../errors/index.js';
+
 
 /**
  * @swagger
@@ -37,24 +38,42 @@ import { ValidationError } from '../errors/index.js';
  *         description: "No user is authenticated."
  */
 export async function createNutritionGoals(req, res) {
-  const { goals, activityLevel, dob, sex } = req.body;
-  const { error, value } = nutritionGoalsSchema.validate(goals, {
+  const { error, value } = nutritionGoalsSchema.validate(req.body ?? {}, {
     abortEarly: false,
   });
   if (error) {
     throw new ValidationError(error.message);
   }
 
-  value.user_id = req.user.id;
-
-  const createNutritionGoals = await prisma.nutrition_goals.create({
-    data: value,
+const updatedUser = await prisma.users.update({
+    where: { id: req.user.id }, // assumes jwtMiddleware sets req.user
+    data: {
+      nutrition_goals: {
+        create: {
+          calories_target: value.calories_target,
+          protein_target: value.protein_target,
+          fat_target: value.fat_target,
+          carbs_target: value.carbs_target,
+        },
+      },
+    },
+    include: {
+      nutrition_goals: {
+        orderBy: { id: 'desc' },
+        take: 1,
+      },
+    },
   });
-  if (!createNutritionGoals) {
-    throw new Error('Failed to create Nutritional Goals');
-  }
-  res.status(StatusCodes.CREATED).json(createNutritionGoals);
-  return;
+ 
+  const goal = updatedUser.nutrition_goals[0];
+ 
+  return res.status(StatusCodes.CREATED).json({
+    id: goal.id,
+    calories_target: goal.calories_target,
+    protein_target: goal.protein_target,
+    fat_target: goal.fat_target,
+    carbs_target: goal.carbs_target,
+  });
 }
 
 /**
@@ -63,7 +82,7 @@ export async function createNutritionGoals(req, res) {
  *   get:
  *     summary: Get the user's daily nutrition goals
  *     description: "Returns the authenticated user's most recently saved nutrition goals."
- *     responses:
+ *       responses:
  *       200:
  *         description: "Nutrition goals for the authenticated user."
  *       401:
@@ -71,6 +90,7 @@ export async function createNutritionGoals(req, res) {
  *       404:
  *         description: "No nutrition goals have been saved for this user yet."
  */
+
 export async function getNutritionGoals(req, res) {
   const goal = await prisma.nutrition_goals.findFirst({
     where: { user_id: req.user.id },
@@ -78,7 +98,7 @@ export async function getNutritionGoals(req, res) {
   });
 
   if (!goal) {
-    throw new Error('No saved goals exist');
+    throw new NotFoundError('No nutrition goals found for this user.');
   }
 
   return res.status(StatusCodes.OK).json({
