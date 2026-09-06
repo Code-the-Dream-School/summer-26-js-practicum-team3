@@ -25,6 +25,9 @@ export default function OnboardingReminder() {
       open={open}
       onClose={handleDismiss}
       anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      sx={{
+        top: '-.5vh !important',
+      }}
     >
       <Alert
         severity="info"
