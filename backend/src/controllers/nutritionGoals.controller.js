@@ -46,8 +46,9 @@ export async function createNutritionGoals(req, res) {
   }
 
 const updatedUser = await prisma.users.update({
-    where: { id: req.user.id }, // assumes jwtMiddleware sets req.user
+    where: { id: req.user.id }, 
     data: {
+      on_boarding: true,
       nutrition_goals: {
         create: {
           calories_target: value.calories_target,
@@ -82,7 +83,7 @@ const updatedUser = await prisma.users.update({
  *   get:
  *     summary: Get the user's daily nutrition goals
  *     description: "Returns the authenticated user's most recently saved nutrition goals."
- *       responses:
+ *     responses:
  *       200:
  *         description: "Nutrition goals for the authenticated user."
  *       401:
