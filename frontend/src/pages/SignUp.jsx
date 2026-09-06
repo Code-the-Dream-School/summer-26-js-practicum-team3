@@ -1,10 +1,10 @@
 import { Link } from 'react-router';
 import SignUpForm from '../features/auth/components/SignUpForm';
 import { Card, Box, CardContent, Typography } from '@mui/material';
-import hero1x1 from '../assets/hero-1x1.webp';
-import hero4x3 from '../assets/hero-4x3.webp';
-import hero16x9 from '../assets/hero-16x9.webp';
-import hero21x9 from '../assets/hero-21x9.webp';
+import hero1x1 from '../assets/AppImages/hero-1x1.webp';
+import hero4x3 from '../assets/AppImages/hero-4x3.webp';
+import hero16x9 from '../assets/AppImages/hero-16x9.webp';
+import hero21x9 from '../assets/AppImages/hero-21x9.webp';
 
 // Nav in DefaultLayout is ~71px tall (py: 2 + small button + 1px border).
 // Update this if the nav's padding or button size changes.
