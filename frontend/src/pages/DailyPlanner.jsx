@@ -38,12 +38,13 @@ const MAIN_CONTAINER = {
   height: '91dvh',
   fontFamily: 'sans-serif',
   position: 'relative',
+  top:'5vh',
   p: '8px',
   pt: 2,
 };
 const RECIPE_NAV = {
   position: 'absolute',
-  top: 'auto',
+  top: '80vh',
   bottom: '3px',
   left: 0,
   right: 0,
