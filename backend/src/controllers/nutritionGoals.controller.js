@@ -1,6 +1,9 @@
 import { StatusCodes } from 'http-status-codes';
 import { prisma } from '../db.js';
-import { nutritionGoalsSchema } from '../validations/joi.input.validations.js';
+import {
+  nutritionGoalsSchema,
+  updateUserProfile,
+} from '../validations/joi.input.validations.js';
 import { ValidationError, NotFoundError } from '../errors/index.js';
 
 /**
@@ -37,29 +40,39 @@ import { ValidationError, NotFoundError } from '../errors/index.js';
  *         description: "No user is authenticated."
  */
 export async function createNutritionGoals(req, res) {
-  const { goals, activity_level, dob, sex } = req.body;
-  const { error, value } = nutritionGoalsSchema.validate(goals, {
-    abortEarly: false,
-  });
-  if (error) {
-    throw new ValidationError(error.message);
+  const { goals, user_activity } = req.body;
+  const { error: goals_error, value: goals_value } =
+    nutritionGoalsSchema.validate(goals, {
+      abortEarly: false,
+    });
+  if (goals_error) {
+    throw new ValidationError(goals_error.message);
   }
-
+  const { error: user_error, value: user_value } = updateUserProfile.validate(
+    user_activity,
+    {
+      abortEarly: false,
+    },
+  );
+  if (user_error) {
+    throw new ValidationError(user_error.message);
+  }
   const NUTRITION_GOAL_ID = await prisma.nutrition_goals.findFirst({
     where: { user_id: req.user.id },
     select: { id: true },
   });
 
-  value.user_id = req.user.id;
+  goals_value.user_id = req.user.id;
+  user_value.user_id = req.user.id;
 
   const createNutritionGoals = await prisma.$transaction(async (tx) => {
     const nutrition_goals_saved = await tx.nutrition_goals.update({
-      where: { user_id: value.user_id, id: NUTRITION_GOAL_ID.id },
-      data: value,
+      where: { user_id: user_value.user_id, id: NUTRITION_GOAL_ID.id },
+      data: goals_value,
     });
     await tx.users.update({
-      where: { id: value.user_id },
-      data: { dob, sex, activity_level, on_boarding: true },
+      where: { id: user_value.user_id },
+      data: { ...user_value, on_boarding: true },
     });
     return nutrition_goals_saved;
   });
