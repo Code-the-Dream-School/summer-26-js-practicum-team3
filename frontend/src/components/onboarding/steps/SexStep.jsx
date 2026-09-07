@@ -16,7 +16,14 @@ const SEX_OPTIONS = [
   { value: 'prefer_not_to_say', label: 'Prefer Not to say' },
 ];
 
-export default function SexStep({ formData, updateField, onNext, onBack, onSkip, submitting }) {
+export default function SexStep({
+  formData,
+  updateField,
+  onNext,
+  onBack,
+  onSkip,
+  submitting,
+}) {
   return (
     <StepCard>
       <MobileStepper
@@ -49,13 +56,13 @@ export default function SexStep({ formData, updateField, onNext, onBack, onSkip,
 
       <Grid container spacing={2} sx={{ mt: 3 }}>
         {onBack && (
-          <Grid item xs={4}>
+          <Grid xs={4}>
             <Button variant="outlined" fullWidth size="large" onClick={onBack}>
               Back
             </Button>
           </Grid>
         )}
-        <Grid item xs={onBack ? 8 : 12}>
+        <Grid xs={onBack ? 8 : 12}>
           <Button
             variant="contained"
             fullWidth
@@ -67,7 +74,13 @@ export default function SexStep({ formData, updateField, onNext, onBack, onSkip,
           </Button>
         </Grid>
       </Grid>
-      <Link component="button" variant="caption" color="text.disabled" onClick={onSkip} sx={{ mt: 1 }}>
+      <Link
+        component="button"
+        variant="caption"
+        color="text.disabled"
+        onClick={onSkip}
+        sx={{ mt: 1 }}
+      >
         Skip for now
       </Link>
     </StepCard>
