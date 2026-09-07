@@ -45,6 +45,13 @@ export async function updateProfile(req, res) {
   let updatedUser = await prisma.users.update({
     where: { id: req.user.id },
     data: value,
+    select: {
+      email: true,
+      name: true,
+      sex: true,
+      dob: true,
+      activity_level: true,
+    },
   });
 
   if (!updatedUser) {
