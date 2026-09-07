@@ -1,4 +1,5 @@
-//Recipe Validation to mirror recipeSchema in the backend (joi.input.validations.js)
+// Recipe form validation — mirrors recipeSchema in the backend
+// (backend/src/validations/joi.input.validations.js). Keep the two in sync.
 
 function validateTitle(title) {
   const trimmed = title.trim();
@@ -55,6 +56,7 @@ function validateCalories(calories) {
     return 'Calories must be between 1 and 9999.';
   return null;
 }
+
 function validateProtein(protein) {
   const trimmed = String(protein).trim();
   if (trimmed === '') return null;
@@ -65,6 +67,7 @@ function validateProtein(protein) {
     return 'Protein must be between 1 and 999 grams.';
   return null;
 }
+
 function validateCarbs(carbs) {
   const trimmed = String(carbs).trim();
   if (trimmed === '') return null;
@@ -75,16 +78,65 @@ function validateCarbs(carbs) {
     return 'Carbs must be between 1 and 999 grams.';
   return null;
 }
+
 function validateFat(fat) {
   const trimmed = String(fat).trim();
   if (trimmed === '') return null;
 
   const number = Number(trimmed);
   if (!Number.isInteger(number)) return 'Fat must be a whole number.';
-  if (number < 1 || number > 999)
-    return 'Fat must be between 1 and 999 grams.';
+  if (number < 1 || number > 999) return 'Fat must be between 1 and 999 grams.';
   return null;
 }
+
+// Form field name -> its validator.
+const FIELD_VALIDATORS = {
+  title: validateTitle,
+  instructions: validateInstructions,
+  ingredients: validateIngredients,
+  servings: validateServings,
+  total_time_minutes: validateTotalTime,
+  calories: validateCalories,
+  protein: validateProtein,
+  carbs: validateCarbs,
+  fat: validateFat,
+};
+
+// Fields the backend stores as numbers; everything else stays a string.
+const NUMERIC_FIELDS = [
+  'servings',
+  'total_time_minutes',
+  'calories',
+  'protein',
+  'carbs',
+  'fat',
+];
+
+// { field: message } for every invalid field, empty object when the form is valid.
+function validateRecipe(formData) {
+  const errors = {};
+  for (const [name, value] of Object.entries(formData)) {
+    const validate = FIELD_VALIDATORS[name];
+    const message = validate ? validate(value ?? '') : null;
+    if (message) {
+      errors[name] = message;
+    }
+  }
+  return errors;
+}
+
+// Request body: trim strings, drop empty optional fields, numeric strings -> Number.
+// Run validateRecipe first.
+function toRecipePayload(formData) {
+  const payload = {};
+  for (const [name, value] of Object.entries(formData)) {
+    const raw = typeof value === 'string' ? value.trim() : value;
+    if (raw === '' || raw == null) continue;
+    payload[name] = NUMERIC_FIELDS.includes(name) ? Number(raw) : raw;
+  }
+  return payload;
+}
+
 export {
   validateTitle,
   validateInstructions,
@@ -94,5 +146,8 @@ export {
   validateCalories,
   validateProtein,
   validateCarbs,
-  validateFat, 
-}; 
+  validateFat,
+  NUMERIC_FIELDS,
+  validateRecipe,
+  toRecipePayload,
+};

@@ -1,5 +1,9 @@
 import { Box, Button, Container, Typography } from '@mui/material';
 import { Link } from 'react-router';
+import banner2x1 from '../assets/AppImages/banner-2x1.webp';
+import banner3x2 from '../assets/AppImages/banner-3x2.webp';
+import banner3x1 from '../assets/AppImages/banner-3x1.webp';
+import banner4x1 from '../assets/AppImages/banner-4x1.webp';
 
 const steps = [
   {
@@ -37,6 +41,26 @@ const features = [
 export default function Home() {
   return (
     <>
+      {/* Banner. The logo is part of the image, so this needs a label. */}
+      <Box
+        role="img"
+        aria-label="Today Eatz"
+        sx={{
+          height: { xs: 220, sm: 300, md: 380, lg: 440 },
+          backgroundImage: `url(${banner3x2})`,
+          '@media (min-width: 640px)': { backgroundImage: `url(${banner2x1})` },
+          '@media (min-width: 1000px)': {
+            backgroundImage: `url(${banner3x1})`,
+          },
+          '@media (min-width: 1500px)': {
+            backgroundImage: `url(${banner4x1})`,
+          },
+          backgroundPosition: 'center',
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat',
+        }}
+      />
+
       {/* Header section */}
       <Container
         component="header"

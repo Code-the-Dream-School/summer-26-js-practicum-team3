@@ -1,5 +1,6 @@
 import { Box, Button, Stack, Typography } from '@mui/material';
 import { Link, Outlet } from 'react-router';
+import logo from '../assets/logo/logo400.png';
 
 export default function DefaultLayout() {
   return (
@@ -17,18 +18,18 @@ export default function DefaultLayout() {
           border: '1px solid #dcebe0',
         }}
       >
-        <Typography
+        <Box
           component={Link}
           to="/"
-          sx={{
-            color: 'primary.main',
-            fontSize: '1.4rem',
-            fontWeight: 700,
-            textDecoration: 'none',
-          }}
+          sx={{ display: 'flex', alignItems: 'center' }}
         >
-          Today Eatz
-        </Typography>
+          <Box
+            component="img"
+            src={logo}
+            alt="Today Eatz"
+            sx={{ height: 34, width: 'auto', display: 'block' }}
+          />
+        </Box>
 
         <Stack direction="row" spacing={1.5}>
           <Button component={Link} to="/about" variant="outlined" size="small">
