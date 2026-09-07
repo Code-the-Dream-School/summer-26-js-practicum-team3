@@ -33,7 +33,7 @@ export default function Profile() {
       setLoading(true);
       try {
         let { status, data } = await getProfile();
-        if (status > 200 && 299 > status) {
+        if (status >= 200 && 300 > status) {
           data.dob = data.dob ? data.dob.split('T')[0] : '';
 
           setProfile(data);
