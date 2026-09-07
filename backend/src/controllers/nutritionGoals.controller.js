@@ -1,9 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import { prisma } from '../db.js';
-import {
-  nutritionGoalsSchema,
-  updateUserProfile,
-} from '../validations/joi.input.validations.js';
+import { nutritionGoalsSchema } from '../validations/joi.input.validations.js';
 import { ValidationError, NotFoundError } from '../errors/index.js';
 
 /**
@@ -40,48 +37,52 @@ import { ValidationError, NotFoundError } from '../errors/index.js';
  *         description: "No user is authenticated."
  */
 export async function createNutritionGoals(req, res) {
-  const { goals, user_activity } = req.body;
-  const { error: goals_error, value: goals_value } =
-    nutritionGoalsSchema.validate(goals, {
-      abortEarly: false,
-    });
-  if (goals_error) {
-    throw new ValidationError(goals_error.message);
-  }
-  const { error: user_error, value: user_value } = updateUserProfile.validate(
-    user_activity,
-    {
-      abortEarly: false,
-    },
+  const { goals, dob, sex, activity_level } = req.body;
+
+  const { error, value: goalsValue } = nutritionGoalsSchema.validate(
+    goals ?? {},
+    { abortEarly: false },
   );
-  if (user_error) {
-    throw new ValidationError(user_error.message);
+  if (error) {
+    throw new ValidationError(error.message);
   }
-  const NUTRITION_GOAL_ID = await prisma.nutrition_goals.findFirst({
+
+  // only write the profile fields the user actually filled in.
+  const profilePatch = { on_boarding: true };
+  if (dob) profilePatch.dob = new Date(dob);
+  if (sex) profilePatch.sex = sex;
+  if (activity_level) profilePatch.activity_level = activity_level;
+
+  const existing = await prisma.nutrition_goals.findFirst({
     where: { user_id: req.user.id },
     select: { id: true },
   });
 
-  user_value.user_id = req.user.id;
+  const savedGoals = await prisma.$transaction(async (tx) => {
+    const nutritionGoals = existing
+      ? await tx.nutrition_goals.update({
+          where: { id: existing.id },
+          data: goalsValue,
+        })
+      : await tx.nutrition_goals.create({
+          data: { ...goalsValue, user_id: req.user.id },
+        });
 
-  const createNutritionGoals = await prisma.$transaction(async (tx) => {
-    const nutrition_goals_saved = await tx.nutrition_goals.update({
-      where: { user_id: user_value.user_id, id: NUTRITION_GOAL_ID.id },
-      data: goals_value,
-    });
     await tx.users.update({
-      where: { id: user_value.user_id },
-      data: { ...user_value, on_boarding: true },
+      where: { id: req.user.id },
+      data: profilePatch,
     });
-    return nutrition_goals_saved;
+
+    return nutritionGoals;
   });
 
-  if (!createNutritionGoals) {
-    throw new Error('Failed to create Nutritional Goals');
-  }
-
-  res.status(StatusCodes.CREATED).json(createNutritionGoals);
-  return;
+  return res.status(StatusCodes.CREATED).json({
+    id: savedGoals.id,
+    calories_target: savedGoals.calories_target,
+    protein_target: savedGoals.protein_target,
+    fat_target: savedGoals.fat_target,
+    carbs_target: savedGoals.carbs_target,
+  });
 }
 
 /**
