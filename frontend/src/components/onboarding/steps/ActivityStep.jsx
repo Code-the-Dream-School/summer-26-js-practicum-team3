@@ -12,14 +12,14 @@ import StepCard from '../StepCard';
 const ACTIVITY_OPTIONS = [
   { value: 'sedentary', label: 'Sedentary', helper: 'little or no exercise' },
   {
-    value: 'moderately_active',
-    label: 'Moderately active',
-    helper: 'exercise 3-5 days/week',
-  },
-  {
     value: 'lightly_active',
     label: 'Lightly Active',
     helper: 'exercise 1-3 days/week',
+  },
+  {
+    value: 'moderate_active',
+    label: 'Moderately active',
+    helper: 'exercise 3-5 days/week',
   },
   {
     value: 'very_active',

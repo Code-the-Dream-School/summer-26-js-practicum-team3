@@ -108,8 +108,8 @@ export default function DailyPlanner() {
 
         data = await resp;
 
-        setRecipes(data.recipes);
-        setPagination(data.pagination);
+        setRecipes(() => data.recipes);
+        setPagination(() => data.pagination);
         setCount(0);
       } catch (error) {
         if (
