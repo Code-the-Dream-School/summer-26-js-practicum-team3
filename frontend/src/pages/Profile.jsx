@@ -25,16 +25,23 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const hasCompletedOnboarding = useHasCompletedOnboarding();
   const [isEditing, setIsEditing] = useState(false);
+  const [error, setError] = useState('');
   const { csrfToken } = useAuth();
 
   useEffect(() => {
     const fetchProfile = async () => {
-      let { status, data } = await getProfile();
-      if (status === 200) {
-        data.dob = data.dob.split('T')[0];
-        setProfile(data);
+      setLoading(true);
+      try {
+        let { status, data } = await getProfile();
+        if (status > 200 && 299 > status) {
+          data.dob = data.dob.split('T')[0];
+          setProfile(data);
+        }
+        setLoading(false);
+      } catch (error) {
+        console.log(error.message);
+        setError(error.message);
       }
-      setLoading(false);
     };
 
     fetchProfile();
@@ -42,7 +49,7 @@ export default function Profile() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-
+    setLoading(true);
     const payload = {
       name: profile.name,
       email: profile.email,
@@ -63,8 +70,10 @@ export default function Profile() {
       data.dob = data.dob.split('T')[0];
       setProfile(data);
       setIsEditing(false);
+      setLoading(false);
     } catch (error) {
       console.log(error);
+      setError(error.message);
     }
   }
 
@@ -75,7 +84,14 @@ export default function Profile() {
       sx={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}
     >
       {loading && <Typography>Loading...</Typography>}
-      {!profile && <Typography>Error loading profile.</Typography>}
+      {error && (
+        <Typography
+          sx={{ width: '100%', color: 'red' }}
+          onClick={() => setError('')}
+        >
+          {error}
+        </Typography>
+      )}
       <Typography variant="h4" sx={{ mb: 3, fontWeight: 'bold' }}>
         My Profile
       </Typography>
