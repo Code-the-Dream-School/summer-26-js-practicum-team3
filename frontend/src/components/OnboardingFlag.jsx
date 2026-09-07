@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 
 export function OnboardingFlag() {
   return (
-    <Button component={Link} to="/onboarding">
+    <Button color="common.primary" component={Link} to="/onboarding">
       Finish Onboarding
     </Button>
   );

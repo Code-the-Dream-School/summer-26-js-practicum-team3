@@ -178,10 +178,6 @@ export default function Profile() {
         </CardContent>
       </Card>
       <Box sx={{ display: 'flex', gap: 2 }}>
-        {/* <Button variant="contained" color="primary">
-          Edit Profile
-        </Button> */}
-        {!hasCompletedOnboarding && <OnboardingFlag />}
         {isEditing ? (
           <Button
             type="submit"
@@ -203,6 +199,7 @@ export default function Profile() {
             Edit
           </Button>
         )}
+        {!hasCompletedOnboarding && <OnboardingFlag />}
       </Box>
     </Box>
   );
