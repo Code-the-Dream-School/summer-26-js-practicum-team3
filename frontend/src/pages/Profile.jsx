@@ -34,10 +34,11 @@ export default function Profile() {
       try {
         let { status, data } = await getProfile();
         if (status > 200 && 299 > status) {
-          data.dob = data.dob.split('T')[0];
+          data.dob = data.dob ? data.dob.split('T')[0] : '';
+
           setProfile(data);
+          setLoading(false);
         }
-        setLoading(false);
       } catch (error) {
         console.log(error.message);
         setError(error.message);
@@ -67,7 +68,8 @@ export default function Profile() {
         credentials: 'include',
       });
 
-      data.dob = data.dob.split('T')[0];
+      data.dob = data.dob ? data.dob.split('T')[0] : '';
+
       setProfile(data);
       setIsEditing(false);
       setLoading(false);
