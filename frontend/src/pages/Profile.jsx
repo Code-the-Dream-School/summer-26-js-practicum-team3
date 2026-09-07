@@ -61,7 +61,7 @@ export default function Profile() {
       });
 
       data.dob = data.dob.split('T')[0];
-      setProfile(() => ({ ...data }));
+      setProfile(data);
       setIsEditing(false);
     } catch (error) {
       console.log(error);
@@ -169,7 +169,8 @@ export default function Profile() {
                 />
               ) : (
                 <Typography variant="body1">
-                  {profile?.activity_level || 'Not provided'}
+                  {removedUnderscoreForUI(profile?.activity_level) ||
+                    'Not provided'}
                 </Typography>
               )}
             </Grid>
@@ -220,9 +221,16 @@ function ActivityLevelOptions({ value, onChange = NO_OP }) {
       variant="standard"
     >
       <MenuItem value="sedentary">Sedentary</MenuItem>
-      <MenuItem value="light_activity">Light</MenuItem>
-      <MenuItem value="medium_activity">Medium</MenuItem>
-      <MenuItem value="very-active">Very Active</MenuItem>
+      <MenuItem value="lightly_active">Light</MenuItem>
+      <MenuItem value="moderately_active">Medium</MenuItem>
+      <MenuItem value="very_active">Very Active</MenuItem>
     </TextField>
   );
+}
+
+function removedUnderscoreForUI(string) {
+  if (string) {
+    return string.replaceAll('_', ' ');
+  }
+  return null;
 }
