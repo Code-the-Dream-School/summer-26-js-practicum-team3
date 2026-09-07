@@ -55,7 +55,7 @@ export async function createNutritionGoals(req, res) {
   const createNutritionGoals = await prisma.$transaction(async (tx) => {
     const nutrition_goals_saved = await tx.nutrition_goals.update({
       where: { user_id: value.user_id, id: NUTRITION_GOAL_ID.id },
-      data: goals,
+      data: value,
     });
     await tx.users.update({
       where: { id: value.user_id },
