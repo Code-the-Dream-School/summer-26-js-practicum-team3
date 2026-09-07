@@ -203,9 +203,6 @@ export default function Profile() {
             Edit
           </Button>
         )}
-        {/* <Button variant="outlined" color="secondary">
-          Change Password
-        </Button> */}
       </Box>
     </Box>
   );
@@ -221,16 +218,18 @@ function ActivityLevelOptions({ value, onChange = NO_OP }) {
       variant="standard"
     >
       <MenuItem value="sedentary">Sedentary</MenuItem>
-      <MenuItem value="lightly_active">Light</MenuItem>
-      <MenuItem value="moderately_active">Medium</MenuItem>
-      <MenuItem value="very_active">Very Active</MenuItem>
+      <MenuItem value="lightly_active">Lightly active</MenuItem>
+      <MenuItem value="moderately_active">Moderately active</MenuItem>
+      <MenuItem value="very_active">Very active</MenuItem>
     </TextField>
   );
 }
 
 function removedUnderscoreForUI(string) {
   if (string) {
-    return string.replaceAll('_', ' ');
+    let cap = string.charAt(0).toUpperCase() + string.slice(1);
+    cap = cap.replaceAll('_', ' ');
+    return cap;
   }
   return null;
 }
