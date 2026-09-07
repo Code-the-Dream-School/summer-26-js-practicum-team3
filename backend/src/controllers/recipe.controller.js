@@ -246,7 +246,7 @@ export async function createRecipe(req, res) {
 /**
  * @swagger
  * /recipes/{id}:
- *   put:
+ *   patch:
  *     summary: Update an existing recipe
  *     description: "Modify an existing recipe in the database."
  *     parameters:

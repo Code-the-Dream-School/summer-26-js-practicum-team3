@@ -5,7 +5,7 @@ import { ValidationError, NotFoundError } from '../errors/index.js';
 
 /**
  * @swagger
- * /v1/users/me:
+ * /users/me:
  *   patch:
  *     summary: Save onboarding profile details (DOB, sex, activity level)
  *     description: "Saves DOB, sex, and activity level to the users table."
@@ -62,7 +62,7 @@ export async function updateOnboardingProfile(req, res) {
 
 /**
  * @swagger
- * /v1/users/me/onboarding-status:
+ * /users/me/onboarding-status:
  *   get:
  *     summary: Get the user's onboarding completion status
  *     description: "Returns whether the authenticated user has completed onboarding."

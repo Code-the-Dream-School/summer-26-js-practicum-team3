@@ -3,10 +3,9 @@ import { prisma } from '../db.js';
 import { nutritionGoalsSchema } from '../validations/joi.input.validations.js';
 import { ValidationError, NotFoundError } from '../errors/index.js';
 
-
 /**
  * @swagger
- * /v1/nutrition-goals:
+ * /nutrition-goals:
  *   post:
  *     summary: Create the user's daily nutrition goals
  *     description: "Creates the user's nutrition goals in the database."
@@ -45,7 +44,7 @@ export async function createNutritionGoals(req, res) {
     throw new ValidationError(error.message);
   }
 
-const updatedUser = await prisma.users.update({
+  const updatedUser = await prisma.users.update({
     where: { id: req.user.id }, // assumes jwtMiddleware sets req.user
     data: {
       nutrition_goals: {
@@ -64,9 +63,9 @@ const updatedUser = await prisma.users.update({
       },
     },
   });
- 
+
   const goal = updatedUser.nutrition_goals[0];
- 
+
   return res.status(StatusCodes.CREATED).json({
     id: goal.id,
     calories_target: goal.calories_target,
@@ -78,11 +77,11 @@ const updatedUser = await prisma.users.update({
 
 /**
  * @swagger
- * /v1/nutrition-goals:
+ * /nutrition-goals:
  *   get:
  *     summary: Get the user's daily nutrition goals
  *     description: "Returns the authenticated user's most recently saved nutrition goals."
- *       responses:
+ *     responses:
  *       200:
  *         description: "Nutrition goals for the authenticated user."
  *       401:
