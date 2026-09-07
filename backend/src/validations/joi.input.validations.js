@@ -32,6 +32,18 @@ const userSchema = Joi.object({
     }),
 });
 
+const updateUserProfile = Joi.object({
+  email: Joi.string().trim().lowercase().email().required(),
+  name: Joi.string().trim().min(3).max(30).required(),
+  dob: Joi.date().iso().allow('', null), //yyyy-mm-dd
+  sex: Joi.string()
+    .valid('male', 'female', 'prefer_not_to_say')
+    .allow('', null),
+  activity_level: Joi.string()
+    .valid('sedentary', 'lightly_active', 'moderately_active', 'very_active')
+    .allow('', null)
+    .min(1),
+});
 /**
  * @typedef {object} updateMeSchema
  * PATCH /api/v1/users/me — all fields optional, but at least one required.
@@ -46,13 +58,12 @@ const updateMeSchema = Joi.object({
     'sedentary',
     'lightly_active',
     'moderately_active',
-    'very_active'
+    'very_active',
   ),
 }).min(1);
 
-
-/** 
- * @typedef {object} loginSchema 
+/**
+ * @typedef {object} loginSchema
  * @prop {string} email - REQUIRED.
  * @prop {string} password - REQUIRED. No strength rules here -
  *  login only checks the credentials that were already accepted at
@@ -136,6 +147,7 @@ const dailyMenuRecipeSchema = Joi.object({
 });
 
 export {
+  updateUserProfile,
   userSchema,
   updateMeSchema,
   loginSchema,

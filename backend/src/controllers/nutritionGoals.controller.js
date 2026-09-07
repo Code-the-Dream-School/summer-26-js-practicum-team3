@@ -1,8 +1,10 @@
 import { StatusCodes } from 'http-status-codes';
 import { prisma } from '../db.js';
-import { nutritionGoalsSchema } from '../validations/joi.input.validations.js';
+import {
+  nutritionGoalsSchema,
+  updateUserProfile,
+} from '../validations/joi.input.validations.js';
 import { ValidationError, NotFoundError } from '../errors/index.js';
-
 
 /**
  * @swagger
@@ -38,42 +40,48 @@ import { ValidationError, NotFoundError } from '../errors/index.js';
  *         description: "No user is authenticated."
  */
 export async function createNutritionGoals(req, res) {
-  const { error, value } = nutritionGoalsSchema.validate(req.body ?? {}, {
-    abortEarly: false,
+  const { goals, user_activity } = req.body;
+  const { error: goals_error, value: goals_value } =
+    nutritionGoalsSchema.validate(goals, {
+      abortEarly: false,
+    });
+  if (goals_error) {
+    throw new ValidationError(goals_error.message);
+  }
+  const { error: user_error, value: user_value } = updateUserProfile.validate(
+    user_activity,
+    {
+      abortEarly: false,
+    },
+  );
+  if (user_error) {
+    throw new ValidationError(user_error.message);
+  }
+  const NUTRITION_GOAL_ID = await prisma.nutrition_goals.findFirst({
+    where: { user_id: req.user.id },
+    select: { id: true },
   });
-  if (error) {
-    throw new ValidationError(error.message);
+
+  user_value.user_id = req.user.id;
+
+  const createNutritionGoals = await prisma.$transaction(async (tx) => {
+    const nutrition_goals_saved = await tx.nutrition_goals.update({
+      where: { user_id: user_value.user_id, id: NUTRITION_GOAL_ID.id },
+      data: goals_value,
+    });
+    await tx.users.update({
+      where: { id: user_value.user_id },
+      data: { ...user_value, on_boarding: true },
+    });
+    return nutrition_goals_saved;
+  });
+
+  if (!createNutritionGoals) {
+    throw new Error('Failed to create Nutritional Goals');
   }
 
-const updatedUser = await prisma.users.update({
-    where: { id: req.user.id }, // assumes jwtMiddleware sets req.user
-    data: {
-      nutrition_goals: {
-        create: {
-          calories_target: value.calories_target,
-          protein_target: value.protein_target,
-          fat_target: value.fat_target,
-          carbs_target: value.carbs_target,
-        },
-      },
-    },
-    include: {
-      nutrition_goals: {
-        orderBy: { id: 'desc' },
-        take: 1,
-      },
-    },
-  });
- 
-  const goal = updatedUser.nutrition_goals[0];
- 
-  return res.status(StatusCodes.CREATED).json({
-    id: goal.id,
-    calories_target: goal.calories_target,
-    protein_target: goal.protein_target,
-    fat_target: goal.fat_target,
-    carbs_target: goal.carbs_target,
-  });
+  res.status(StatusCodes.CREATED).json(createNutritionGoals);
+  return;
 }
 
 /**
@@ -82,7 +90,7 @@ const updatedUser = await prisma.users.update({
  *   get:
  *     summary: Get the user's daily nutrition goals
  *     description: "Returns the authenticated user's most recently saved nutrition goals."
- *       responses:
+ *     responses:
  *       200:
  *         description: "Nutrition goals for the authenticated user."
  *       401:
