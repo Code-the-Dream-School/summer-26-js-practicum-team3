@@ -60,7 +60,7 @@ export default function ActivityStep({
 
       <Grid container spacing={1}>
         {ACTIVITY_OPTIONS.map((opt) => (
-          <Grid item xs={6} key={opt.value}>
+          <Grid xs={6} key={opt.value}>
             <FormControlLabel
               sx={{
                 alignItems: 'flex-start',
@@ -92,13 +92,13 @@ export default function ActivityStep({
 
       <Grid container spacing={2} sx={{ mt: 4 }}>
         {onBack && (
-          <Grid item xs={4}>
+          <Grid xs={4}>
             <Button variant="outlined" fullWidth size="large" onClick={onBack}>
               Back
             </Button>
           </Grid>
         )}
-        <Grid item xs={onBack ? 8 : 12}>
+        <Grid xs={onBack ? 8 : 12}>
           <Button variant="contained" fullWidth size="large" onClick={onNext}>
             Continue
           </Button>
