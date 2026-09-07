@@ -9,6 +9,6 @@ const router = Router();
 
 // PATCH /api/v1/users/me
 router.patch('/me', jwtMiddleware, updateProfile);
-// PATCH /api/v1/users/me/onborading-status
+// PATCH /api/v1/users/me/onboarding-status
 router.get('/me/onboarding-status', jwtMiddleware, OnboardingStatus);
 export default router;
