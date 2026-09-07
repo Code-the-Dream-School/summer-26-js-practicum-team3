@@ -51,6 +51,7 @@ function SignUpForm() {
         return;
       }
       login(response.data);
+      navigate('/onboarding');
     } catch (error) {
       setErrorMessage('Submission failed: A critical error occurred');
       console.error(error);
@@ -116,7 +117,7 @@ function SignUpForm() {
           onTryAgain={() => setModalOpen(false)}
         />
       </Modal>
-      {successMessage && navigate('/onboarding')}
+      {successMessage}
     </form>
   );
 }
