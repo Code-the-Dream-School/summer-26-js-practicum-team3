@@ -101,7 +101,7 @@ export default function OnboardingWizard({ onComplete = () => {} }) {
         },
       }}
     >
-      <Box sx={{ position: 'relative', width: '100%', maxWidth: 480 }} v>
+      <Box sx={{ position: 'relative', width: '100%', maxWidth: 480 }}>
         <AppBar
           position="static"
           color="transparent"
