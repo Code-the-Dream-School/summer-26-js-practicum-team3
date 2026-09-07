@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router';
 import { Snackbar, Alert, Button } from '@mui/material';
 import { useHasCompletedOnboarding } from '../../features/dailyMenu/useHasCompletedOnboarding';
 
+const API_ORIGIN = import.meta.env.VITE_API_ORIGIN ?? '';
+const BASE_URL = `${API_ORIGIN}/api/v1`;
+
 export default function OnboardingReminder() {
   const navigate = useNavigate();
   const hasCompletedOnboarding = useHasCompletedOnboarding();
@@ -24,7 +27,6 @@ export default function OnboardingReminder() {
       anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       sx={{
         top: '-.5vh !important',
-        width: '98%',
       }}
     >
       <Alert
@@ -35,14 +37,12 @@ export default function OnboardingReminder() {
             x
           </Button>
         }
-        sx={{
-          width: '100%',
-        }}
+        sx={{ width: '100%' }}
       >
         <span>
           Complete your onboarding to get a better tailored experience.
         </span>
-        <Button sx={{ mx: 2 }} size="small" onClick={handleGoToProfile}>
+        <Button sx={{ mx: 1 }} size="small" onClick={handleGoToProfile}>
           Go to Profile
         </Button>
       </Alert>
