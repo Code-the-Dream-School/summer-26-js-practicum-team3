@@ -163,7 +163,8 @@ export default function Profile() {
                     }))
                   }
                   variant="standard"
-                  placeholder="YYYY/MM/DD"
+                  value={profile.dob}
+                  placeholder={profile.dob}
                 />
               ) : (
                 <Typography variant="body1">
