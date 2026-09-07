@@ -62,7 +62,6 @@ export async function createNutritionGoals(req, res) {
     select: { id: true },
   });
 
-  goals_value.user_id = req.user.id;
   user_value.user_id = req.user.id;
 
   const createNutritionGoals = await prisma.$transaction(async (tx) => {
