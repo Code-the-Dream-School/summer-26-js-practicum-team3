@@ -42,7 +42,8 @@ export default function Profile() {
   // setUpdateNutrition(goals);
   useEffect(() => {
     if (goals) {
-      setUpdateNutrition(goals);
+      const { id, ...rest } = goals;
+      setUpdateNutrition(rest);
     }
   }, [goals]);
 
@@ -186,7 +187,7 @@ export default function Profile() {
                     }))
                   }
                   variant="standard"
-                  placeholder="YYYY/MM/DD"
+                  value={profile?.dob}
                 />
               ) : (
                 <Typography variant="body1">
