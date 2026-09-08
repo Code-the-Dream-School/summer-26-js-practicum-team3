@@ -6,14 +6,6 @@ import {
 } from '../validations/joi.input.validations.js';
 import { ValidationError, NotFoundError } from '../errors/index.js';
 
-const GOALS_RESPONSE_FIELDS = {
-  id: true,
-  calories_target: true,
-  protein_target: true,
-  fat_target: true,
-  carbs_target: true,
-};
-
 /**
  * @swagger
  * /nutrition-goals:
@@ -75,22 +67,21 @@ export async function createNutritionGoals(req, res) {
     profilePatch.activity_level = profile.activity_level;
   }
 
-  const existingUserGoals = await prisma.nutrition_goals.findFirst({
+  const existing = await prisma.nutrition_goals.findFirst({
     where: { user_id: req.user.id },
     select: { id: true },
   });
 
   const savedGoals = await prisma.$transaction(async (tx) => {
-    const nutritionGoals = existingUserGoals
+    // Registration seeds a nutrition_goals row, so `existing` is normally set.
+    // Users created before have none, so create it if it's missing.
+    const nutritionGoals = existing
       ? await tx.nutrition_goals.update({
-          where: { id: existingUserGoals.id },
+          where: { id: existing.id },
           data: goalsValue,
-          select: GOALS_RESPONSE_FIELDS,
         })
-      // older users have no seeded row - create it if it's missing
       : await tx.nutrition_goals.create({
           data: { ...goalsValue, user_id: req.user.id },
-          select: GOALS_RESPONSE_FIELDS,
         });
 
     await tx.users.update({
@@ -101,7 +92,13 @@ export async function createNutritionGoals(req, res) {
     return nutritionGoals;
   });
 
-  return res.status(StatusCodes.CREATED).json({ savedGoals });
+  return res.status(StatusCodes.CREATED).json({
+    id: savedGoals.id,
+    calories_target: savedGoals.calories_target,
+    protein_target: savedGoals.protein_target,
+    fat_target: savedGoals.fat_target,
+    carbs_target: savedGoals.carbs_target,
+  });
 }
 
 /**
@@ -123,12 +120,17 @@ export async function getNutritionGoals(req, res) {
   const goal = await prisma.nutrition_goals.findFirst({
     where: { user_id: req.user.id },
     orderBy: { id: 'desc' },
-    select: GOALS_RESPONSE_FIELDS,
   });
 
   if (!goal) {
     throw new NotFoundError('No nutrition goals found for this user.');
   }
 
-  return res.status(StatusCodes.OK).json({ goal });
+  return res.status(StatusCodes.OK).json({
+    id: goal.id,
+    calories_target: goal.calories_target,
+    protein_target: goal.protein_target,
+    fat_target: goal.fat_target,
+    carbs_target: goal.carbs_target,
+  });
 }
