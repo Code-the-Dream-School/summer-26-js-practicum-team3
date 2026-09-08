@@ -1,7 +1,20 @@
-import { Typography, TextField, Button, MobileStepper, Grid, Link } from '@mui/material';
+import {
+  Typography,
+  TextField,
+  Button,
+  MobileStepper,
+  Grid,
+  Link,
+} from '@mui/material';
 import StepCard from '../StepCard';
 
-export default function DobStep({ formData, updateField, onNext, onBack, onSkip }) {
+export default function DobStep({
+  formData,
+  updateField,
+  onNext,
+  onBack,
+  onSkip,
+}) {
   return (
     <StepCard>
       <MobileStepper
@@ -22,24 +35,36 @@ export default function DobStep({ formData, updateField, onNext, onBack, onSkip 
         fullWidth
         value={formData.dob}
         onChange={(e) => updateField('dob', e.target.value)}
-        InputLabelProps={{ shrink: true }}
+        inputlabel={{ inputLabel: { shrink: true } }}
       />
 
       <Grid container spacing={2} sx={{ mt: 3 }}>
         {onBack && (
-          <Grid item xs={4}>
+          <Grid xs={4}>
             <Button variant="outlined" fullWidth size="large" onClick={onBack}>
               Back
             </Button>
           </Grid>
         )}
-        <Grid item xs={onBack ? 8 : 12}>
-          <Button variant="contained" fullWidth size="large" onClick={onNext} disabled={!formData.dob}>
+        <Grid xs={onBack ? 8 : 12}>
+          <Button
+            variant="contained"
+            fullWidth
+            size="large"
+            onClick={onNext}
+            disabled={!formData.dob}
+          >
             Continue
           </Button>
         </Grid>
       </Grid>
-      <Link component="button" variant="caption" color="text.disabled" onClick={onSkip} sx={{ mt: 1 }}>
+      <Link
+        component="button"
+        variant="caption"
+        color="text.disabled"
+        onClick={onSkip}
+        sx={{ mt: 1 }}
+      >
         Skip for now
       </Link>
     </StepCard>
