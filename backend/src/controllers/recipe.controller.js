@@ -70,6 +70,8 @@ import {
  *     responses:
  *       200:
  *         description: A list of recipes and pagination details.
+ *       400:
+ *         description: Invalid pagination parameters (negative page or limit).
  *       404:
  *         description: No recipes met the search criteria.
  *       500:
@@ -167,13 +169,7 @@ export async function getRecipes(req, res) {
  * /recipes:
  *   post:
  *     summary: Create a new recipe
- *     parameters:
- *       - in: header
- *         name: Authorization
- *         description: "JWT Token to pull the request user ID (Note: hardcoded for now, but will be required later)"
- *         required: false
- *         schema:
- *           type: string
+ *     description: "Adds a recipe owned by the authenticated user. Auth is the `jwt` cookie plus a matching `X-CSRF-TOKEN` header."
  *     requestBody:
  *       required: true
  *       content:
@@ -211,6 +207,10 @@ export async function getRecipes(req, res) {
  *     responses:
  *       201:
  *         description: The recipe was successfully created.
+ *       400:
+ *         description: Invalid or missing fields in the request body.
+ *       401:
+ *         description: No user is authenticated, or the CSRF token is missing or invalid.
  *       500:
  *         description: Server or database connection error.
  */
@@ -252,7 +252,7 @@ export async function createRecipe(req, res) {
  * /recipes/{id}:
  *   patch:
  *     summary: Update an existing recipe
- *     description: "Modify an existing recipe in the database."
+ *     description: "Modifies a recipe owned by the authenticated user. Auth is the `jwt` cookie plus a matching `X-CSRF-TOKEN` header."
  *     parameters:
  *       - in: path
  *         name: id
@@ -260,12 +260,6 @@ export async function createRecipe(req, res) {
  *         description: "The ID of the recipe you want to update."
  *         schema:
  *           type: integer
- *       - in: header
- *         name: Authorization
- *         description: "JWT Token to pull the request user ID (Note: hardcoded for now, but will be required later)"
- *         required: false
- *         schema:
- *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -304,7 +298,11 @@ export async function createRecipe(req, res) {
  *       200:
  *         description: "The recipe was successfully updated."
  *       400:
- *         description: "Validation error or database connection issue."
+ *         description: "Invalid recipe ID or invalid fields in the request body."
+ *       401:
+ *         description: "No user is authenticated, or the CSRF token is missing or invalid."
+ *       404:
+ *         description: "No recipe with that ID belongs to the authenticated user."
  */
 export async function updateRecipe(req, res) {
   const { error, value } = patchRecipeSchema.validate(req.body ?? {}, {
@@ -357,7 +355,7 @@ export async function updateRecipe(req, res) {
  * /recipes/{id}:
  *   delete:
  *     summary: Delete a recipe
- *     description: "Remove a recipe from the database."
+ *     description: "Removes a recipe owned by the authenticated user. Auth is the `jwt` cookie plus a matching `X-CSRF-TOKEN` header."
  *     parameters:
  *       - in: path
  *         name: id
@@ -365,17 +363,15 @@ export async function updateRecipe(req, res) {
  *         description: "The ID of the recipe you want to delete."
  *         schema:
  *           type: integer
- *       - in: header
- *         name: Authorization
- *         description: "JWT Token to pull the request user ID (Note: hardcoded for now, but will be required later)"
- *         required: false
- *         schema:
- *           type: string
  *     responses:
  *       204:
  *         description: "The recipe was successfully deleted."
  *       400:
- *         description: "Validation error or database connection issue."
+ *         description: "Invalid recipe ID."
+ *       401:
+ *         description: "No user is authenticated, or the CSRF token is missing or invalid."
+ *       404:
+ *         description: "No recipe with that ID belongs to the authenticated user."
  */
 export async function deleteRecipe(req, res) {
   const recipeIndex = parseInt(req.params?.id);
