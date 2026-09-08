@@ -5,6 +5,11 @@ import { useHasCompletedOnboarding } from '../features/dailyMenu/useHasCompleted
 import { baseFetch } from '../utils/api-helper';
 import { useAuth } from '../features/auth/context/AuthContext';
 
+/*************
+ * MACROS EDIT
+ **************/
+import { useNutritionalGoals } from '../utils/customHooks/useNutritionGoals.js';
+
 import {
   Card,
   Box,
@@ -28,7 +33,20 @@ export default function Profile() {
   const [error, setError] = useState('');
   const { csrfToken } = useAuth();
 
+  /*************
+   * MACROS EDIT
+   **************/
+  const { goals, macros, error: goalsError } = useNutritionalGoals();
+  const [updateNutrition, setUpdateNutrition] = useState({});
+
   useEffect(() => {
+    if (goals) {
+      setUpdateNutrition(goals);
+    }
+  }, [goals]);
+
+  useEffect(() => {
+    console.log(updateNutrition);
     const fetchProfile = async () => {
       setLoading(true);
       try {
@@ -46,7 +64,7 @@ export default function Profile() {
     };
 
     fetchProfile();
-  }, []);
+  }, [goals]);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -86,6 +104,9 @@ export default function Profile() {
       sx={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}
     >
       {loading && <Typography>Loading...</Typography>}
+      {/**
+       * clearing error state by clicking needs better adhearnece
+       */}
       {error && (
         <Typography
           sx={{ width: '100%', color: 'red' }}
@@ -104,7 +125,6 @@ export default function Profile() {
             Personal Information
           </Typography>
           <Divider sx={{ mb: 2 }} />
-
           <Grid container spacing={2}>
             <Grid xs={12} sm={6}>
               <Typography variant="subtitle2" color="textSecondary">
@@ -189,6 +209,96 @@ export default function Profile() {
                 <Typography variant="body1">
                   {removedUnderscoreForUI(profile?.activity_level) ||
                     'Not provided'}
+                </Typography>
+              )}
+            </Grid>
+          </Grid>
+          {/******************
+           * MACROS EDITING
+           *****************/}
+          <Divider sx={{ mb: 2 }} />
+          <Grid container spacing={2}>
+            <Grid xs={12} sm={6}>
+              <Typography variant="standard" color="textSecondary">
+                Calories:
+              </Typography>
+              {isEditing ? (
+                <TextField
+                  variant="standard"
+                  onChange={(e) =>
+                    setProfile((previous) => ({
+                      ...previous,
+                      calories_target: e.target.value,
+                    }))
+                  }
+                  value={updateNutrition?.calories_target}
+                />
+              ) : (
+                <Typography variant="body1">
+                  {updateNutrition?.calories_target || '0'}
+                </Typography>
+              )}
+            </Grid>
+            <Grid xs={12} sm={6}>
+              <Typography variant="subtitle2" color="textSecondary">
+                Carbs:
+              </Typography>
+              {isEditing ? (
+                <TextField
+                  variant="standard"
+                  onChange={(e) =>
+                    setUpdateNutrition((previous) => ({
+                      ...previous,
+                      carbs_target: e.target.value,
+                    }))
+                  }
+                  value={updateNutrition.carbs_target}
+                />
+              ) : (
+                <Typography variant="body1">
+                  {updateNutrition?.carbs_target || '0'}
+                </Typography>
+              )}
+            </Grid>
+            <Grid xs={12} sm={6}>
+              <Typography variant="subtitle2" color="textSecondary">
+                Fat:
+              </Typography>
+              {isEditing ? (
+                <TextField
+                  variant="standard"
+                  onChange={(e) =>
+                    setUpdateNutrition((previous) => ({
+                      ...previous,
+                      fat_target: e.target.value,
+                    }))
+                  }
+                  value={updateNutrition.fat_target}
+                />
+              ) : (
+                <Typography variant="body1">
+                  {updateNutrition?.fat_target || '0'}
+                </Typography>
+              )}
+            </Grid>
+            <Grid xs={12} sm={6}>
+              <Typography variant="subtitle2" color="textSecondary">
+                Protein:
+              </Typography>
+              {isEditing ? (
+                <TextField
+                  variant="standard"
+                  onChange={(e) =>
+                    setUpdateNutrition((previous) => ({
+                      ...previous,
+                      protein_target: e.target.value,
+                    }))
+                  }
+                  value={updateNutrition?.protein_target}
+                />
+              ) : (
+                <Typography variant="body1">
+                  {updateNutrition?.protein_target || '0'}
                 </Typography>
               )}
             </Grid>
