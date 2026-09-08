@@ -8,32 +8,45 @@ import { ValidationError, NotFoundError } from '../errors/index.js';
 
 /**
  * @swagger
- * /v1/users/me:
+ * /users/me:
  *   patch:
- *     summary: Save onboarding profile details (DOB, sex, activity level)
- *     description: "Saves DOB, sex, and activity level to the users table."
+ *     summary: Update the current user's profile
+ *     description: "Updates the authenticated user's profile. `email` and `name` are required on every call; `dob`, `sex`, and `activity_level` are optional and may be sent as \"\" or null to leave them unset. Used by the Profile page."
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
+ *             required: [email, name]
  *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: "jane@example.com"
+ *               name:
+ *                 type: string
+ *                 example: "Jane Doe"
  *               dob:
  *                 type: string
+ *                 format: date
+ *                 nullable: true
  *                 example: "1990-05-14"
  *               sex:
  *                 type: string
  *                 enum: [male, female, prefer_not_to_say]
- *                 example: "male"
+ *                 nullable: true
+ *                 example: "female"
  *               activity_level:
  *                 type: string
+ *                 enum: [sedentary, lightly_active, moderately_active, very_active]
+ *                 nullable: true
  *                 example: "moderately_active"
  *     responses:
  *       200:
- *         description: "Successfully updated the onboarding profile fields."
+ *         description: "The updated profile: email, name, sex, dob, activity_level."
  *       400:
- *         description: "Invalid or unknown fields in the request body."
+ *         description: "Missing required fields or invalid values in the request body."
  *       401:
  *         description: "No user is authenticated."
  */
@@ -111,7 +124,7 @@ export async function updateProfile(req, res) {
 
 /**
  * @swagger
- * /v1/users/me/onboarding-status:
+ * /users/me/onboarding-status:
  *   get:
  *     summary: Get the user's onboarding completion status
  *     description: "Returns whether the authenticated user has completed onboarding."
