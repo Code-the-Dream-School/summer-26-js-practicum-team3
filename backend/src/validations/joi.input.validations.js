@@ -44,23 +44,25 @@ const updateUserProfile = Joi.object({
     .allow('', null)
     .min(1),
 });
+
 /**
- * @typedef {object} updateMeSchema
- * PATCH /api/v1/users/me — all fields optional, but at least one required.
- * @prop {string} [dob] - Date Of Birth, yyyy-mm-dd.
- * @prop {string} [sex] - one of male|female|prefer_not_to_say
- * @prop {string} [activity_level] - one of sedentary|lightly_active|moderately_active|very_active
+ * @typedef {object} updateUserOnboardingSchema
+ * Onboarding profile fields sent with POST /api/v1/nutrition-goals.
+ * Every field is optional and may be "" or null — the wizard lets the user
+ * skip the DOB, sex, and activity steps.
+ * @prop {string} [dob] - Date of birth, ISO date.
+ * @prop {string} [sex] - male|female|prefer_not_to_say
+ * @prop {string} [activity_level] - sedentary|lightly_active|moderately_active|very_active
  */
-const updateMeSchema = Joi.object({
-  dob: Joi.date().iso(),
-  sex: Joi.string().valid('male', 'female', 'prefer_not_to_say'),
-  activity_level: Joi.string().valid(
-    'sedentary',
-    'lightly_active',
-    'moderately_active',
-    'very_active',
-  ),
-}).min(1);
+const updateUserOnboardingSchema = Joi.object({
+  dob: Joi.date().iso().allow('', null),
+  sex: Joi.string()
+    .valid('male', 'female', 'prefer_not_to_say')
+    .allow('', null),
+  activity_level: Joi.string()
+    .valid('sedentary', 'lightly_active', 'moderately_active', 'very_active')
+    .allow('', null),
+});
 
 /**
  * @typedef {object} loginSchema
@@ -149,7 +151,7 @@ const dailyMenuRecipeSchema = Joi.object({
 export {
   updateUserProfile,
   userSchema,
-  updateMeSchema,
+  updateUserOnboardingSchema,
   loginSchema,
   recipeSchema,
   patchRecipeSchema,
