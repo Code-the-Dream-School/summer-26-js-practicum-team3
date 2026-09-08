@@ -13,8 +13,12 @@ const options = {
       title: 'TodayEatz API Docs',
       version: '1.0.0',
       description:
-        'Documentation for creating, reading, updating, and deleting recipes.',
+        'REST API for TodayEatz — auth, recipes, nutrition goals, onboarding, ' +
+        'and the daily meal planner.',
     },
+    // Every @swagger path is written relative to this base, so the docs
+    // show the real URLs (e.g. /api/v1/auth/login).
+    servers: [{ url: '/api/v1', description: 'API base path' }],
   },
   // 2. Point Swagger to the files where we will write our comments
   apis: ['./src/controllers/*.js'],
