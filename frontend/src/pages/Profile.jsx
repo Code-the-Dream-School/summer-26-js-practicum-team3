@@ -39,6 +39,7 @@ export default function Profile() {
   const { goals, macros, error: goalsError } = useNutritionalGoals();
   const [updateNutrition, setUpdateNutrition] = useState({});
 
+  // setUpdateNutrition(goals);
   useEffect(() => {
     if (goals) {
       setUpdateNutrition(goals);
@@ -46,7 +47,6 @@ export default function Profile() {
   }, [goals]);
 
   useEffect(() => {
-    console.log(updateNutrition);
     const fetchProfile = async () => {
       setLoading(true);
       try {
@@ -64,7 +64,7 @@ export default function Profile() {
     };
 
     fetchProfile();
-  }, [goals]);
+  }, []);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -74,7 +74,9 @@ export default function Profile() {
       email: profile.email,
       dob: profile.dob,
       activity_level: profile.activity_level,
+      goals: { ...updateNutrition },
     };
+    console.log('papyload', payload);
     try {
       let data = await baseFetch(BASE_PATH, {
         method: 'PATCH',
@@ -94,6 +96,7 @@ export default function Profile() {
     } catch (error) {
       console.log(error);
       setError(error.message);
+      setLoading(false);
     }
   }
 
@@ -226,7 +229,7 @@ export default function Profile() {
                 <TextField
                   variant="standard"
                   onChange={(e) =>
-                    setProfile((previous) => ({
+                    setUpdateNutrition((previous) => ({
                       ...previous,
                       calories_target: e.target.value,
                     }))
@@ -327,6 +330,18 @@ export default function Profile() {
             Edit
           </Button>
         )}
+        {isEditing && (
+          <Button
+            type="button"
+            onClick={() => setIsEditing(false)}
+            variant="contained"
+            color="primary"
+            key="cancel-button"
+          >
+            Cancel
+          </Button>
+        )}
+
         {!hasCompletedOnboarding && <OnboardingFlag />}
       </Box>
     </Box>
