@@ -1,6 +1,9 @@
 import { StatusCodes } from 'http-status-codes';
 import { prisma } from '../db.js';
-import { nutritionGoalsSchema } from '../validations/joi.input.validations.js';
+import {
+  nutritionGoalsSchema,
+  updateUserOnboardingSchema,
+} from '../validations/joi.input.validations.js';
 import { ValidationError, NotFoundError } from '../errors/index.js';
 
 /**
@@ -37,21 +40,32 @@ import { ValidationError, NotFoundError } from '../errors/index.js';
  *         description: "No user is authenticated."
  */
 export async function createNutritionGoals(req, res) {
-  const { goals, dob, sex, activity_level } = req.body;
+  const { goals, ...profileFields } = req.body;
 
-  const { error, value: goalsValue } = nutritionGoalsSchema.validate(
-    goals ?? {},
-    { abortEarly: false },
-  );
-  if (error) {
-    throw new ValidationError(error.message);
+  // onboarding always sends `goals`; a missing one is a bad request
+  if (!goals) {
+    throw new ValidationError('goals is required');
   }
 
-  // only write the profile fields the user actually filled in.
+  const { error: goalsError, value: goalsValue } =
+    nutritionGoalsSchema.validate(goals, { abortEarly: false });
+  if (goalsError) {
+    throw new ValidationError(goalsError.message);
+  }
+
+  const { error: profileError, value: profile } =
+    updateUserOnboardingSchema.validate(profileFields, { abortEarly: false });
+  if (profileError) {
+    throw new ValidationError(profileError.message);
+  }
+
+  // only write the profile fields the user actually filled in ("" / null skipped).
   const profilePatch = { on_boarding: true };
-  if (dob) profilePatch.dob = new Date(dob);
-  if (sex) profilePatch.sex = sex;
-  if (activity_level) profilePatch.activity_level = activity_level;
+  if (profile.dob) profilePatch.dob = profile.dob; // Joi already coerced to Date
+  if (profile.sex) profilePatch.sex = profile.sex;
+  if (profile.activity_level) {
+    profilePatch.activity_level = profile.activity_level;
+  }
 
   const existing = await prisma.nutrition_goals.findFirst({
     where: { user_id: req.user.id },
@@ -59,6 +73,8 @@ export async function createNutritionGoals(req, res) {
   });
 
   const savedGoals = await prisma.$transaction(async (tx) => {
+    // Registration seeds a nutrition_goals row, so `existing` is normally set.
+    // Users created before have none, so create it if it's missing.
     const nutritionGoals = existing
       ? await tx.nutrition_goals.update({
           where: { id: existing.id },
