@@ -17,7 +17,7 @@ const ACTIVITY_OPTIONS = [
     helper: 'exercise 1-3 days/week',
   },
   {
-    value: 'moderate_active',
+    value: 'moderately_active',
     label: 'Moderately active',
     helper: 'exercise 3-5 days/week',
   },
