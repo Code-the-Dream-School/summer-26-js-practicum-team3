@@ -10,7 +10,7 @@ import {
  * /recipes:
  *   get:
  *     summary: Get a list of recipes
- *     description: Fetch recipes with pagination. You can also search by title, sort by nutrition facts, and filter recipes based on nutritional goals. Daily nutritional targets are divided by three meals per day before filtering.
+ *     description: Fetch recipes with pagination. You can also search by title, sort by nutrition facts, and filter recipes based on nutritional goals. Filtering kicks in only when `calories` is provided, and it expects `protein`, `carbs`, and `fat` alongside it. Daily targets are divided by three meals per day before filtering.
  *     parameters:
  *       - in: query
  *         name: page
@@ -44,25 +44,29 @@ import {
  *           enum: [asc, desc]
  *         description: Sort going up (asc) or down (desc).
  *       - in: query
- *         name: calories:2000
+ *         name: calories
  *         schema:
  *           type: integer
- *         description: Daily calorie target.
+ *           example: 2000
+ *         description: Daily calorie target. Turns nutrition filtering on.
  *       - in: query
- *         name: protein:50
+ *         name: protein
  *         schema:
  *           type: integer
- *         description: Daily protein target.
+ *           example: 50
+ *         description: Daily protein target. Used only when `calories` is set.
  *       - in: query
- *         name: carbs:275
+ *         name: carbs
  *         schema:
  *           type: integer
- *         description: Daily carbohydrate target.
+ *           example: 275
+ *         description: Daily carbohydrate target. Used only when `calories` is set.
  *       - in: query
- *         name: fat:70
+ *         name: fat
  *         schema:
  *           type: integer
- *         description: Daily fat target.
+ *           example: 70
+ *         description: Daily fat target. Used only when `calories` is set.
  *     responses:
  *       200:
  *         description: A list of recipes and pagination details.
