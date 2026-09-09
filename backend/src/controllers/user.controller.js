@@ -107,17 +107,14 @@ export async function updateProfile(req, res) {
           },
         });
 
-    const savedUserInfo = await tx.users.update({
+    const userInfo = await tx.users.update({
       where: { id: req.user.id },
       data: profilePatch,
-      select: { name: true, email: true, dob: true, sex: true },
+      select: { name: true, email: true, dob: true, activity_level: true },
     });
 
-    return { ...savedUserInfo, ...nutritionGoals };
+    return { userInfo, nutritionGoals };
   });
-  console.log('*************************');
-  console.log('Profile updating on server\n', updatedUser);
-  console.log('*************************');
 
   return res.status(StatusCodes.CREATED).json(updatedUser);
 }
