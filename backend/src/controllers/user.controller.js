@@ -1,6 +1,9 @@
 import { StatusCodes } from 'http-status-codes';
 import { prisma } from '../db.js';
-import { updateUserProfile } from '../validations/joi.input.validations.js';
+import {
+  updateUserProfileSchema,
+  nutritionGoalsSchema,
+} from '../validations/joi.input.validations.js';
 import { ValidationError, NotFoundError } from '../errors/index.js';
 
 /**
@@ -48,30 +51,74 @@ import { ValidationError, NotFoundError } from '../errors/index.js';
  *         description: "No user is authenticated."
  */
 export async function updateProfile(req, res) {
-  const { error, value } = updateUserProfile.validate(req.body ?? {}, {
-    abortEarly: false,
-  });
-  if (error) {
-    throw new ValidationError(error.message);
+  const { goals, ...profileFields } = req.body;
+
+  // onboarding always sends `goals`; a missing one is a bad request
+  if (!goals) {
+    throw new ValidationError('goals is required');
   }
 
-  let updatedUser = await prisma.users.update({
-    where: { id: req.user.id },
-    data: value,
-    select: {
-      email: true,
-      name: true,
-      sex: true,
-      dob: true,
-      activity_level: true,
-    },
-  });
-
-  if (!updatedUser) {
-    throw new Error('User Updates failed');
+  const { error: goalsError, value: goalsValue } =
+    nutritionGoalsSchema.validate(goals, { abortEarly: false });
+  if (goalsError) {
+    throw new ValidationError(goalsError.message);
   }
 
-  return res.status(StatusCodes.OK).json(updatedUser);
+  const { error: profileError, value: profile } =
+    updateUserProfileSchema.validate(profileFields, { abortEarly: false });
+  if (profileError) {
+    throw new ValidationError(profileError.message);
+  }
+
+  // only write the profile fields the user actually filled in ("" / null skipped).
+  const profilePatch = {};
+  if (profile.name) profilePatch.name = profile.name;
+  if (profile.dob) profilePatch.dob = profile.dob; // Joi already coerced to Date
+  if (profile.sex) profilePatch.sex = profile.sex;
+  if (profile.activity_level) {
+    profilePatch.activity_level = profile.activity_level;
+  }
+
+  // Would like to do better targeting so their are not duplicate goals
+  const existing_nutrition_goals = await prisma.nutrition_goals.findFirst({
+    where: { user_id: req.user.id },
+    select: { id: true },
+  });
+
+  const updatedUser = await prisma.$transaction(async (tx) => {
+    // Registration seeds a nutrition_goals row, so `existing` is normally set.
+    // Users created before have none, so create it if it's missing.
+    const nutritionGoals = existing_nutrition_goals
+      ? await tx.nutrition_goals.update({
+          where: { id: existing_nutrition_goals.id },
+          data: goalsValue,
+          select: {
+            calories_target: true,
+            carbs_target: true,
+            fat_target: true,
+            protein_target: true,
+          },
+        })
+      : await tx.nutrition_goals.create({
+          data: { ...goalsValue, user_id: req.user.id },
+          select: {
+            calories_target: true,
+            carbs_target: true,
+            fat_target: true,
+            protein_target: true,
+          },
+        });
+
+    const userInfo = await tx.users.update({
+      where: { id: req.user.id },
+      data: profilePatch,
+      select: { name: true, email: true, dob: true, activity_level: true },
+    });
+
+    return { userInfo, nutritionGoals };
+  });
+
+  return res.status(StatusCodes.CREATED).json(updatedUser);
 }
 
 /**

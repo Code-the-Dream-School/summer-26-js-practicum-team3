@@ -32,11 +32,7 @@ const NO_OP = () => {};
  */
 
 const FLEX_COLUMN = { display: 'flex', flexDirection: 'column' };
-const CARD_CONTAINER = {
-  width: { xs: '50%', md: '65%' },
-  justifySelf: 'center',
-  mb: 3,
-};
+const CARD_CONTAINER = { width: '100%' };
 const CARD_CONTEXT = {
   textAlign: 'left',
   p: '8px',
@@ -49,8 +45,15 @@ const STACKED_TEXT = { textAlign: 'center', ...FLEX_COLUMN };
 const TITLE_BUTTON_CONTAINER = {
   display: 'flex',
   justifyContent: 'space-between',
-  alignItems: 'center',
+  alignItems: 'flex-start',
+  gap: 1.5,
+  mb: 1,
 };
+// Keeps a long recipe title from squeezing the button into its own label.
+const ADD_BUTTON = { flexShrink: 0, whiteSpace: 'nowrap' };
+// minWidth lets the title shrink below its content size so it wraps
+// instead of pushing the button out of the card.
+const CARD_TITLE = { minWidth: 0, overflowWrap: 'anywhere' };
 const LIST_CONTROL = { p: 0, m: 0, listStyle: 'none' };
 const TEXT_HIDDEN_FOR_SCREEN_READERS = visuallyHidden;
 export function RecipeCard({
@@ -71,13 +74,14 @@ export function RecipeCard({
     <Card variant="outlined" sx={CARD_CONTAINER}>
       <CardContent sx={CARD_CONTEXT}>
         <Box sx={TITLE_BUTTON_CONTAINER}>
-          <Typography variant="h5" component="h2">
+          <Typography variant="h5" component="h2" sx={CARD_TITLE}>
             {title}
           </Typography>
           <Button
             variant="contained"
             onClick={() => handleAddToPlanner(id)}
             disabled={disabled}
+            sx={ADD_BUTTON}
           >
             Add To Planner
           </Button>

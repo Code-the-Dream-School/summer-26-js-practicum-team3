@@ -1,16 +1,12 @@
 /* eslint-disable react/prop-types */
 import { FormControl, TextField } from '@mui/material';
+// Shares the filter row with SortBy, and takes the full row on the
+// narrowest screens.
 const SEARCH_CONTAINER = {
-  width: { xs: '45%', md: '95%' },
-  mb: { xs: '16px', md: 0 },
-  display: 'flex',
-  justifyContent: 'space-around',
-  alignItems: 'center',
+  flex: { xs: '1 1 100%', sm: '1 1 0' },
+  minWidth: 0,
 };
-const SEARCH_BAR = {
-  width: { xs: '100%', md: '50%' },
-  alignText: 'center',
-};
+const SEARCH_BAR = { width: '100%' };
 export function SearchInput({ searchTerm, onFilterChange }) {
   return (
     <FormControl sx={SEARCH_CONTAINER}>
