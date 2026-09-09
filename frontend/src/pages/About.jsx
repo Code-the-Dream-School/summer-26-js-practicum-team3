@@ -6,6 +6,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import { visuallyHidden } from '@mui/utils';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
@@ -63,10 +64,8 @@ const teamMembers = [
 export default function About() {
   return (
     <>
-      {/* Banner. The "About Us" wordmark is part of the image, so this needs a label. */}
       <Box
-        role="img"
-        aria-label="About Us"
+        aria-hidden="true"
         sx={{
           height: { xs: 140, sm: 170, md: 200, lg: 220 },
           backgroundImage: `url(${bannerAbout3x1})`,
@@ -78,6 +77,8 @@ export default function About() {
           backgroundRepeat: 'no-repeat',
         }}
       />
+      {/* Accessibility: heading lives in the banner image. Keeps the page in the heading outline. */}
+      <h1 style={visuallyHidden}>About Us</h1>
 
       <Box component="main" sx={{ py: { xs: 6, md: 10 } }}>
         <Container maxWidth="lg">
