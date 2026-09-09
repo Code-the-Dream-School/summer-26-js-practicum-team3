@@ -6,19 +6,14 @@ import {
   Select,
   Stack,
 } from '@mui/material';
+// Shares the filter row with SearchInput, and takes the full row on the
+// narrowest screens.
 const CONTAINER = {
-  mx: 0,
-  maxWidth: { xs: '50%' },
-  display: 'flex',
-  flexDirection: 'row',
-  justifyContent: { xs: 'flex-end', md: 'space-between' },
-  alignItems: 'center',
-  mb: 2,
+  flex: { xs: '1 1 100%', sm: '1 1 0' },
+  minWidth: 0,
+  alignItems: 'flex-end',
 };
-const DISPLAY_SIZE = {
-  width: { xs: '45%', md: '40%' },
-  mx: { xs: '4px', md: 0 },
-};
+const DISPLAY_SIZE = { flex: 1, minWidth: 0 };
 
 export function SortBy({
   sortBy,
@@ -27,7 +22,7 @@ export function SortBy({
   onSortDirectionChange,
 }) {
   return (
-    <Stack sx={CONTAINER}>
+    <Stack direction="row" spacing={2} sx={CONTAINER}>
       <FormControl variant="standard" sx={DISPLAY_SIZE}>
         <InputLabel id="sortBy-label">Sort By</InputLabel>
         <Select
