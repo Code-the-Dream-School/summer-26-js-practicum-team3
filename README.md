@@ -1,259 +1,211 @@
-# Project Name
+# TodayEatz
 
-Short, clear description of what this application does and who it’s for.
-(1–2 sentences max.)
+A single-user web app for planning a day's meals that add up to your nutrition
+targets. You build a daily menu from starter recipes or your own, and a live
+widget shows running totals against your calorie and macro goals — one progress
+bar per nutrient.
 
-**Example:**
-A full-stack web application with a React frontend and a Node/Express backend that allows users to create, manage, and track data stored in a database.
+It's for people who track macros or eat intentionally and want their meals to
+actually hit their targets, not just browse recipes. One user, no admin — the app
+is personal.
 
-## 🚀 Live Demo
+> Early planning docs also call it **TodaysEatz** / **NutriPlan**.
 
-- **Frontend Live Site:** https://your-frontend-url.com
-- **Frontend Repo:** /frontend
-- **Backend Repo:** /backend
+## 🚀 Live demo
 
-## 🧠 Problem Statement
+Frontend, API, and docs are one deployment on Render (free tier — the first
+request after idle can take ~30s to wake).
 
-What problem does this project solve?
+- **App:** https://today-eatz.onrender.com/
+- **API base:** https://today-eatz.onrender.com/api/v1
+- **Swagger UI:** https://today-eatz.onrender.com/swagger/v1/docs
 
-- Who is this application for?
-- What pain point does it address?
-- Why does this solution matter?
+## 🛠 Tech stack
 
-Focus on the **user problem**, not the technology.
+**Frontend**
 
-## 🎯 Features
+- React 19 + React Router 8
+- MUI 9 (`@mui/material`), Emotion, CSS Modules
+- Vite 8 (dev server + proxy)
+- DOMPurify for sanitizing user-authored recipe content
 
-- User authentication (register, login, logout)
-- CRUD operations for core resources
-- Protected routes and authorization
-- Responsive UI (mobile & desktop)
-- Form validation and error handling
-- RESTful API integration
+**Backend**
 
-## 📸 Screenshots
+- Node (LTS) + Express 5
+- PostgreSQL, hosted on [Neon](https://neon.tech/)
+- Prisma 7 (`prisma-client` generator; schema kept in sync by introspection, not Prisma Migrate)
+- Auth: JWT in an httpOnly cookie + a CSRF token echoed in the `X-CSRF-TOKEN` header on writes
+- Joi (input validation), Helmet, `express-rate-limit`, `cookie-parser`, `morgan`
+- Swagger via `swagger-jsdoc` + `swagger-ui-express`
 
-Add screenshots or GIFs of key features here.
+**Tooling**
 
-## 🛠 Tech Stack
+- npm workspaces (`backend`, `frontend`)
+- Vitest + Supertest (backend tests)
+- ESLint + Prettier
+- Husky git hooks
 
-### Frontend
-
-- React
-- JavaScript (ES6+)
-- HTML5
-- CSS3 / Tailwind / Bootstrap
-- Vite or Create React App
-
-### Backend
-
-- Node.js
-- Express.js
-- REST API
-
-### Database
-
-- PostgreSQL (Prisma / Knex / Sequelize)
-
-### Tooling
-
-- Git & GitHub
-- dotenv (environment variables)
-- ESLint / Prettier
-
-## 📁 Project Structure
-
-```text
-project-root/
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── hooks/
-│   │   ├── services/
-│   │   ├── styles/
-│   │   ├── utils/
-│   │   ├── App.jsx
-│   │   └── main.jsx
-│   └── index.html
-│
-├── backend/
-│   ├── controllers/
-│   ├── routes/
-│   ├── models/
-│   ├── middleware/
-│   ├── config/
-│   ├── app.js
-│   └── server.js
-├── package.json
-└── README.md
-```
-
-## ⚙️ Setup & Installation
+## ⚙️ Setup & installation
 
 ### Prerequisites
 
-- Node.js (v24.18+ recommended)
-- npm
-- PostgreSQL (local or cloud)
+- Node LTS (see [`.nvmrc`](./.nvmrc))
+- npm 10+
+- A PostgreSQL database (the team uses a Neon branch — see [`backend/README.md`](./backend/README.md))
 
-### Installation
-
-```bash
-# In the root directory of the repo (NOT frontend or backend)
-
-# Install dependencies
-npm ci
-
-# Set up environment variables
-npm run init-env
-
-# Pull latest database migrations
-npm run db:pull
-
-# Generate Prisma client
-npm run db:generate
-```
-
-### Environment Variables
-
-`npm run init-env` copies `backend/.env.example` → `backend/.env` and
-`frontend/.env.example` → `frontend/.env`. Fill in the real values afterwards.
-
-**Backend (`backend/.env`)**
-
-- `DATABASE_URL` - Connection string for the PostgreSQL database.
-- `JWT_SECRET` - Secret key used to sign JWTs. Use a long, random string - do not commit a real value.
-  Generate one with:
-  ```bash
-  node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
-  ```
-
-**Frontend (`frontend/.env`)** - the defaults work out of the box.
-
-- `VITE_PORT` - Port the frontend dev server runs on (default `8081`).
-- `VITE_TARGET` - Address of the backend (default `http://localhost:8080`). In dev, the frontend sends every request starting with `/api` to itself, and Vite forwards it to this address (set up in `frontend/vite.config.js`).
-- `VITE_API_ORIGIN` - Origin prefix prepended to API paths.
-  - Default empty (`""`), means same-origin: the frontend calls its own origin and the proxy (dev) forwards to the backend.
-  - Set a fullorigin only to call a backend directly, bypassing the proxy.
-
-## 🧪 Available Scripts
+### Steps
 
 ```bash
-# Start the development server (frontend + backend)
-npm run dev
+# From the repo root (not backend/ or frontend/)
 
-# Format code with Prettier
-npm run format
+git clone <repo-url>
+cd summer-26-js-practicum-team3
 
-# Run all backend tests (Vitest)
-npm run test
-
-# Run only the Joi validation tests
-npm run test:joi
+npm ci                 # installs both workspaces + sets up git hooks
+npm run init-env       # copies backend/.env.example and frontend/.env.example
+npm run db:pull        # introspects the DB schema into backend/prisma/schema.prisma
+npm run db:generate    # generates the Prisma client (output is git-ignored, so this is required)
 ```
 
-## Installing new dependencies
+### Environment variables
 
-This project makes use of npm workspaces to manage dependencies for both the frontend and backend. To install a new dependency, run the following command from the root of the project:
+`npm run init-env` creates `backend/.env` and `frontend/.env` from the
+`*.env.example` files. Then fill in the real values.
+
+**`backend/.env`**
+
+| Variable | Notes |
+| --- | --- |
+| `DATABASE_URL` | PostgreSQL connection string (from the Neon console) |
+| `JWT_SECRET` | Long random string. Generate: `node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"` |
+| `PORT` | Backend port (default `8080`) |
+
+**`frontend/.env`** — defaults work out of the box.
+
+| Variable | Notes |
+| --- | --- |
+| `VITE_PORT` | Frontend dev port (default `8081`, pinned with `strictPort`) |
+| `VITE_TARGET` | Backend address the Vite proxy forwards `/api` to (default `http://localhost:8080`) |
+| `VITE_API_ORIGIN` | Origin prefix for API paths. Empty = same-origin (use the proxy). Set a full origin only to bypass the proxy. |
+
+## ▶️ Running it
 
 ```bash
-# For frontend dependencies
-npm install <package-name> --workspace=frontend
+npm run dev            # frontend (:8081) + backend (:8080) together
 
-# For backend dependencies
-npm install <package-name> --workspace=backend
+npm run test           # backend Vitest suite (Prisma is mocked — no DB needed)
+npm run test:joi       # only the Joi validation tests
+npm run test:recipe-api # only the recipe API tests
+
+npm run lint           # ESLint, both workspaces
+npm run format         # Prettier, both workspaces
 ```
 
-## 🔐 API Overview
+**Production build**
 
-All routes are under `/api/v1`. Auth is cookie-based: `POST /auth/login` (or `/auth/register`) 
-sets an httpOnly `jwt` cookie and returns a `csrfToken` — send that token in 
-the `X-CSRF-TOKEN` header on every `POST` / `PATCH` / `DELETE`.
-
-### Interactive docs (Swagger)
-
-With the backend running:
-
-```
-http://localhost:8080/swagger/v1/docs
+```bash
+npm run build                     # builds frontend/dist + generates Prisma client
+NODE_ENV=production npm start     # Express serves the API and frontend/dist on one port
 ```
 
-The spec is generated from `@swagger` JSDoc comments in
-`backend/src/controllers/*.js` (config in `backend/src/routes/swagger-docs.routes.js`).
-When you add or change an endpoint, update its `@swagger` block in the same commit.
+**Git hooks (Husky).** `pre-commit` runs the test suite; `post-merge` regenerates
+the Prisma client / runs `npm install` when `schema.prisma` or a `package.json`
+changed. See [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
-### Endpoints
+## 📁 Project structure
+
+```text
+.
+├── backend/
+│   ├── prisma/schema.prisma        introspected from Neon (source of truth is the DB)
+│   ├── src/
+│   │   ├── routes/                  Express routers, one per resource
+│   │   ├── controllers/            handlers + @swagger JSDoc blocks
+│   │   ├── middleware/             jwt (auth + CSRF), not-found, error-handler
+│   │   ├── validations/           Joi schemas
+│   │   ├── config/ · errors/ · db.js
+│   │   ├── generated/prisma/       Prisma client (git-ignored, created by db:generate)
+│   │   └── app.js
+│   ├── tests/{unit,integration}/    Vitest + Supertest
+│   └── server.js                   DB-connection check + graceful shutdown
+│
+├── frontend/
+│   ├── src/
+│   │   ├── features/               auth · dailyMenu · recipes  (api/ components/ context/ utils/)
+│   │   ├── components/            shared + onboarding wizard UI
+│   │   ├── pages/                 route-level screens
+│   │   ├── services/ · utils/     helpers + customHooks/
+│   │   ├── App.jsx                routes (public vs. protected)
+│   │   └── main.jsx
+│   ├── vite.config.js             dev server + /api proxy
+│   └── index.html
+│
+├── .husky/                         pre-commit + post-merge hooks
+├── CONTRIBUTING.md
+└── package.json                    npm workspaces + shared scripts
+```
+
+## 🔐 API overview
+
+- All routes are under `/api/v1`.
+- Auth is cookie-based: `POST /auth/register` or `/auth/login` sets an httpOnly
+  `jwt` cookie and returns a `csrfToken`. Send that token in the `X-CSRF-TOKEN`
+  header on every `POST` / `PATCH` / `DELETE`.
+- Interactive docs: [live](https://today-eatz.onrender.com/swagger/v1/docs), or
+  `http://localhost:8080/swagger/v1/docs` with the backend running. Generated from
+  `@swagger` JSDoc in `backend/src/controllers/*.js`.
 
 ```text
 Auth
   POST   /api/v1/auth/register
   POST   /api/v1/auth/login
   POST   /api/v1/auth/logout
-  GET    /api/v1/auth/profile          (auth)
-  GET    /api/v1/auth/me               (auth)
+  GET    /api/v1/auth/profile                (auth)
+  GET    /api/v1/auth/me                     (auth)  → { name, csrfToken }, 401 if invalid
 
 Recipes
-  GET    /api/v1/recipes               search / sort / paginate
-  POST   /api/v1/recipes               (auth)
-  PATCH  /api/v1/recipes/:id           (auth)
-  DELETE /api/v1/recipes/:id           (auth)
+  GET    /api/v1/recipes                     search / sort / paginate (public)
+  POST   /api/v1/recipes                     (auth)
+  PATCH  /api/v1/recipes/:id                 (auth)
+  DELETE /api/v1/recipes/:id                 (auth)
 
 Users
-  PATCH  /api/v1/users/me                     (auth)
-  GET    /api/v1/users/me/onboarding-status   (auth)
+  PATCH  /api/v1/users/me                    (auth)
+  GET    /api/v1/users/me/onboarding-status  (auth)
 
-Nutrition Goals
-  GET    /api/v1/nutrition-goals       (auth)
-  POST   /api/v1/nutrition-goals       (auth)
+Nutrition goals
+  GET    /api/v1/nutrition-goals             (auth)
+  POST   /api/v1/nutrition-goals             (auth)
 
-Daily Menu
-  GET    /api/v1/daily-menu                   (auth)
-  POST   /api/v1/daily-menu                   (auth)
-  DELETE /api/v1/daily-menu/recipes/:id       (auth)
+Daily menu
+  GET    /api/v1/daily-menu                  (auth)
+  POST   /api/v1/daily-menu                  (auth)
+  DELETE /api/v1/daily-menu/recipes/:id      (auth)
 ```
 
-## 🤝 Team & Collaboration
+## 🤝 Team & workflow
 
-### Team Members
+### Team
 
-- Name — Role
-- Name — Role
-- Name — Role
+| Name | Role |
+| --- | --- |
+| [Olena Khvorostianenko](https://github.com/helen-khvorostianenko) | Full-Stack Software Engineer |
+| [Stephen Lewis](https://github.com/WizardOfWhimsical) | Software Engineer |
+| [Stephanie Mix](https://github.com/stephcra123) | Full-Stack Developer & Product Marketing Manager |
+| [Terri-Ann Walker](https://github.com/terriberri82) | Software Engineer |
+| [Xavier Mcallister](https://github.com/XavierCTD) | Software Engineer |
+
+Bios on the app's [About page](https://today-eatz.onrender.com/about).
 
 ### Workflow
 
-- GitHub Issues for task tracking
-- Feature branches for development
-- Pull Requests required for all merges
-- Code reviews before merging to `main`
+- Tasks tracked as GitHub Issues (`MEAL-###`).
+- Feature branch → Pull Request → one review → squash-merge to `main`.
+- Conventional commit prefixes (`feat`, `fix`, `chore`, `docs`, `refactor`).
+- Backend endpoints ship with their `@swagger` block and tests.
 
-## 🧩 Development Process
-
-- Agile / sprint-based workflow
-- Backend API built before frontend integration
-- MVP defined early
-- Incremental feature development
-
-## 📌 Known Issues / Limitations
-
-- Limited role-based access control
-- No automated tests yet
-- Performance optimizations pending
-
-## 🛣 Future Improvements
-
-- Add automated testing (Jest, Supertest)
-- Improve security and validation
-- Add caching and performance improvements
-- Dockerize the application
-
-## 🙌 Acknowledgments
-
-- Mentors
-- Instructors
-- Open-source libraries and tools
+Full contributor guide: [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
 ## 📄 License
 
-This project is for educational purposes only.
+For educational purposes only (Code the Dream practicum).
