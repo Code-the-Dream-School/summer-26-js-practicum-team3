@@ -107,41 +107,76 @@ export async function getRecipes(req, res) {
     whereClause.protein = { gte: parseInt(req.query.protein) / MEALS_PER_DAY };
   }
 
+  // function getOrderBy(query) {
+  //   const validSortFields = ['protein', 'carbs', 'fat', 'calories'];
+  //   const sortBy = query.sortBy || 'calories';
+  //   const sortDirection = query.sortDirection === 'asc' ? 'asc' : 'desc';
+
+  //   if (validSortFields.includes(sortBy)) {
+  //     return { [sortBy]: sortDirection };
+  //   }
+
+  //   return { created_at: sortDirection };
+  // }
+
+  const searchPattern = `%${whereClause.title}%`;
+  const exactMatch = whereClause.title;
+  const startsWith = `${whereClause.title}%`;
   let recipes = null;
   let total = null;
 
-  function getOrderBy(query) {
-    const validSortFields = ['protein', 'carbs', 'fat', 'calories'];
-    const sortBy = query.sortBy || 'calories';
-    const sortDirection = query.sortDirection === 'asc' ? 'asc' : 'desc';
+  recipes = await prisma.$queryRaw`
+SELECT 
+id,
+instructions,
+ingredients,
+total_time_minutes,
+servings,
+title,
+calories,
+fat,
+protein,
+carbs
+  FROM recipes
+  WHERE title ILIKE ${searchPattern} 
+  ORDER BY 
+    CASE 
+      WHEN title ILIKE ${exactMatch} THEN 1
+      WHEN title ILIKE ${startsWith} THEN 2
+      WHEN title ILIKE ${searchPattern} THEN 3
+      ELSE 4
+       END,
+CASE WHEN calories <= ${Math.floor(whereClause.calories)} THEN 1 ELSE 0 END
++ CASE WHEN protein >= ${Math.floor(whereClause.protein)} THEN 1 ELSE 0 END
++ CASE WHEN fat <= ${Math.floor(whereClause.fat)} THEN 1 ELSE 0 END
++ CASE WHEN carbs >= ${Math.floor(whereClause.carbs)} THEN 1 ELSE 0 END
+    DESC
+    OFFSET ${parseInt(page)}
+  LIMIT ${parseInt(limit)}
+`;
 
-    if (validSortFields.includes(sortBy)) {
-      return { [sortBy]: sortDirection };
-    }
+  // recipes = await prisma.recipes.findMany({
+  //   where: whereClause,
+  //   select: {
+  //     id: true,
+  //     instructions: true,
+  //     ingredients: true,
+  //     total_time_minutes: true,
+  //     servings: true,
+  //     title: true,
+  //     calories: true,
+  //     fat: true,
+  //     protein: true,
+  //     carbs: true,
+  //   },
+  //   skip: skip,
+  //   take: limit,
+  //   orderBy: getOrderBy(req.query),
+  // });
 
-    return { created_at: sortDirection };
-  }
-
-  recipes = await prisma.recipes.findMany({
-    where: whereClause,
-    select: {
-      id: true,
-      instructions: true,
-      ingredients: true,
-      total_time_minutes: true,
-      servings: true,
-      title: true,
-      calories: true,
-      fat: true,
-      protein: true,
-      carbs: true,
-    },
-    skip: skip,
-    take: limit,
-    orderBy: getOrderBy(req.query),
-  });
-
-  total = await prisma.recipes.count({ where: whereClause });
+  // total = await prisma.recipes.count({ where: whereClause });
+  total =
+    await prisma.$queryRaw`SELECT COUNT(*) FROM recipes WHERE title ILIKE ${searchPattern}`;
 
   const pagination = {
     page,
@@ -160,7 +195,14 @@ export async function getRecipes(req, res) {
     return;
   }
 
-  res.status(StatusCodes.OK).json({ recipes, pagination });
+  res.status(StatusCodes.OK).json({
+    recipes,
+    search: whereClause.title,
+    count: recipes.length,
+    pagination,
+  });
+  //origina
+  // res.status(StatusCodes.OK).json({ recipes, pagination });
   return;
 }
 
