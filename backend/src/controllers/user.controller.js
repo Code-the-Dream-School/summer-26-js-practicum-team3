@@ -72,12 +72,14 @@ export async function updateProfile(req, res) {
 
   // only write the profile fields the user actually filled in ("" / null skipped).
   const profilePatch = {};
+  if (profile.name) profilePatch.name = profile.name;
   if (profile.dob) profilePatch.dob = profile.dob; // Joi already coerced to Date
   if (profile.sex) profilePatch.sex = profile.sex;
   if (profile.activity_level) {
     profilePatch.activity_level = profile.activity_level;
   }
 
+  // Would like to do better targeting so their are not duplicate goals
   const existing_nutrition_goals = await prisma.nutrition_goals.findFirst({
     where: { user_id: req.user.id },
     select: { id: true },
