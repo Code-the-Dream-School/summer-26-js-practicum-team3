@@ -1,8 +1,11 @@
 import { useAuth } from '../context/AuthContext';
+import { Navigate } from 'react-router';
 import { Box, CircularProgress } from '@mui/material';
+import { useHasCompletedOnboarding } from '../../dailyMenu/useHasCompletedOnboarding';
 
 function PublicRoute({ children }) {
-  const { isChecking } = useAuth();
+  const { userName, isChecking } = useAuth();
+  const hasCompletedOnboarding = useHasCompletedOnboarding();
 
   if (isChecking) {
     return (
@@ -11,7 +14,9 @@ function PublicRoute({ children }) {
       </Box>
     );
   }
-
+  if (userName) {
+    return <Navigate to={'/daily-planner'} replace />;
+  }
   return children;
 }
 export default PublicRoute;
