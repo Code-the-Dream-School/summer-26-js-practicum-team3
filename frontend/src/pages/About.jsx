@@ -9,6 +9,8 @@ import {
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import bannerAbout3x1 from '../assets/AppImages/about-banner-3x1.webp';
+import bannerAbout4x1 from '../assets/AppImages/about-banner-4x1.webp';
 
 const teamMembers = [
   {
@@ -54,143 +56,153 @@ const teamMembers = [
     github: 'https://github.com/XavierCTD',
     linkedin: 'https://www.linkedin.com/in/xavier-mcallister-b2a117351/',
     initials: 'XM',
-    bio: 'I have have been coding for three years and enjoy frontend development. I am 25 years old and live in the state of N.C. I like going to parks to enjoy the view with family and friends. My favorite show to watch is batman.'
+    bio: 'I have have been coding for three years and enjoy frontend development. I am 25 years old and live in the state of N.C. I like going to parks to enjoy the view with family and friends. My favorite show to watch is batman.',
   },
 ];
 
 export default function About() {
   return (
-    <Box component="main" sx={{ py: { xs: 6, md: 10 } }}>
-      <Container maxWidth="lg">
-        {/* Header / Intro */}
-        <Box component="header" sx={{ mb: { xs: 5, md: 8 } }}>
-          <Typography
-            variant="h3"
-            component="h1"
-            sx={{ fontWeight: 700, mb: 2, textAlign: 'center' }}
-          >
-            About Us
-          </Typography>
+    <>
+      {/* Banner. The "About Us" wordmark is part of the image, so this needs a label. */}
+      <Box
+        role="img"
+        aria-label="About Us"
+        sx={{
+          height: { xs: 140, sm: 170, md: 200, lg: 220 },
+          backgroundImage: `url(${bannerAbout3x1})`,
+          '@media (min-width: 1000px)': {
+            backgroundImage: `url(${bannerAbout4x1})`,
+          },
+          backgroundPosition: 'center',
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat',
+        }}
+      />
 
-          <Typography
-            variant="h6"
-            color="textSecondary"
-            sx={{
-              maxWidth: 900,
-              mx: 'auto',
-              textAlign: 'center',
-              lineHeight: 1.7,
-            }}
-          >
-            Code the Dream is a non-profit organization learning community where
-            mentors train and students learn to build real-world skills by
-            creating apps and possibly other meaningful technology. Our team
-            came together with one shared goal: to build a user-friendly app
-            called TodayEatz. This app will allow the users to better manage
-            their wellness and nutrition goals.
-          </Typography>
-        </Box>
-
-        {/* Main Section / Team bios */}
-        <Box component="section" sx={{ mb: { xs: 5, md: 8 } }}>
-          {teamMembers.map((member) => (
-            <Box
-              key={member.name}
-              component="article"
+      <Box component="main" sx={{ py: { xs: 6, md: 10 } }}>
+        <Container maxWidth="lg">
+          <Box component="header" sx={{ mb: { xs: 5, md: 8 } }}>
+            <Typography
+              variant="h6"
+              color="textSecondary"
               sx={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: 2,
-                py: 3,
-                borderBottom: '1px solid',
-                borderColor: 'divider',
-                '&:first-of-type': {
-                  borderTop: '1px solid',
-                  borderColor: 'divider',
-                },
+                maxWidth: 900,
+                mx: 'auto',
+                textAlign: 'center',
+                lineHeight: 1.7,
               }}
             >
-              <Avatar
+              Code the Dream is a non-profit organization learning community
+              where mentors train and students learn to build real-world skills
+              by creating apps and possibly other meaningful technology. Our
+              team came together with one shared goal: to build a user-friendly
+              app called TodayEatz. This app will allow the users to better
+              manage their wellness and nutrition goals.
+            </Typography>
+          </Box>
+
+          {/* Main Section / Team bios */}
+          <Box component="section" sx={{ mb: { xs: 5, md: 8 } }}>
+            {teamMembers.map((member) => (
+              <Box
+                key={member.name}
+                component="article"
                 sx={{
-                  width: 56,
-                  height: 56,
-                  bgcolor: 'primary.main',
-                  fontWeight: 700,
-                  flexShrink: 0,
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 2,
+                  py: 3,
+                  borderBottom: '1px solid',
+                  borderColor: 'divider',
+                  '&:first-of-type': {
+                    borderTop: '1px solid',
+                    borderColor: 'divider',
+                  },
                 }}
               >
-                {member.initials}
-              </Avatar>
+                <Avatar
+                  sx={{
+                    width: 56,
+                    height: 56,
+                    bgcolor: 'primary.main',
+                    fontWeight: 700,
+                    flexShrink: 0,
+                  }}
+                >
+                  {member.initials}
+                </Avatar>
 
-              <Box sx={{ flex: 1 }}>
-                <Typography
-                  variant="h5"
-                  component="h2"
-                  sx={{ fontWeight: 600, mb: 0.5 }}
-                >
-                  {member.name}
-                </Typography>
-
-                <Typography
-                  variant="subtitle1"
-                  color="primary.main"
-                  sx={{ fontWeight: 500, mb: 1 }}
-                >
-                  {member.role}
-                </Typography>
-
-                <Typography
-                  variant="body1"
-                  color="text.secondary"
-                  sx={{ lineHeight: 1.7 }}
-                >
-                  {member.bio}
-                </Typography>
-                <Stack
-                  direction={{ xs: 'column', sm: 'row' }}
-                  spacing={1}
-                  sx={{ mt: 2, flexWrap: 'wrap' }}
-                >
-                  <Button
-                    component="a"
-                    href={`mailto:${member.email}`}
-                    startIcon={<EmailOutlinedIcon />}
-                    variant="outlined"
-                    aria-label={`Email ${member.name}`}
-                    sx={{ alignSelf: 'flex-start' }}
+                <Box sx={{ flex: 1 }}>
+                  <Typography
+                    variant="h5"
+                    component="h2"
+                    sx={{ fontWeight: 600, mb: 0.5 }}
                   >
-                    Email
-                  </Button>
+                    {member.name}
+                  </Typography>
 
-                  <Button
-                    component="a"
-                    href={member.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    variant="text"
-                    startIcon={<GitHubIcon />}
-                    aria-label={`${member.name}'s GitHub profile`}
+                  <Typography
+                    variant="subtitle1"
+                    color="primary.main"
+                    sx={{ fontWeight: 500, mb: 1 }}
                   >
-                    GitHub
-                  </Button>
+                    {member.role}
+                  </Typography>
 
-                  <Button
-                    component="a"
-                    href={member.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    variant="text"
-                    startIcon={<LinkedInIcon />}
-                    aria-label={`${member.name}'s LinkedIn profile`}
+                  <Typography
+                    variant="body1"
+                    color="text.secondary"
+                    sx={{ lineHeight: 1.7 }}
                   >
-                    LinkedIn
-                  </Button>
-                </Stack>
+                    {member.bio}
+                  </Typography>
+
+                  <Stack
+                    direction={{ xs: 'column', sm: 'row' }}
+                    spacing={1}
+                    sx={{ mt: 2, flexWrap: 'wrap' }}
+                  >
+                    <Button
+                      component="a"
+                      href={`mailto:${member.email}`}
+                      startIcon={<EmailOutlinedIcon />}
+                      variant="outlined"
+                      aria-label={`Email ${member.name}`}
+                      sx={{ alignSelf: 'flex-start' }}
+                    >
+                      Email
+                    </Button>
+
+                    <Button
+                      component="a"
+                      href={member.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      variant="text"
+                      startIcon={<GitHubIcon />}
+                      aria-label={`${member.name}'s GitHub profile`}
+                    >
+                      GitHub
+                    </Button>
+
+                    <Button
+                      component="a"
+                      href={member.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      variant="text"
+                      startIcon={<LinkedInIcon />}
+                      aria-label={`${member.name}'s LinkedIn profile`}
+                    >
+                      LinkedIn
+                    </Button>
+                  </Stack>
+                </Box>
               </Box>
-            </Box>
-          ))}
-        </Box>
-      </Container>
-    </Box>
+            ))}
+          </Box>
+        </Container>
+      </Box>
+    </>
   );
 }
