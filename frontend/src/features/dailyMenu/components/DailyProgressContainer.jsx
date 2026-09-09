@@ -113,16 +113,17 @@ export function DailyProgressContainer({
         transformOrigin={{ vertical: 'top', horizontal: 'left' }}
         slots={{ transition: Fade }}
         transitionDuration={0}
+        marginThreshold={0}
         slotProps={{
           paper: {
             sx: {
-              // A bit wider/taller than the trigger and nudged up-left, so
-              // this paper fully covers it - no sliver of the trigger
-              // should peek out from behind the edges.
-              width: (triggerEl?.offsetWidth ?? 0) + 8,
-              ml: '-4px',
-              mt: '-4px',
+              // Overhang the trigger on every side so none of it shows through from behind the edges.
+              width: (triggerEl?.offsetWidth ?? 0) + 16,
+              maxWidth: '100vw',
+              ml: '-8px',
+              mt: '-8px',
               p: 1.5,
+              bgcolor: 'background.paper',
             },
           },
         }}
