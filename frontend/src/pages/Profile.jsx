@@ -91,6 +91,7 @@ export default function Profile() {
 
       setIsEditing(false);
       setLoading(false);
+      setError('');
     } catch (error) {
       console.log(error);
       setError(error.message);
@@ -157,7 +158,6 @@ export default function Profile() {
               {isEditing ? (
                 <TextField
                   required
-                  email
                   onChange={(e) =>
                     setProfile((previous) => ({
                       ...previous,
