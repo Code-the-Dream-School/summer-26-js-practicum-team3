@@ -28,9 +28,6 @@ export default function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  function activeState(pathname) {
-    return location.pathname === pathname ? 'contained' : 'outlined';
-  }
   const handleLogout = () => {
     logout();
     navigate('/login');
@@ -49,30 +46,18 @@ export default function AppLayout() {
           aria-label="Bottom navigation"
         >
           <Toolbar sx={JUSTIFY_AROUND}>
-            <Button
-              variant={activeState('/daily-planner')}
-              component={Link}
-              to="/daily-planner"
-            >
+            <Button color="inherit" component={Link} to="/daily-planner">
               Daily Planner
             </Button>
-            <Button
-              variant={activeState('/add-recipe')}
-              component={Link}
-              to="/add-recipe"
-            >
+            <Button color="inherit" component={Link} to="/add-recipe">
               Add Recipe
             </Button>
-            <Button
-              variant={activeState('/profile')}
-              component={Link}
-              to="/profile"
-            >
+            <Button color="inherit" component={Link} to="/profile">
               Profile
             </Button>
 
             {!hasCompletedOnboarding && <OnboardingReminder />}
-            <Button variant={activeState('/logout')} onClick={handleLogout}>
+            <Button color="inherit" onClick={handleLogout}>
               Log Out
             </Button>
           </Toolbar>
