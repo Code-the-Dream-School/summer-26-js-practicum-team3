@@ -27,31 +27,31 @@ const BASE_PATH = `${API_ORIGIN}/api/v1/recipes`;
 const FILTER_CONTAINER = {
   width: '100%',
   display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: 1,
-  mx: { xs: 'auto', md: 0 },
-  pt: 2,
+  // On the narrowest screens the search drops onto its own row so the two
+  // sort selects still have room for their labels.
+  flexWrap: 'wrap',
+  alignItems: 'flex-end',
+  gap: 2,
 };
 
 const MAIN_CONTAINER = {
-  height: '91dvh',
   fontFamily: 'sans-serif',
-  position: 'relative',
-  top:'5vh',
-  p: '8px',
+  px: { xs: 2, sm: 3 },
+  pt: 4,
+  // Clears the fixed bottom navigation bar.
+  pb: 10,
+};
+const RECIPE_LIST = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 2,
   pt: 2,
 };
 const RECIPE_NAV = {
-  position: 'absolute',
-  top: '80vh',
-  bottom: '3px',
-  left: 0,
-  right: 0,
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
-  px: 2,
+  mt: 2,
 };
 
 export default function DailyPlanner() {
@@ -223,7 +223,7 @@ export default function DailyPlanner() {
       {error && <h3 style={{ color: 'red' }}>{error}</h3>}
       {isLoading && <h1>Loading Recipes...</h1>}
 
-      <Box sx={{ gap: 1, pt: 3 }}>
+      <Box sx={RECIPE_LIST}>
         {recipes.slice(count, count + 2).map((recipe) => (
           <RecipeCard
             key={recipe.id}
