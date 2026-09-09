@@ -36,16 +36,10 @@ export default function Profile() {
   /*************
    * MACROS EDIT
    **************/
-  const { goals, macros, error: goalsError } = useNutritionalGoals();
-  const [updateNutrition, setUpdateNutrition] = useState({});
-
-  // setUpdateNutrition(goals);
-  useEffect(() => {
-    if (goals) {
-      const { id, ...rest } = goals;
-      setUpdateNutrition(rest);
-    }
-  }, [goals]);
+  const {
+    goals: { id, ...goals },
+    setGoals,
+  } = useNutritionalGoals();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -75,7 +69,7 @@ export default function Profile() {
       email: profile.email,
       dob: profile.dob,
       activity_level: profile.activity_level,
-      goals: { ...updateNutrition },
+      goals: { ...goals },
     };
     console.log('papyload', payload);
     try {
@@ -88,10 +82,12 @@ export default function Profile() {
         body: JSON.stringify(payload),
         credentials: 'include',
       });
+      console.log('hey', data);
+      const { userInfo, nutritionGoals } = data;
 
-      data.dob = data.dob ? data.dob.split('T')[0] : '';
-
-      setProfile(data);
+      userInfo.dob = userInfo.dob ? userInfo.dob.split('T')[0] : '';
+      setGoals(nutritionGoals);
+      setProfile(userInfo);
       setIsEditing(false);
       setLoading(false);
     } catch (error) {
@@ -230,16 +226,16 @@ export default function Profile() {
                 <TextField
                   variant="standard"
                   onChange={(e) =>
-                    setUpdateNutrition((previous) => ({
+                    setGoals((previous) => ({
                       ...previous,
                       calories_target: e.target.value,
                     }))
                   }
-                  value={updateNutrition?.calories_target}
+                  value={goals?.calories_target}
                 />
               ) : (
                 <Typography variant="body1">
-                  {updateNutrition?.calories_target || '0'}
+                  {goals?.calories_target || '0'}
                 </Typography>
               )}
             </Grid>
@@ -251,16 +247,16 @@ export default function Profile() {
                 <TextField
                   variant="standard"
                   onChange={(e) =>
-                    setUpdateNutrition((previous) => ({
+                    setGoals((previous) => ({
                       ...previous,
                       carbs_target: e.target.value,
                     }))
                   }
-                  value={updateNutrition.carbs_target}
+                  value={goals.carbs_target}
                 />
               ) : (
                 <Typography variant="body1">
-                  {updateNutrition?.carbs_target || '0'}
+                  {goals?.carbs_target || '0'}
                 </Typography>
               )}
             </Grid>
@@ -272,16 +268,16 @@ export default function Profile() {
                 <TextField
                   variant="standard"
                   onChange={(e) =>
-                    setUpdateNutrition((previous) => ({
+                    setGoals((previous) => ({
                       ...previous,
                       fat_target: e.target.value,
                     }))
                   }
-                  value={updateNutrition.fat_target}
+                  value={goals.fat_target}
                 />
               ) : (
                 <Typography variant="body1">
-                  {updateNutrition?.fat_target || '0'}
+                  {goals?.fat_target || '0'}
                 </Typography>
               )}
             </Grid>
@@ -293,16 +289,16 @@ export default function Profile() {
                 <TextField
                   variant="standard"
                   onChange={(e) =>
-                    setUpdateNutrition((previous) => ({
+                    setGoals((previous) => ({
                       ...previous,
                       protein_target: e.target.value,
                     }))
                   }
-                  value={updateNutrition?.protein_target}
+                  value={goals?.protein_target}
                 />
               ) : (
                 <Typography variant="body1">
-                  {updateNutrition?.protein_target || '0'}
+                  {goals?.protein_target || '0'}
                 </Typography>
               )}
             </Grid>
