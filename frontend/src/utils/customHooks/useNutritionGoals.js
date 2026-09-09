@@ -9,7 +9,7 @@ const BASE_PATH = `${API_ORIGIN}/api/v1/nutrition-goals`;
 // recipe query (needs them renamed, without the _target suffix) read from
 // here instead of each fetching /nutrition-goals on their own.
 export function useNutritionalGoals() {
-  const [nutritionGoals, setNutritionGoals] = useState(null);
+  const [nutritionGoals, setNutritionGoals] = useState({});
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -46,5 +46,10 @@ export function useNutritionalGoals() {
     };
   }, [nutritionGoals]);
 
-  return { goals: nutritionGoals, macros: convertedMacrosForQuery, error };
+  return {
+    goals: nutritionGoals,
+    setGoals: setNutritionGoals,
+    macros: convertedMacrosForQuery,
+    error,
+  };
 }

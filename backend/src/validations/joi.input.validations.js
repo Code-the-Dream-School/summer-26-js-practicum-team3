@@ -32,7 +32,7 @@ const userSchema = Joi.object({
     }),
 });
 
-const updateUserProfile = Joi.object({
+const updateUserProfileSchema = Joi.object({
   email: Joi.string().trim().lowercase().email().required(),
   name: Joi.string().trim().min(3).max(30).required(),
   dob: Joi.date().iso().allow('', null), //yyyy-mm-dd
@@ -149,7 +149,7 @@ const dailyMenuRecipeSchema = Joi.object({
 });
 
 export {
-  updateUserProfile,
+  updateUserProfileSchema,
   userSchema,
   updateUserOnboardingSchema,
   loginSchema,

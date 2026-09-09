@@ -5,6 +5,11 @@ import { useHasCompletedOnboarding } from '../features/dailyMenu/useHasCompleted
 import { baseFetch } from '../utils/api-helper';
 import { useAuth } from '../features/auth/context/AuthContext';
 
+/*************
+ * MACROS EDIT
+ **************/
+import { useNutritionalGoals } from '../utils/customHooks/useNutritionGoals.js';
+
 import {
   Card,
   Box,
@@ -27,6 +32,14 @@ export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState('');
   const { csrfToken } = useAuth();
+
+  /*************
+   * MACROS EDIT
+   **************/
+  const {
+    goals: { id, ...goals },
+    setGoals,
+  } = useNutritionalGoals();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -56,7 +69,9 @@ export default function Profile() {
       email: profile.email,
       dob: profile.dob,
       activity_level: profile.activity_level,
+      goals: { ...goals },
     };
+
     try {
       let data = await baseFetch(BASE_PATH, {
         method: 'PATCH',
@@ -68,14 +83,20 @@ export default function Profile() {
         credentials: 'include',
       });
 
-      data.dob = data.dob ? data.dob.split('T')[0] : '';
+      const { userInfo, nutritionGoals } = data;
 
-      setProfile(data);
+      userInfo.dob = userInfo.dob ? userInfo.dob.split('T')[0] : '';
+      setGoals(nutritionGoals);
+      setProfile(userInfo);
+
       setIsEditing(false);
       setLoading(false);
+      setError('');
     } catch (error) {
       console.log(error);
       setError(error.message);
+
+      setLoading(false);
     }
   }
 
@@ -86,6 +107,9 @@ export default function Profile() {
       sx={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}
     >
       {loading && <Typography>Loading...</Typography>}
+      {/**
+       * clearing error state by clicking needs better adhearnece
+       */}
       {error && (
         <Typography
           sx={{ width: '100%', color: 'red' }}
@@ -104,7 +128,6 @@ export default function Profile() {
             Personal Information
           </Typography>
           <Divider sx={{ mb: 2 }} />
-
           <Grid container spacing={2}>
             <Grid xs={12} sm={6}>
               <Typography variant="subtitle2" color="textSecondary">
@@ -112,6 +135,7 @@ export default function Profile() {
               </Typography>
               {isEditing ? (
                 <TextField
+                  required
                   onChange={(e) =>
                     setProfile((previous) => ({
                       ...previous,
@@ -133,6 +157,7 @@ export default function Profile() {
               </Typography>
               {isEditing ? (
                 <TextField
+                  required
                   onChange={(e) =>
                     setProfile((previous) => ({
                       ...previous,
@@ -155,6 +180,7 @@ export default function Profile() {
               </Typography>
               {isEditing ? (
                 <TextField
+                  required
                   type="date"
                   onChange={(e) =>
                     setProfile((previous) => ({
@@ -163,7 +189,7 @@ export default function Profile() {
                     }))
                   }
                   variant="standard"
-                  placeholder="YYYY/MM/DD"
+                  value={profile?.dob}
                 />
               ) : (
                 <Typography variant="body1">
@@ -193,6 +219,100 @@ export default function Profile() {
               )}
             </Grid>
           </Grid>
+          {/*****************
+           * MACROS EDITING *
+           *****************/}
+          <Divider sx={{ mb: 2 }} />
+          <Grid container spacing={2}>
+            <Grid xs={12} sm={6}>
+              <Typography variant="standard" color="textSecondary">
+                Calories:
+              </Typography>
+              {isEditing ? (
+                <TextField
+                  required
+                  variant="standard"
+                  onChange={(e) =>
+                    setGoals((previous) => ({
+                      ...previous,
+                      calories_target: e.target.value,
+                    }))
+                  }
+                  value={goals?.calories_target}
+                />
+              ) : (
+                <Typography variant="body1">
+                  {goals?.calories_target || '0'}
+                </Typography>
+              )}
+            </Grid>
+            <Grid xs={12} sm={6}>
+              <Typography variant="subtitle2" color="textSecondary">
+                Carbs:
+              </Typography>
+              {isEditing ? (
+                <TextField
+                  required
+                  variant="standard"
+                  onChange={(e) =>
+                    setGoals((previous) => ({
+                      ...previous,
+                      carbs_target: e.target.value,
+                    }))
+                  }
+                  value={goals.carbs_target}
+                />
+              ) : (
+                <Typography variant="body1">
+                  {goals?.carbs_target || '0'}
+                </Typography>
+              )}
+            </Grid>
+            <Grid xs={12} sm={6}>
+              <Typography variant="subtitle2" color="textSecondary">
+                Fat:
+              </Typography>
+              {isEditing ? (
+                <TextField
+                  required
+                  variant="standard"
+                  onChange={(e) =>
+                    setGoals((previous) => ({
+                      ...previous,
+                      fat_target: e.target.value,
+                    }))
+                  }
+                  value={goals.fat_target}
+                />
+              ) : (
+                <Typography variant="body1">
+                  {goals?.fat_target || '0'}
+                </Typography>
+              )}
+            </Grid>
+            <Grid xs={12} sm={6}>
+              <Typography variant="subtitle2" color="textSecondary">
+                Protein:
+              </Typography>
+              {isEditing ? (
+                <TextField
+                  required
+                  variant="standard"
+                  onChange={(e) =>
+                    setGoals((previous) => ({
+                      ...previous,
+                      protein_target: e.target.value,
+                    }))
+                  }
+                  value={goals?.protein_target}
+                />
+              ) : (
+                <Typography variant="body1">
+                  {goals?.protein_target || '0'}
+                </Typography>
+              )}
+            </Grid>
+          </Grid>
         </CardContent>
       </Card>
       <Box sx={{ display: 'flex', gap: 2 }}>
@@ -217,11 +337,24 @@ export default function Profile() {
             Edit
           </Button>
         )}
+        {isEditing && (
+          <Button
+            type="button"
+            onClick={() => setIsEditing(false)}
+            variant="contained"
+            color="primary"
+            key="cancel-button"
+          >
+            Cancel
+          </Button>
+        )}
+
         {!hasCompletedOnboarding && <OnboardingFlag />}
       </Box>
     </Box>
   );
 }
+
 const NO_OP = () => {};
 function ActivityLevelOptions({ value, onChange = NO_OP }) {
   return (
