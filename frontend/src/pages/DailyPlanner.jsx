@@ -56,6 +56,7 @@ const RECIPE_NAV = {
 
 export default function DailyPlanner() {
   const [recipes, setRecipes] = useState([]);
+  const [recipeCount, setRecipeCount] = useState(0);
   const [count, setCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -107,9 +108,13 @@ export default function DailyPlanner() {
         });
 
         data = await resp;
-
-        setRecipes(() => data.recipes);
-        setPagination(() => data.pagination);
+        setRecipes(data.recipes);
+        setRecipeCount(
+          data.recipes?.length === 10
+            ? data.recipe?.length
+            : data.recipes?.length - 2,
+        );
+        setPagination(data.pagination);
         setCount(0);
       } catch (error) {
         if (
@@ -166,10 +171,12 @@ export default function DailyPlanner() {
   async function previous() {
     setCount((prev) => prev - 2);
     if (count === 0 && databasePageNumber > 1) {
+      //this sets reipes to empty so when new fetch is triggered
+      // they do not stack
+      setRecipes([]);
       const previousPageNumber = databasePageNumber - 1;
       setDatabasePageNumber(previousPageNumber);
       setCount(0);
-      setRecipes([]);
     }
   }
 
@@ -240,7 +247,7 @@ export default function DailyPlanner() {
           variant="contained"
           size="large"
           type="button"
-          disabled={count === 0 || pagination.hasPrev === false}
+          disabled={count === 0 && pagination.hasPrev === false}
           onClick={previous}
         >
           prev
@@ -251,7 +258,7 @@ export default function DailyPlanner() {
           variant="contained"
           size="large"
           type="button"
-          disabled={count === 10 || pagination.hasNext === false}
+          disabled={count === recipeCount && pagination.hasNext === false}
           onClick={next}
         >
           next

@@ -97,15 +97,15 @@ export async function getRecipes(req, res) {
       mode: 'insensitive',
     };
   }
-  if (req.query.calories) {
-    const MEALS_PER_DAY = 3;
-    whereClause.calories = {
-      lte: parseInt(req.query.calories) / MEALS_PER_DAY,
-    };
-    whereClause.carbs = { gte: parseInt(req.query.carbs) / MEALS_PER_DAY };
-    whereClause.fat = { lte: parseInt(req.query.fat) / MEALS_PER_DAY };
-    whereClause.protein = { gte: parseInt(req.query.protein) / MEALS_PER_DAY };
-  }
+  // if (req.query.calories) {
+  //   const MEALS_PER_DAY = 3;
+  //   whereClause.calories = {
+  //     lte: parseInt(req.query.calories) / MEALS_PER_DAY,
+  //   };
+  //   whereClause.carbs = { gte: parseInt(req.query.carbs) / MEALS_PER_DAY };
+  //   whereClause.fat = { lte: parseInt(req.query.fat) / MEALS_PER_DAY };
+  //   whereClause.protein = { gte: parseInt(req.query.protein) / MEALS_PER_DAY };
+  // }
 
   let recipes = null;
   let total = null;
