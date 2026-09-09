@@ -71,7 +71,7 @@ export default function Profile() {
       activity_level: profile.activity_level,
       goals: { ...goals },
     };
-    console.log('papyload', payload);
+
     try {
       let data = await baseFetch(BASE_PATH, {
         method: 'PATCH',
@@ -82,17 +82,19 @@ export default function Profile() {
         body: JSON.stringify(payload),
         credentials: 'include',
       });
-      console.log('hey', data);
+
       const { userInfo, nutritionGoals } = data;
 
       userInfo.dob = userInfo.dob ? userInfo.dob.split('T')[0] : '';
       setGoals(nutritionGoals);
       setProfile(userInfo);
+
       setIsEditing(false);
       setLoading(false);
     } catch (error) {
       console.log(error);
       setError(error.message);
+
       setLoading(false);
     }
   }
@@ -132,6 +134,7 @@ export default function Profile() {
               </Typography>
               {isEditing ? (
                 <TextField
+                  required
                   onChange={(e) =>
                     setProfile((previous) => ({
                       ...previous,
@@ -153,6 +156,8 @@ export default function Profile() {
               </Typography>
               {isEditing ? (
                 <TextField
+                  required
+                  email
                   onChange={(e) =>
                     setProfile((previous) => ({
                       ...previous,
@@ -175,6 +180,7 @@ export default function Profile() {
               </Typography>
               {isEditing ? (
                 <TextField
+                  required
                   type="date"
                   onChange={(e) =>
                     setProfile((previous) => ({
@@ -213,8 +219,8 @@ export default function Profile() {
               )}
             </Grid>
           </Grid>
-          {/******************
-           * MACROS EDITING
+          {/*****************
+           * MACROS EDITING *
            *****************/}
           <Divider sx={{ mb: 2 }} />
           <Grid container spacing={2}>
@@ -224,6 +230,7 @@ export default function Profile() {
               </Typography>
               {isEditing ? (
                 <TextField
+                  required
                   variant="standard"
                   onChange={(e) =>
                     setGoals((previous) => ({
@@ -245,6 +252,7 @@ export default function Profile() {
               </Typography>
               {isEditing ? (
                 <TextField
+                  required
                   variant="standard"
                   onChange={(e) =>
                     setGoals((previous) => ({
@@ -266,6 +274,7 @@ export default function Profile() {
               </Typography>
               {isEditing ? (
                 <TextField
+                  required
                   variant="standard"
                   onChange={(e) =>
                     setGoals((previous) => ({
@@ -287,6 +296,7 @@ export default function Profile() {
               </Typography>
               {isEditing ? (
                 <TextField
+                  required
                   variant="standard"
                   onChange={(e) =>
                     setGoals((previous) => ({
@@ -344,6 +354,7 @@ export default function Profile() {
     </Box>
   );
 }
+
 const NO_OP = () => {};
 function ActivityLevelOptions({ value, onChange = NO_OP }) {
   return (
