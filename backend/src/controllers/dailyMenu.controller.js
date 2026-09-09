@@ -35,7 +35,7 @@ function toDailyMenuResponse(dailyMenu) {
 
 /**
  * @swagger
- * /v1/daily-menu:
+ * /daily-menu:
  *   get:
  *     summary: Get the user's current daily menu
  *     description: "Returns the user's daily menu with assigned recipes and their macros in one query, or an empty menu if nothing has been added yet."
@@ -61,7 +61,7 @@ export async function getDailyMenu(req, res) {
 
 /**
  * @swagger
- * /v1/daily-menu:
+ * /daily-menu:
  *   post:
  *     summary: Add a recipe to the user's current daily menu
  *     description: "Creates the user's daily menu entry first if one doesn't exist yet, then assigns the recipe to it."
@@ -131,7 +131,7 @@ export async function addRecipeToDailyMenu(req, res) {
 
 /**
  * @swagger
- * /v1/daily-menu/recipes/{id}:
+ * /daily-menu/recipes/{id}:
  *   delete:
  *     summary: Remove a recipe from the user's current daily menu
  *     description: "Removes one recipe assignment from today's daily menu selections."

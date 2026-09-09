@@ -8,7 +8,7 @@ import { ValidationError, NotFoundError } from '../errors/index.js';
 
 /**
  * @swagger
- * /v1/nutrition-goals:
+ * /nutrition-goals:
  *   post:
  *     summary: Create the user's daily nutrition goals
  *     description: "Creates the user's nutrition goals in the database."
@@ -103,7 +103,7 @@ export async function createNutritionGoals(req, res) {
 
 /**
  * @swagger
- * /v1/nutrition-goals:
+ * /nutrition-goals:
  *   get:
  *     summary: Get the user's daily nutrition goals
  *     description: "Returns the authenticated user's most recently saved nutrition goals."

@@ -10,7 +10,7 @@ import {
  * /recipes:
  *   get:
  *     summary: Get a list of recipes
- *     description: Fetch recipes with pagination. You can also search by title, sort by nutrition facts, and filter recipes based on nutritional goals. Daily nutritional targets are divided by three meals per day before filtering.
+ *     description: Fetch recipes with pagination. You can also search by title, sort by nutrition facts, and filter recipes based on nutritional goals. Filtering kicks in only when `calories` is provided, and it expects `protein`, `carbs`, and `fat` alongside it. Daily targets are divided by three meals per day before filtering.
  *     parameters:
  *       - in: query
  *         name: page
@@ -44,28 +44,34 @@ import {
  *           enum: [asc, desc]
  *         description: Sort going up (asc) or down (desc).
  *       - in: query
- *         name: calories:2000
+ *         name: calories
  *         schema:
  *           type: integer
- *         description: Daily calorie target.
+ *           example: 2000
+ *         description: Daily calorie target. Turns nutrition filtering on.
  *       - in: query
- *         name: protein:50
+ *         name: protein
  *         schema:
  *           type: integer
- *         description: Daily protein target.
+ *           example: 50
+ *         description: Daily protein target. Used only when `calories` is set.
  *       - in: query
- *         name: carbs:275
+ *         name: carbs
  *         schema:
  *           type: integer
- *         description: Daily carbohydrate target.
+ *           example: 275
+ *         description: Daily carbohydrate target. Used only when `calories` is set.
  *       - in: query
- *         name: fat:70
+ *         name: fat
  *         schema:
  *           type: integer
- *         description: Daily fat target.
+ *           example: 70
+ *         description: Daily fat target. Used only when `calories` is set.
  *     responses:
  *       200:
  *         description: A list of recipes and pagination details.
+ *       400:
+ *         description: Invalid pagination parameters (negative page or limit).
  *       404:
  *         description: No recipes met the search criteria.
  *       500:
@@ -163,13 +169,7 @@ export async function getRecipes(req, res) {
  * /recipes:
  *   post:
  *     summary: Create a new recipe
- *     parameters:
- *       - in: header
- *         name: Authorization
- *         description: "JWT Token to pull the request user ID (Note: hardcoded for now, but will be required later)"
- *         required: false
- *         schema:
- *           type: string
+ *     description: "Adds a recipe owned by the authenticated user. Auth is the `jwt` cookie plus a matching `X-CSRF-TOKEN` header."
  *     requestBody:
  *       required: true
  *       content:
@@ -207,6 +207,10 @@ export async function getRecipes(req, res) {
  *     responses:
  *       201:
  *         description: The recipe was successfully created.
+ *       400:
+ *         description: Invalid or missing fields in the request body.
+ *       401:
+ *         description: No user is authenticated, or the CSRF token is missing or invalid.
  *       500:
  *         description: Server or database connection error.
  */
@@ -246,9 +250,9 @@ export async function createRecipe(req, res) {
 /**
  * @swagger
  * /recipes/{id}:
- *   put:
+ *   patch:
  *     summary: Update an existing recipe
- *     description: "Modify an existing recipe in the database."
+ *     description: "Modifies a recipe owned by the authenticated user. Auth is the `jwt` cookie plus a matching `X-CSRF-TOKEN` header."
  *     parameters:
  *       - in: path
  *         name: id
@@ -256,12 +260,6 @@ export async function createRecipe(req, res) {
  *         description: "The ID of the recipe you want to update."
  *         schema:
  *           type: integer
- *       - in: header
- *         name: Authorization
- *         description: "JWT Token to pull the request user ID (Note: hardcoded for now, but will be required later)"
- *         required: false
- *         schema:
- *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -300,7 +298,11 @@ export async function createRecipe(req, res) {
  *       200:
  *         description: "The recipe was successfully updated."
  *       400:
- *         description: "Validation error or database connection issue."
+ *         description: "Invalid recipe ID or invalid fields in the request body."
+ *       401:
+ *         description: "No user is authenticated, or the CSRF token is missing or invalid."
+ *       404:
+ *         description: "No recipe with that ID belongs to the authenticated user."
  */
 export async function updateRecipe(req, res) {
   const { error, value } = patchRecipeSchema.validate(req.body ?? {}, {
@@ -353,7 +355,7 @@ export async function updateRecipe(req, res) {
  * /recipes/{id}:
  *   delete:
  *     summary: Delete a recipe
- *     description: "Remove a recipe from the database."
+ *     description: "Removes a recipe owned by the authenticated user. Auth is the `jwt` cookie plus a matching `X-CSRF-TOKEN` header."
  *     parameters:
  *       - in: path
  *         name: id
@@ -361,17 +363,15 @@ export async function updateRecipe(req, res) {
  *         description: "The ID of the recipe you want to delete."
  *         schema:
  *           type: integer
- *       - in: header
- *         name: Authorization
- *         description: "JWT Token to pull the request user ID (Note: hardcoded for now, but will be required later)"
- *         required: false
- *         schema:
- *           type: string
  *     responses:
  *       204:
  *         description: "The recipe was successfully deleted."
  *       400:
- *         description: "Validation error or database connection issue."
+ *         description: "Invalid recipe ID."
+ *       401:
+ *         description: "No user is authenticated, or the CSRF token is missing or invalid."
+ *       404:
+ *         description: "No recipe with that ID belongs to the authenticated user."
  */
 export async function deleteRecipe(req, res) {
   const recipeIndex = parseInt(req.params?.id);

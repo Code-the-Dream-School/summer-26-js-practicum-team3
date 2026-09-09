@@ -167,15 +167,50 @@ npm install <package-name> --workspace=backend
 
 ## 🔐 API Overview
 
-### Example Endpoints
+All routes are under `/api/v1`. Auth is cookie-based: `POST /auth/login` (or `/auth/register`) 
+sets an httpOnly `jwt` cookie and returns a `csrfToken` — send that token in 
+the `X-CSRF-TOKEN` header on every `POST` / `PATCH` / `DELETE`.
+
+### Interactive docs (Swagger)
+
+With the backend running:
+
+```
+http://localhost:8080/swagger/v1/docs
+```
+
+The spec is generated from `@swagger` JSDoc comments in
+`backend/src/controllers/*.js` (config in `backend/src/routes/swagger-docs.routes.js`).
+When you add or change an endpoint, update its `@swagger` block in the same commit.
+
+### Endpoints
 
 ```text
-POST   /api/auth/register
-POST   /api/auth/login
-GET    /api/items
-POST   /api/items
-PUT    /api/items/:id
-DELETE /api/items/:id
+Auth
+  POST   /api/v1/auth/register
+  POST   /api/v1/auth/login
+  POST   /api/v1/auth/logout
+  GET    /api/v1/auth/profile          (auth)
+  GET    /api/v1/auth/me               (auth)
+
+Recipes
+  GET    /api/v1/recipes               search / sort / paginate
+  POST   /api/v1/recipes               (auth)
+  PATCH  /api/v1/recipes/:id           (auth)
+  DELETE /api/v1/recipes/:id           (auth)
+
+Users
+  PATCH  /api/v1/users/me                     (auth)
+  GET    /api/v1/users/me/onboarding-status   (auth)
+
+Nutrition Goals
+  GET    /api/v1/nutrition-goals       (auth)
+  POST   /api/v1/nutrition-goals       (auth)
+
+Daily Menu
+  GET    /api/v1/daily-menu                   (auth)
+  POST   /api/v1/daily-menu                   (auth)
+  DELETE /api/v1/daily-menu/recipes/:id       (auth)
 ```
 
 ## 🤝 Team & Collaboration
