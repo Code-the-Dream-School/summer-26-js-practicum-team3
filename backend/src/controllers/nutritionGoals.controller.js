@@ -101,7 +101,7 @@ export async function createNutritionGoals(req, res) {
     return nutritionGoals;
   });
 
-  return res.status(StatusCodes.CREATED).json({ savedGoals });
+  return res.status(StatusCodes.CREATED).json( savedGoals );
 }
 
 /**
@@ -130,5 +130,5 @@ export async function getNutritionGoals(req, res) {
     throw new NotFoundError('No nutrition goals found for this user.');
   }
 
-  return res.status(StatusCodes.OK).json({ goal });
+  return res.status(StatusCodes.OK).json( goal );
 }
