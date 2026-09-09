@@ -107,6 +107,25 @@ React-specific practices for keeping the frontend maintainable.
 - Reach for `useMemo` / `useCallback` only when you have a real re-render or
   cost problem — not by default.
 
+## Backend conventions
+
+- **Routes stay thin.** A router file defines URL + method + middleware only; 
+  all logic lives in the matching controller.
+- **One job per file.** If a file defines routes *and* validates *and* queries 
+  the DB *and* formats responses, split it.
+- **Controllers are `async` and delegate errors:** `try/catch` → `next(error)`,
+  never handle the response shape for errors inline. The `error-handler` middleware 
+  is the single place that turns errors into HTTP responses.
+- **Never trust client input.** Validate every request body / query / param with a
+  Joi schema (`src/validations/`) and fail fast with `400` before any DB call.
+- **Least privilege.** Only expose routes we need, protect every route that modifies 
+  data with `jwtMiddleware`, and never return sensitive fields (`password_hash`, secrets).
+- **Never leak internals.** Log the real error server-side; send the client a safe message. 
+  Don't echo stack traces or raw DB errors.
+- **Secrets only in `.env`** (git-ignored) - DB URLs, `JWT_SECRET`, API keys.
+- **Use correct status codes** via `http-status-codes` (`200/201/400/401/403/404/500`).
+- Only the backend talks to the database; keep Prisma calls out of route files.
+
 ## Definition of done
 
 - [ ] `npm run lint` and `npm run test` pass locally
