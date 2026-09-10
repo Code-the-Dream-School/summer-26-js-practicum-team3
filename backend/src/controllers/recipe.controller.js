@@ -91,37 +91,27 @@ export async function getRecipes(req, res) {
 
   const whereClause = {};
 
-  if (req.query.find) {
-    whereClause.title = {
-      contains: req.query.find,
-      mode: 'insensitive',
-    };
-  }
-  if (req.query.calories) {
+  whereClause.title = req.query.find ?? null;
+
+  function formattingMacros(num) {
     const MEALS_PER_DAY = 3;
-    whereClause.calories = {
-      lte: parseInt(req.query.calories) / MEALS_PER_DAY,
-    };
-    whereClause.carbs = { gte: parseInt(req.query.carbs) / MEALS_PER_DAY };
-    whereClause.fat = { lte: parseInt(req.query.fat) / MEALS_PER_DAY };
-    whereClause.protein = { gte: parseInt(req.query.protein) / MEALS_PER_DAY };
+    const singleMealValue = parseInt(num) / MEALS_PER_DAY;
+    return Math.floor(singleMealValue);
   }
 
-  // function getOrderBy(query) {
-  //   const validSortFields = ['protein', 'carbs', 'fat', 'calories'];
-  //   const sortBy = query.sortBy || 'calories';
-  //   const sortDirection = query.sortDirection === 'asc' ? 'asc' : 'desc';
+  whereClause.calories = req.query.calories
+    ? formattingMacros(req.query.calories)
+    : 667;
+  whereClause.carbs = req.query.carbs ? formattingMacros(req.query.carbs) : 23;
+  whereClause.fat = req.query.fat ? formattingMacros(req.query.fat) : 83;
+  whereClause.protein = req.query.protein
+    ? formattingMacros(req.query.protein)
+    : 50;
 
-  //   if (validSortFields.includes(sortBy)) {
-  //     return { [sortBy]: sortDirection };
-  //   }
+  const searchPattern = whereClause.title ? `%${whereClause.title}%` : '%';
+  const exactMatch = whereClause.title ? whereClause.title : '%';
+  const startsWith = whereClause.title ? `${whereClause.title}%` : '%';
 
-  //   return { created_at: sortDirection };
-  // }
-
-  const searchPattern = `%${whereClause.title}%`;
-  const exactMatch = whereClause.title;
-  const startsWith = `${whereClause.title}%`;
   let recipes = null;
   let total = null;
 
@@ -151,32 +141,16 @@ CASE WHEN calories <= ${Math.floor(whereClause.calories)} THEN 1 ELSE 0 END
 + CASE WHEN fat <= ${Math.floor(whereClause.fat)} THEN 1 ELSE 0 END
 + CASE WHEN carbs >= ${Math.floor(whereClause.carbs)} THEN 1 ELSE 0 END
     DESC
-    OFFSET ${parseInt(page)}
-  LIMIT ${parseInt(limit)}
+    LIMIT ${parseInt(limit)}
+    OFFSET ${parseInt(skip)}
 `;
 
-  // recipes = await prisma.recipes.findMany({
-  //   where: whereClause,
-  //   select: {
-  //     id: true,
-  //     instructions: true,
-  //     ingredients: true,
-  //     total_time_minutes: true,
-  //     servings: true,
-  //     title: true,
-  //     calories: true,
-  //     fat: true,
-  //     protein: true,
-  //     carbs: true,
-  //   },
-  //   skip: skip,
-  //   take: limit,
-  //   orderBy: getOrderBy(req.query),
-  // });
-
-  // total = await prisma.recipes.count({ where: whereClause });
-  total =
-    await prisma.$queryRaw`SELECT COUNT(*) FROM recipes WHERE title ILIKE ${searchPattern}`;
+  const totalResult = await prisma.$queryRaw`
+    SELECT COUNT(*)::int AS count
+    FROM recipes
+    WHERE title ILIKE ${searchPattern}
+  `;
+  total = totalResult[0].count;
 
   const pagination = {
     page,
@@ -201,8 +175,6 @@ CASE WHEN calories <= ${Math.floor(whereClause.calories)} THEN 1 ELSE 0 END
     count: recipes.length,
     pagination,
   });
-  //origina
-  // res.status(StatusCodes.OK).json({ recipes, pagination });
   return;
 }
 
