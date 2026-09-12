@@ -18,7 +18,7 @@ export default function AddRecipe() {
             content: '""',
             position: 'absolute',
             inset: 0,
-           bgcolor: 'rgba(255, 255, 255, 0.6)',
+           bgcolor: 'rgba(255, 255, 255, 0.3)',
           },
           '& .MuiOutlinedInput-root': {
             bgcolor: 'common.white',
