@@ -6,7 +6,7 @@ import { useHasCompletedOnboarding } from '../../dailyMenu/useHasCompletedOnboar
 function PublicRoute({ children }) {
   const { userName, isChecking } = useAuth();
   const hasCompletedOnboarding = useHasCompletedOnboarding();
- 
+
   if (isChecking) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}>
@@ -15,9 +15,7 @@ function PublicRoute({ children }) {
     );
   }
   if (userName) {
-    return (
-      <Navigate to={hasCompletedOnboarding ? '/daily-planner' : '/onboarding'} replace />
-    );
+    return <Navigate to={'/daily-planner'} replace />;
   }
   return children;
 }
